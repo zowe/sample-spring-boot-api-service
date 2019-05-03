@@ -1,7 +1,8 @@
-HELP.md
 .gradle
 /build/
+/bin/
 !gradle/wrapper/gradle-wrapper.jar
+.DS_Store
 
 ### STS ###
 .apt_generated
@@ -28,4 +29,3 @@ HELP.md
 
 ### VS Code ###
 .vscode/
-/bin/
