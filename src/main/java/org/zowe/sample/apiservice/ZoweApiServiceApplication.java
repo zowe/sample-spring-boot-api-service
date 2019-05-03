@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ZoweApiserviceApplication {
+public class ZoweApiServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ZoweApiserviceApplication.class, args);
+		SpringApplication.run(ZoweApiServiceApplication.class, args);
 	}
 
 }
