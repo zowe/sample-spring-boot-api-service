@@ -13,8 +13,12 @@ You can pass it as a command line argument `--spring.profiles.include=debug` whe
 
     java -jar build/libs/*.jar --spring.config.additional-location=file:./config/local/application.yml --spring.profiles.include=debug
 
+Or with Gradle:
+
+    ./gradlew bootRun --args=='--spring.config.additional-location=file:./config/local/application.yml --spring.profiles.include=debug'
+
 ## Diagnostics Profile
 
-There is a profile called `diag` that is enabled in `config/local/application.yml`.
+There is a profile called `diag` that is enabled in [`config/local/application.yml`](/config/local/application.yml).
 
-This profile enables all Spring Actuator endpoints that you can see at: https://localhost:10080/actuator
+This profile enables all Spring Actuator endpoints that you can see at: <https://localhost:10080/actuator>

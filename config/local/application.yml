@@ -1,5 +1,7 @@
 # Configuration for running the locally on your workstation
 # It overrides service defaults provided in src/main/resources/application.yml
 
+spring.profiles.include: diag
+
 server:
     port: 10080

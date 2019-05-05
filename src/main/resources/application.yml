@@ -1,2 +1,38 @@
+spring:
+    main:
+        bannerMode: "off"
+
+logging:
+    level:
+        ROOT: INFO
+        com.netflix: WARN
+        com.netflix.config: ERROR
+        com.netflix.discovery: ERROR
+        org.apache.catalina: WARN
+        org.springframework: WARN
+        org.springframework.boot.web.embedded: INFO
+
 server:
     port: 10080
+
+---
+spring:
+    profiles: debug
+
+
+logging:
+    level:
+        ROOT: INFO
+        org.springframework: INFO
+        org.apache.catalina: INFO
+        com.netflix: INFO
+
+---
+spring:
+    profiles: diag
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
