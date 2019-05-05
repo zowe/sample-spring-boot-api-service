@@ -1,0 +1,5 @@
+# Configuration for running the locally on your workstation
+# It overrides service defaults provided in src/main/resources/application.yml
+
+server:
+    port: 10080

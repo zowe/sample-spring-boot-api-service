@@ -24,6 +24,17 @@ Start your application:
 
 Open <http://localhost:10080/api/v1/greeting> in your browser or favorite REST API client (for example [HTTPie](https://httpie.org/), [REST Client for VSCode](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), or [Insomnia](https://insomnia.rest/).
 
+## Customize and Extend Your Application
+
+For further reference, please consider the following sections:
+
+* [External Configuration](docs/config.md)
+* [Logging](docs/logging.md)
+* [TODO - Create TLS/SSL Certificates](docs/create-certificates.md)
+* [TODO - Deployment to z/OS](docs/deployment-instructions.md)
+* [TODO - z/OS Security](docs/zos-security.md)
+* [TODO - z/OS Native code](docs/zos-native-code.md)
+
 ## Learn More about Gradle and Spring Boot
 
 ### Reference Documentation
