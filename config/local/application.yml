@@ -1,7 +1,17 @@
 # Configuration for running the locally on your workstation
 # It overrides service defaults provided in src/main/resources/application.yml
 
-spring.profiles.include: diag
+spring.profiles.include: https,diag
 
 server:
+    address: 0.0.0.0
     port: 10080
+    ssl:
+        keyAlias: localhost
+        keyPassword: password
+        keyStore: config/local/keystore.p12
+        keyStorePassword: password
+        keyStoreType: PKCS12
+        trustStore: config/local/truststore.p12
+        trustStorePassword: password
+        trustStoreType: PKCS12

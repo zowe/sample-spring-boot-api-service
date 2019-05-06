@@ -6,7 +6,7 @@ There are various ways how these values can be overridden in Spring Boot (extern
 
 The Java System properties are a common way how to provide external configuration options. They are defined using `-D` options for Java. Java System properties can override any configuration.
 
-The values for Java System properties can be defined in STDENV member for Java started tasks on z/OS.
+The values for Java System properties can be defined in STDENV member of JZOS Batch Launcher for Java started tasks on z/OS.
 
 When your run the sample application on your computer using `gradlew bootRun` it is using external configuration file [`config/local/application.yml`](/config/local/application.yml). This file contains the value for running on your computer in development mode.
 
@@ -26,7 +26,7 @@ Running by Gradle:
 
 1. Extension is `.yml`
 2. Indentation is 4 spaces
-3. Property names are using `camelCase`
+3. Property names are using `camelCase` 
 4. The `application.yml` bundled into the JAR should contain only valid or typical values for any deployment (ie. it should not contain values that are correct only on your computer)
 
 ## Resources

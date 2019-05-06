@@ -16,17 +16,14 @@ import org.springframework.test.web.servlet.MockMvc;
 @RunWith(SpringRunner.class)
 @WebMvcTest(GreetingController.class)
 public class GreetingControllerTests {
- 
+
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void returnsGreeting()
-      throws Exception {              
-        mvc.perform(get("/api/v1/greeting")
-          .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.content", is("Hello, World!")));
-    }    
- 
+    public void returnsGreeting() throws Exception {
+        mvc.perform(get("/api/v1/greeting").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", is("Hello, World!")));
+    }
+
 }
