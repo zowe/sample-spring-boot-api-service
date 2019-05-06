@@ -20,5 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @RestController
-@RequestMapping("/api/v1")
-public @interface RestApiVersion1Controller {}
+@RequestMapping(value = "/api/v1", produces = "application/json")
+public @interface RestApiVersion1Controller {
+}

@@ -11,18 +11,25 @@ package org.zowe.sample.apiservice.hello;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.zowe.sample.apiservice.config.RestApiVersion1Controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
+@Api(tags = "Greeting", description = "REST API for greetings")
 @RestApiVersion1Controller
 public class GreetingController {
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping("/greeting")
-    public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+    @ApiOperation(value = "Returns a greeting for the name passed", nickname = "greetingToSomeone")
+    @GetMapping("/greeting")
+    public Greeting greeting(
+            @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "World") String name) {
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
 }

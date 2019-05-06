@@ -11,13 +11,49 @@ logging:
         org.apache.catalina: WARN
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
+        springfox.documentation: WARN
 
 server:
     port: 10080
 
+springfox.documentation.swagger.v2.path: /apiDocs/v2
+
+apiml:
+    service:
+        hostname: localhost
+        scheme: http
+        serviceId: zowesample
+        title: Zowe Sample API Service
+        description: Sample Spring Boot API service that provides REST API
+        baseUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/
+        homePageRelativeUrl:
+        statusPageRelativeUrl: /actuator/info
+        healthCheckRelativeUrl: /actuator/health
+        discoveryServiceUrls:
+            - https://localhost:10011/eureka
+        routedServices:
+            - gatewayUrl: api/v1
+              serviceUrl: /api/v1
+        apiInfo:
+            - apiId: org.zowe.sample.api
+              title: Zowe Sample REST API
+              description: Sample Spring Boot REST API for Zowe
+              version: 1.0.0
+              gatewayUrl: api/v1
+              swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDoc
+        catalogUiTile:
+            id: sample
+            title: Sample API Services
+            description: Sample API services to demonstrate exposing a REST API service in the Zowe ecosystem
+            version: 1.0.0
+
 ---
 spring:
     profiles: https
+
+apiml:
+    service:
+        scheme: https
 
 server:
     ssl:
@@ -37,6 +73,7 @@ logging:
         org.springframework: INFO
         org.apache.catalina: INFO
         com.netflix: INFO
+        springfox.documentation: INFO
 
 ---
 spring:
