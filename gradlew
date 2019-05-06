@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+DIRNAME=`dirname $0`
+$DIRNAME/gradle/bootstrap/bootstrap-gradlew.sh
+
 ##############################################################################
 ##
 ##  Gradle start up script for UN*X

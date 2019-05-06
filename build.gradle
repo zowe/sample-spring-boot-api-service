@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.1.4.RELEASE'
 	id 'java'
 	id 'jacoco'
+    id 'com.github.hierynomus.license' version '0.15.0'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -40,6 +41,15 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestReport
+
+license {
+    header rootProject.file('.licence/EPL-2.0-licence-header.txt')
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks"])
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
 
 bootRun {
 	args '--spring.config.additional-location=file:./config/local/application.yml'
