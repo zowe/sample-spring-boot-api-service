@@ -15,7 +15,7 @@ You can pass it as a command line argument `--spring.profiles.include=debug` whe
 
 Or with Gradle:
 
-    ./gradlew bootRun --args=='--spring.config.additional-location=file:./config/local/application.yml --spring.profiles.include=debug'
+    ./gradlew bootRun --args='--spring.config.additional-location=file:./config/local/application.yml --spring.profiles.include=debug'
 
 ## Diagnostics Profile
 

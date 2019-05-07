@@ -24,6 +24,8 @@ Start your application:
 
 Open <https://localhost:10080/api/v1/greeting> in your browser or favorite REST API client (for example [HTTPie](https://httpie.org/), [REST Client for VSCode](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), or [Insomnia](https://insomnia.rest/).
 
+The default page <https://localhost:10080/> opens Swagger UI with the API Documentation.
+
 ## Customize and Extend Your Application
 
 For further reference, please consider the following sections:
@@ -31,6 +33,7 @@ For further reference, please consider the following sections:
 * [External Configuration](docs/config.md)
 * [Logging](docs/logging.md)
 * [Setup HTTPS and Create TLS/SSL Certificates](docs/https-setup.md)
+* [Integrate with Zowe API Mediation Layer](docs/zowe-integrate-with-apiml.md)
 * [TODO - Deployment to z/OS](docs/deployment-instructions.md)
 * [TODO - z/OS Security](docs/zos-security.md)
 * [TODO - z/OS Native code](docs/zos-native-code.md)
@@ -51,6 +54,7 @@ The following guides illustrate how to use some features concretely:
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
 * [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
+* [Setting Up Swagger 2 with a Spring REST API](https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
 
 ### Additional Links
 

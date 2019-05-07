@@ -20,13 +20,13 @@ Running from JAR:
 
 Running by Gradle:
 
-    ./gradlew bootRun --args=='--spring.config.additional-location=file:./config/local/application.yml --server.port=10081'
+    ./gradlew bootRun --args='--spring.config.additional-location=file:./config/local/application.yml --server.port=10081'
 
 ## YAML Files Conventions
 
 1. Extension is `.yml`
 2. Indentation is 4 spaces
-3. Property names are using `camelCase` 
+3. Property names are using `camelCase`
 4. The `application.yml` bundled into the JAR should contain only valid or typical values for any deployment (ie. it should not contain values that are correct only on your computer)
 
 ## Resources

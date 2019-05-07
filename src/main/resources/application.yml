@@ -12,40 +12,46 @@ logging:
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
         springfox.documentation: WARN
+        com.ca.mfaas.eurekaservice.client.impl: WARN
 
 server:
     port: 10080
+    ssl:
+        verifySslCertificatesOfServices: true
+        protocol: TLS
+        enabledProtocols: TLSv1.2
+        ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
 
 springfox.documentation.swagger.v2.path: /apiDocs/v2
 
 apiml:
     service:
-        hostname: localhost
-        scheme: http
+        # Following values are default values that can be changed by user:
         serviceId: zowesample
         title: Zowe Sample API Service
         description: Sample Spring Boot API service that provides REST API
-        baseUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/
-        homePageRelativeUrl:
-        statusPageRelativeUrl: /actuator/info
-        healthCheckRelativeUrl: /actuator/health
-        discoveryServiceUrls:
-            - https://localhost:10011/eureka
-        routedServices:
-            - gatewayUrl: api/v1
-              serviceUrl: /api/v1
-        apiInfo:
-            - apiId: org.zowe.sample.api
-              title: Zowe Sample REST API
-              description: Sample Spring Boot REST API for Zowe
-              version: 1.0.0
-              gatewayUrl: api/v1
-              swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDoc
         catalogUiTile:
             id: sample
             title: Sample API Services
             description: Sample API services to demonstrate exposing a REST API service in the Zowe ecosystem
             version: 1.0.0
+
+        # Following values are provided by the developer:
+        scheme: http
+        baseUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/
+        homePageRelativeUrl:
+        statusPageRelativeUrl: actuator/info
+        healthCheckRelativeUrl: actuator/health
+        routes:
+            - gatewayUrl: api/v1
+              serviceUrl: /api/v1
+        apiInfo:
+            - apiId: org.zowe.sample.api
+              gatewayUrl: api/v1
+              version: 1.0.0
+              title: Zowe Sample REST API
+              description: Sample Spring Boot REST API for Zowe
+              swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDocs
 
 ---
 spring:
@@ -58,9 +64,6 @@ apiml:
 server:
     ssl:
         enabled: true
-        protocol: TLS
-        enabledProtocols: TLSv1.2
-        ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
 
 ---
 spring:
@@ -70,10 +73,13 @@ spring:
 logging:
     level:
         ROOT: INFO
+        org.zowe.sample.apiservice: DEBUG
         org.springframework: INFO
         org.apache.catalina: INFO
         com.netflix: INFO
         springfox.documentation: INFO
+        com.ca.mfaas.eurekaservice.client.impl: INFO
+
 
 ---
 spring:

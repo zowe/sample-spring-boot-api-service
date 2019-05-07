@@ -1,7 +1,7 @@
 # Configuration for running the locally on your workstation
 # It overrides service defaults provided in src/main/resources/application.yml
 
-spring.profiles.include: https,diag
+spring.profiles.active: https,diag
 
 server:
     address: 0.0.0.0
@@ -15,3 +15,11 @@ server:
         trustStore: config/local/truststore.p12
         trustStorePassword: password
         trustStoreType: PKCS12
+
+apiml:
+    enabled: false
+    service:
+        hostname: localhost
+        ipAddress: 127.0.0.1
+        discoveryServiceUrls:
+            - https://localhost:10011/eureka

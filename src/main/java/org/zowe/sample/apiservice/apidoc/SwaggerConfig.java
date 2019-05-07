@@ -37,7 +37,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Value("${apiml.service.apiInfo[0].description}")
     private String apiDescription;
 
-
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).groupName("v1").select().apis(RequestHandlerSelectors.any())
