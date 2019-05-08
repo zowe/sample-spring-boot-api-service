@@ -1,0 +1,19 @@
+{
+    "properties": [
+        {
+            "name": "apiml",
+            "type": "java.util.Map",
+            "description": "Zowe API Mediation Layer related configuration"
+        },
+        {
+            "name": "server.ssl.verifySslCertificatesOfServices",
+            "type": "java.lang.String",
+            "description": "Validation of the certificates of services that are accessed from this service (e.g. Discovery Service)"
+        },
+        {
+            "name": "springfox.documentation.swagger.v2.path",
+            "type": "java.lang.String",
+            "description": "URL where the Swagger API documentation JSON document will be provided"
+        }
+    ]
+}

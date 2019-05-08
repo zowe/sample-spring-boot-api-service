@@ -80,7 +80,6 @@ logging:
         springfox.documentation: INFO
         com.ca.mfaas.eurekaservice.client.impl: INFO
 
-
 ---
 spring:
     profiles: diag

@@ -56,7 +56,6 @@ public class RegisterToApiLayer {
         log.info("Registering to API Mediation Layer: baseUrl={}, ipAddress={}, discoveryServiceUrls={}",
                 config.getBaseUrl(), config.getEureka().getIpAddress(), config.getDiscoveryServiceUrls());
         log.debug("Registering to API Mediation Layer with settings: {}", config.toString());
-        log.debug("API Info: {}", config.getApiInfo().get(0).toString());
         apiMediationClient.register(config);
     }
 }
