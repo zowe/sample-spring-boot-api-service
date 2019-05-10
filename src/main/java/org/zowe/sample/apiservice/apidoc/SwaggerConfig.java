@@ -9,7 +9,10 @@
  */
 package org.zowe.sample.apiservice.apidoc;
 
+import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +24,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.BasicAuth;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -28,6 +33,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
+
     @Value("${apiml.service.apiInfo[0].title}")
     private String apiTitle;
 
@@ -39,14 +45,23 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean
     public Docket api() {
+        List<SecurityScheme> schemes = new ArrayList<>();
+        schemes.add(new BasicAuth(DOC_SCHEME_BASIC_AUTH));
+
         return new Docket(DocumentationType.SWAGGER_2).groupName("v1").select().apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/v1/*")).build().apiInfo(apiInfo())
+                .paths(PathSelectors.ant("/api/v1/*")).build().apiInfo(apiInfo()).securitySchemes(schemes)
                 .pathProvider(new BasePathProvider("/api/v1"));
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfo(apiTitle, apiDescription, apiVersion, null, null, null, null, new ArrayList<>());
     }
+
+    // @Bean
+    // public SecurityConfiguration security() {
+    // return
+    // SecurityConfigurationBuilder.builder().useBasicAuthenticationWithAccessCodeGrant(true).build();
+    // }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

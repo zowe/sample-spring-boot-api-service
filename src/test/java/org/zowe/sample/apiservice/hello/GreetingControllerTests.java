@@ -31,8 +31,13 @@ public class GreetingControllerTests {
 
     @Test
     public void returnsGreeting() throws Exception {
-        mvc.perform(get("/api/v1/greeting").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", is("Hello, World!")));
+        mvc.perform(get("/api/v1/greeting").header("Authorization", "Basic em93ZTp6b3dl")
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", is("Hello, world!")));
     }
 
+    @Test
+    public void failsWithoutAuthentication() throws Exception {
+        mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized());
+    }
 }

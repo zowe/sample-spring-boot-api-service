@@ -50,7 +50,7 @@ apiml:
               gatewayUrl: api/v1
               version: 1.0.0
               title: Zowe Sample REST API
-              description: Sample Spring Boot REST API for Zowe
+              description: Sample Spring Boot REST API for Zowe. Press **Authorize** and use `zowe` as the username and `zowe` as the password
               swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDocs
 
 ---

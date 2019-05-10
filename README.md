@@ -24,6 +24,8 @@ Start your application:
 
 Open <https://localhost:10080/api/v1/greeting> in your browser or favorite REST API client (for example [HTTPie](https://httpie.org/), [REST Client for VSCode](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), or [Insomnia](https://insomnia.rest/).
 
+Use `zowe` as the username and `zowe` as the password.
+
 The default page <https://localhost:10080/> opens Swagger UI with the API Documentation.
 
 ## Customize and Extend Your Application
