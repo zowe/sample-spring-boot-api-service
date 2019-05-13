@@ -28,6 +28,8 @@ Use `zowe` as the username and `zowe` as the password.
 
 The default page <https://localhost:10080/> opens Swagger UI with the API Documentation.
 
+![Swagger UI](/docs/images/swagger.png)
+
 ## Customize and Extend Your Application
 
 For further reference, please consider the following sections:
@@ -36,7 +38,8 @@ For further reference, please consider the following sections:
 * [Logging](docs/logging.md)
 * [Setup HTTPS and Create TLS/SSL Certificates](docs/https-setup.md)
 * [Integrate with Zowe API Mediation Layer](docs/zowe-integrate-with-apiml.md)
-* [TODO - Deployment to z/OS](docs/deployment-instructions.md)
+* [Web Security](docs/web-security.md)
+* [Deployment to z/OS](docs/zos-deployment.md)
 * [TODO - z/OS Security](docs/zos-security.md)
 * [TODO - z/OS Native code](docs/zos-native-code.md)
 
@@ -57,6 +60,8 @@ The following guides illustrate how to use some features concretely:
 * [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
 * [Setting Up Swagger 2 with a Spring REST API](https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
+* [Spring Security Basic Authentication](https://www.baeldung.com/spring-security-basic-authentication)
+* [Spring Security Authentication Provider](https://www.baeldung.com/spring-security-authentication-provider)
 
 ### Additional Links
 

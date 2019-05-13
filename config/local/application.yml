@@ -19,6 +19,7 @@ server:
 apiml:
     enabled: false
     service:
+        serviceId: zowesample
         hostname: localhost
         ipAddress: 127.0.0.1
         discoveryServiceUrls:

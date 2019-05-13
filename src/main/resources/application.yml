@@ -18,11 +18,14 @@ server:
     port: 10080
     ssl:
         verifySslCertificatesOfServices: true
+        enabled: false
         protocol: TLS
         enabledProtocols: TLSv1.2
         ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
 
 springfox.documentation.swagger.v2.path: /apiDocs/v2
+
+zowe.sample.authentication: Press **Authorize** and use `zowe` as the username and `zowe` as the password
 
 apiml:
     service:
@@ -50,7 +53,7 @@ apiml:
               gatewayUrl: api/v1
               version: 1.0.0
               title: Zowe Sample REST API
-              description: Sample Spring Boot REST API for Zowe. Press **Authorize** and use `zowe` as the username and `zowe` as the password
+              description: Sample Spring Boot REST API for Zowe. ${zowe.sample.authentication}
               swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDocs
 
 ---
@@ -89,3 +92,9 @@ management:
         web:
             exposure:
                 include: "*"
+
+---
+spring:
+    profiles: zos
+
+zowe.sample.authentication: Press **Authorize** and use your mainframe credentials
