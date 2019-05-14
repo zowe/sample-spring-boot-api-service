@@ -1,25 +1,26 @@
 # z/OS Deployment Instructions
 
 There are multiple approaches to deploying the sample API service to z/OS; the following
-serves as a reference.  For a production instance of an API, your deployment process may differ.
+serves as a reference to deploy the sample API as-is.  For a production instance of an API, your deployment process may differ.
+
+**(Substitute values below for your site configuration)**
 
 ## Manual Deployment
 
+First, create a space to deploy the API artifacts.
+
 Login to [z/OS Unix Shell](https://www.ibm.com/support/knowledgecenter/zosbasics/com.ibm.zos.zconcepts/zconcepts_146.htm).
 
-**Note:** You may need privileged authority to issue the commands below.  The following were
-run as `superuser`.
+**(You may need privileged authority to issue the command examples below)**
 
-**Note:** substitute values for your site configuration (e.g. your mainframe user ID for IBMUSER, valid volume names, and JCL standards)
-
-1. Allocate and format [z/OS File System](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb200/zfspref.htm) (zFS), example:
+1. Allocate and format a [z/OS File System](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb200/zfspref.htm) (zFS):
 
     - `zfsadm define -aggregate IBMUSER.SAMPLAPI.ZFS -cyls 100 -volumes WRKD23`
-      - response: `IOEZ00248I VSAM linear dataset IBMUSER.SAMPLAPI.ZFS successfully created.`
+      - (response): `IOEZ00248I VSAM linear dataset IBMUSER.SAMPLAPI.ZFS successfully created.`
     - `zfsadm format -aggregate IBMUSER.SAMPLAPI.ZFS`
-      - response: `IOEZ00077I HFS-compatibility aggregate IBMUSER.SAMPLAPI.ZFS has been successfully created`
+      - (response): `IOEZ00077I HFS-compatibility aggregate IBMUSER.SAMPLAPI.ZFS has been successfully created`
 
-1. Create directory and mount the file system, example:
+2. Create directory and mount the file system:
 
     - `mkdir /u/ibmuser/samplapi`
     - `/usr/sbin/mount -v -f IBMUSER.SAMPLAPI.ZFS /u/ibmuser/samplapi`
@@ -27,7 +28,9 @@ run as `superuser`.
 
 ### Deploy Artifacts
 
-You can upload artifacts via something like `ftp`, `sftp`, `scp` or [`Zowe CLI`](https://github.com/zowe/zowe-cli).  For this document, `zowe` commands will be used.
+Next, deploy artifacts from your workstation to the zFS.
+
+You can upload artifacts via `ftp`, `sftp`, `scp` or [`Zowe CLI`](https://github.com/zowe/zowe-cli). `zowe` commands will be used in the remaining examples.
 
 #### Deploy the Sample Service API Jar
 
@@ -49,7 +52,7 @@ To obtain the sample service jar, run `gradlew build`.  The default artifact wil
 
 `zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/local/application.yml" --binary`
 
-**Note:** if this file is edited on z/OS, it must remain in ASCII format.
+**(If this file is edited on z/OS, it must remain in ASCII format)**
 
 When the server is started, options will be provided to specify `--spring.config.additional-location` to refer to `config/local/application.yml`.  Settings in this file will override values found in the same-named `src/main/resources/application.yml`.  For example:
 
@@ -66,7 +69,7 @@ server:
 
 ### Run
 
-You can run the sample server from the z/OS Unix Shell, started task, or batch job.
+Lastly, you can run the sample server from the z/OS Unix Shell, started task, or batch job.
 
 #### Start via Java Commands
 
@@ -81,6 +84,8 @@ Stop the server via:
 `Ctrl+C`
 
 #### Start via z/OS Batch Job
+
+Customize the JCL below to run the server as a batch job:
 
 ```
 //SAMPLAPI JOB ACCT#,'SAMPLE API',MSGCLASS=A,CLASS=B,
@@ -145,9 +150,9 @@ file:/u/ibmuser/samplapi/config/local/application.yml
 
 Stop via: `STOP SAMPLE`.
 
-### Example
+### Running Example
 
-When the server is started on z/OS, you can test the sample `api/v1/greeting` API through your web browser (as you could if they API were running on your workstation).
+When the server is started (either through a java command or JCL), you can test the sample `api/v1/greeting` API through your web browser (as you could if they API were running on your workstation).
 
 Navigate to the host and port configured in your `config/local/application.yml`:
 ![Landing](images/landing-page.png)
