@@ -1,7 +1,7 @@
 # z/OS Deployment Instructions
 
 There are multiple approaches to deploying the sample API service to z/OS; the following
-serves as a reference.
+serves as a reference.  For a production instance of an API, your deployment process may differ.
 
 ## Manual Deployment
 
@@ -58,6 +58,7 @@ server:
     address: 127.0.0.1
     port: 10080
 ```
+
 ### Run
 
 You can run the sample server from the z/OS Unix Shell, started task, or batch job.
@@ -149,3 +150,16 @@ file:/u/users/samplapi/config/local/application.yml
 ```
 
 Stop via: `STOP SAMPLE`.
+
+### Example
+
+When the server is started on z/OS, you can test the sample `api/v1/greeting` API through your web browser.
+
+Navigate to the host and port configured in your `config/local/application.yml`:
+![Landing](images/landing-page.png)
+
+After bypassing the security exception, sign in with `zowe` as the user name and password:
+![Sign in](images/sign-in.png)
+
+View the sample API response:
+![Greeting API](images/greeting-api.png)
