@@ -67,6 +67,10 @@ You can run the sample server from the z/OS Unix Shell, started task, or batch j
 Start the server via:
 `java -jar /u/users/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar --spring.config.additional-location=file:/u/users/samplapi/config/local/application.yml`
 
+Here is a snippet of the messages seen after startup on z/OS (using git bash terminal and ssh):
+
+![Java Started Service](images/java-started-service.png)
+
 Stop the server via:
 `Ctrl+C`
 
