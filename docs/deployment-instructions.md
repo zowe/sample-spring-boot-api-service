@@ -21,8 +21,8 @@ run as `superuser`.
 
 1. Create directory and mount the file system, example:
 
-    - `mkdir /u/users/samplapi`
-    - `/usr/sbin/mount -v -f IBMUSER.SAMPLAPI.ZFS /u/users/samplapi`
+    - `mkdir /u/ibmuser/samplapi`
+    - `/usr/sbin/mount -v -f IBMUSER.SAMPLAPI.ZFS /u/ibmuser/samplapi`
       - response: `FOMF0502I Mount complete for IBMUSER.SAMPLAPI.ZFS`
 
 ### Deploy Artifacts
@@ -34,20 +34,20 @@ You can upload artifacts via something like `ftp`, `sftp`, `scp` or [`Zowe CLI`]
 To obtain the sample service jar, run `gradlew build`.  The default artifact will be `build/libs/zowe-apiservice-0.0.1-SNAPSHOT.jar`.
 
 1. Create a directory for the `sample-service.jar`
-   - `mkdir /u/users/samplapi/jars`
+   - `mkdir /u/ibmuser/samplapi/jars`
 
 2. Upload the `sample-service.jar` as a binary artifact:
 
-    - `zowe files upload ftu "<path_to_local_file>/sample-service.jar" "/u/users/samplapi/jars/sample-service.jar" --binary`
+    - `zowe files upload ftu "<path_to_local_file>/sample-service.jar" "/u/ibmuser/samplapi/jars/sample-service.jar" --binary`
 
 #### Deploy the Sample Service Configuration YAML
 
 1. Create a directory for the `application.yml`
-   - `mkdir /u/users/samplapi/config`
+   - `mkdir /u/ibmuser/samplapi/config`
 
 2. Upload the `config/local/application.yml` as a binary artifact:
 
-`zowe files upload ftu "config/local/application.yml" "/u/users/samplapi/config/local/application.yml" --binary`
+`zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/local/application.yml" --binary`
 
 **Note:** if this file is edited on z/OS, it must remain in ASCII format.
 
@@ -59,6 +59,11 @@ server:
     port: 10080
 ```
 
+#### Deploy `keystore` and `truststore`
+`zowe files upload ftu "config/local/keystore.p12" "/u/ibmuser/samplapi/config/local/keystore.p12" --binary`
+
+`zowe files upload ftu "config/local/truststore.p12" "/u/ibmuser/samplapi/config/local/truststore.p12" --binary`
+
 ### Run
 
 You can run the sample server from the z/OS Unix Shell, started task, or batch job.
@@ -66,7 +71,7 @@ You can run the sample server from the z/OS Unix Shell, started task, or batch j
 #### Start via Java Commands
 
 Start the server via:
-`java -jar /u/users/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar --spring.config.additional-location=file:/u/users/samplapi/config/local/application.yml`
+`java -jar /u/ibmuser/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar --spring.config.additional-location=file:/u/ibmuser/samplapi/config/local/application.yml`
 
 Here is a snippet of the messages seen after startup on z/OS (using git bash terminal and ssh):
 
@@ -78,16 +83,10 @@ Stop the server via:
 #### Start via z/OS Batch Job
 
 ```
-{{#jclUseDeployment}}
-//{{jcl.srv.jobname}} JOB {{deploy.tso.account}},
-{{/jclUseDeployment}}
-{{^jclUseDeployment}}
-//{{jcl.srv.jobname}} JOB {{build.tso.account}},
-{{/jclUseDeployment}}
-//             'Sample API',
-//             MSGCLASS=A,CLASS={{jcl.srv.jobclass}},
+//SAMPLAPI JOB ACCT#,'SAMPLE API',MSGCLASS=A,CLASS=B,
 //             MSGLEVEL=(1,1),REGION=0M
 /*JOBPARM SYSAFF=*
+//*
 //********************************************************************
 //* Custom JVM procedure                                             *
 //********************************************************************
@@ -112,37 +111,32 @@ TRAP(ON,NOSPIE)
 //********************************************************************
 //* End Custom JVM procedure                                         *
 //********************************************************************
+//*
 //JAVA EXEC PROC=JVMPRC86,
 // PARM='+T'
-//SYSPROC DD DISP=SHR,DSN=USER.PROCLIB
 //STDENV DD *
-export JAVA_HOME={{java.home}}
-{{#jclUseDeployment}}
-export PWD={{deploy.uss.workDir}}
-{{/jclUseDeployment}}
-{{^jclUseDeployment}}
-export PWD={{build.uss.workDir}}
-{{/jclUseDeployment}}
-CLASSPATH={{jclJarLib}}/*
+export PWD=/u/ibmuser/samplapi
+
+export JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
+
+CLASSPATH=/u/ibmuser/sampleapi/jars/*
 export CLASSPATH=$CLASSPATH
 
 LIBPATH=/lib:/usr/lib:$JAVA_HOME/bin
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x/j9vm
 LIBPATH=$LIBPATH:$JAVA_HOME/bin/classic
-LIBPATH=$LIBPATH:{{jclDeployUssLib}}
 export LIBPATH=$LIBPATH
 
-IJO="{{java.ijo}}"
+IJO="-Xms16m -Xmx128m"
 export IBM_JAVA_OPTIONS="${IJO}"
 
 export PATH=$PATH:$JAVA_HOME:$LIBPATH
-
 /*
 //MAINARGS DD *
--jar /u/users/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
+-jar jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
-file:/u/users/samplapi/config/local/application.yml
+file:/u/ibmuser/samplapi/config/local/application.yml
 /*
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
@@ -153,7 +147,7 @@ Stop via: `STOP SAMPLE`.
 
 ### Example
 
-When the server is started on z/OS, you can test the sample `api/v1/greeting` API through your web browser.
+When the server is started on z/OS, you can test the sample `api/v1/greeting` API through your web browser (as you could if they API were running on your workstation).
 
 Navigate to the host and port configured in your `config/local/application.yml`:
 ![Landing](images/landing-page.png)
