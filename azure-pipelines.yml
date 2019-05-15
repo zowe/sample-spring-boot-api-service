@@ -21,3 +21,7 @@ steps:
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
     tasks: 'build'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'bash <(curl -s https://codecov.io/bash)'
