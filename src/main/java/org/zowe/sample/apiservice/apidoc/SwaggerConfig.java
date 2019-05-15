@@ -57,12 +57,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
         return new ApiInfo(apiTitle, apiDescription, apiVersion, null, null, null, null, new ArrayList<>());
     }
 
-    // @Bean
-    // public SecurityConfiguration security() {
-    // return
-    // SecurityConfigurationBuilder.builder().useBasicAuthenticationWithAccessCodeGrant(true).build();
-    // }
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/api/v1/apiDocs", "/apiDocs/v2?group=v1");
