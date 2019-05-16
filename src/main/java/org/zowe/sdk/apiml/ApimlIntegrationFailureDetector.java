@@ -10,9 +10,8 @@
 package org.zowe.sdk.apiml;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import org.slf4j.Marker;
-import org.zowe.sdk.SdkErrorService;
+import org.zowe.sdk.error.SdkErrorService;
 import org.zowe.sdk.spring.SpringContext;
 
 import ch.qos.logback.classic.Level;
@@ -26,6 +25,14 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
 
     @Override
     public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        if (shouldExit(level, t)) {
+            System.exit(1);
+        }
+
+        return FilterReply.NEUTRAL;
+    }
+
+    boolean shouldExit(Level level, Throwable t) {
         if (level.isGreaterOrEqual(Level.ERROR)) {
             if (ExceptionUtils.indexOfType(t, javax.net.ssl.SSLHandshakeException.class) >= 0) {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
@@ -33,14 +40,14 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                         log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.serviceCertificateNotTrusted",
                                 t.getMessage()));
                         if (SpringContext.getApplicationContext() == null) {
-                            System.exit(1);
+                            return true;
                         }
                     }
                 }
             }
         }
 
-        return FilterReply.NEUTRAL;
+        return false;
     }
 
 }
