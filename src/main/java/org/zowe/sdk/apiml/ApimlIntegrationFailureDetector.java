@@ -7,11 +7,12 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.apiml;
+package org.zowe.sdk.apiml;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import org.slf4j.Marker;
+import org.zowe.sdk.spring.SpringContext;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -29,9 +30,11 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
                     if (s.indexOf(".ApiMediationClient") >= 0) {
                         log.error(
-                                "Unable to connect to Zowe API Mediation Layer. The certificate of your service is not trusted by the API Mediation Layer: {}",
-                                t.getMessage());
-                        System.exit(1);
+                            "Unable to connect to Zowe API Mediation Layer. The certificate of your service is not trusted by the API Mediation Layer: {}",
+                            t.getMessage());
+                        if (SpringContext.getApplicationContext() == null) {
+                            System.exit(1);
+                        }
                     }
                 }
             }

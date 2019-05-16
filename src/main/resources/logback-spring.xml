@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <turboFilter class="org.zowe.apiml.ApimlIntegrationFailureDetector"/>
+    <turboFilter class="org.zowe.sdk.apiml.ApimlIntegrationFailureDetector"/>
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
