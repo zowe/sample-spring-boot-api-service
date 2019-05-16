@@ -9,14 +9,21 @@
  */
 package org.zowe.sample.apiservice;
 
+import com.ca.mfaas.error.ErrorService;
+import com.ca.mfaas.error.impl.ErrorServiceImpl;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ZoweApiServiceApplication {
-
-	public static void main(String[] args) {
+    @Bean
+    public ErrorService errorService() {
+        return new ErrorServiceImpl("/messages.yml");
+    }
+    public static void main(String[] args) {
 		SpringApplication.run(ZoweApiServiceApplication.class, args);
-	}
+    }
 
 }

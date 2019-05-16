@@ -1,0 +1,5 @@
+messages:
+    - key: org.zowe.sdk.apiml.serviceCertificateNotTrusted
+      number: ZWEAS001
+      type: ERROR
+      text: "Unable to connect to Zowe API Mediation Layer. The certificate of your service is not trusted by the API Mediation Layer: %s"

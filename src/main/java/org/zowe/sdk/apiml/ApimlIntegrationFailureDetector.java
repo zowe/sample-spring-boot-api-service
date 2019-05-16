@@ -12,6 +12,7 @@ package org.zowe.sdk.apiml;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import org.slf4j.Marker;
+import org.zowe.sdk.SdkErrorService;
 import org.zowe.sdk.spring.SpringContext;
 
 import ch.qos.logback.classic.Level;
@@ -29,9 +30,8 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
             if (ExceptionUtils.indexOfType(t, javax.net.ssl.SSLHandshakeException.class) >= 0) {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
                     if (s.indexOf(".ApiMediationClient") >= 0) {
-                        log.error(
-                            "Unable to connect to Zowe API Mediation Layer. The certificate of your service is not trusted by the API Mediation Layer: {}",
-                            t.getMessage());
+                        log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.serviceCertificateNotTrusted",
+                                t.getMessage()));
                         if (SpringContext.getApplicationContext() == null) {
                             System.exit(1);
                         }
