@@ -12,8 +12,10 @@ package org.zowe.sdk.error;
 import com.ca.mfaas.error.ErrorService;
 import com.ca.mfaas.error.impl.ErrorServiceImpl;
 
-public class SdkErrorService {
+public final class SdkErrorService {
     private static ErrorService errorService = new ErrorServiceImpl("/sdk-messages.yml");
+
+    private SdkErrorService() {}
 
     public static ErrorService get() {
         return errorService;
