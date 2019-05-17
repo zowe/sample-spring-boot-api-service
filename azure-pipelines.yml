@@ -25,3 +25,14 @@ steps:
   inputs:
     targetType: 'inline'
     script: 'bash <(curl -s https://codecov.io/bash)'
+- task: SonarQubePrepare@4
+  inputs:
+    SonarQube: 'Zowe'
+    scannerMode: 'MSBuild'
+    projectKey: 'zowe.sample-spring-boot-api-service'
+    projectName: 'Sample Zowe Spring Boot API Service'
+    projectVersion: '0.x'
+- task: SonarQubePublish@4
+   inputs:
+     pollingTimeoutSec: '300'
+     
