@@ -58,14 +58,14 @@ It has two sections:
     healthCheckRelativeUrl: actuator/health
     routes:
         - gatewayUrl: api/v1
-            serviceUrl: /api/v1
+          serviceUrl: /api/v1
     apiInfo:
         - apiId: org.zowe.sample.api
-            gatewayUrl: api/v1
-            version: 1.0.0
-            title: Zowe Sample REST API
-            description: Sample Spring Boot REST API for Zowe
-            swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDocs
+          gatewayUrl: api/v1
+          version: 1.0.0
+          title: Zowe Sample REST API
+          description: Sample Spring Boot REST API for Zowe
+          swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${server.port}/api/v1/apiDocs
     ```
 
 The description of the properties are in the Zowe documentation.
