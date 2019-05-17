@@ -97,4 +97,41 @@ There are several errors that can occur during reporting:
 
   * *Reason*: The certificate of the API Mediation Layer is not trusted by the service and its truststore that is defined by `server.ssl.truststore*` properties so the registration and updates of the service cannot be completed.
 
-  * *Action*: Import the APIML server public certificate to the truststore of your service. TODO
+  * *Action*: Import the APIML server public certificate to the truststore of your service. By default, API ML creates a local CA. Import the API ML local CA public certificate to the truststore of the service.
+
+    The public certificate in the [PEM format](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) is stored at `$ZOWE_ROOT_DIR/api-mediation/keystore/local_ca/localca.cer` where `$ZOWE_ROOT_DIR` is the directory that was used for the Zowe runtime during installation.
+
+    The certificate is stored in UTF-8 encoding so you need to transfer it as a binary file. Since this is the certificate that the service is going to trust, it is recommended to use a secure connection for transfer.
+
+    **Follow these steps:**
+
+    1. Download the local CA certificate to your computer. Use one of the following methods to download the local CA certificate to your computer:
+
+        * Use [Zowe CLI](https://github.com/zowe/zowe-cli#zowe-cli--)
+        Issue teh following command:
+
+        ```bash
+        zowe zos-files download uss-file --binary $ZOWE_ROOT_DIR/api-mediation/keystore/local_ca/localca.cer`
+        ```
+
+        * **Use `sftp`**
+        Issue the following command:
+
+        ```bash
+        sftp <system>
+        get $ZOWE_ROOT_DIR/api-mediation/keystore/local_ca/localca.cer
+        ```
+
+        To verify that the file has been transferred correctly, open the file. The following heading and closing should appear:
+
+        ```txt
+        -----BEGIN CERTIFICATE-----
+        ...
+        -----END CERTIFICATE-----
+        ```
+
+    2. Import the certificate to your root certificate store and trust it. If the service has a truststore in file `config/truststore.p12` then the command to import the API ML local CA public certificate.
+
+    ```bash
+    keytool -importcert -trustcacerts -noprompt -file localca.cer -alias apimlca -keystore config/truststore.p12 -storepass <store-password> -storetype PKCS12
+    ```
