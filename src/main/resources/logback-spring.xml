@@ -2,6 +2,10 @@
 <configuration>
     <turboFilter class="org.zowe.sdk.apiml.ApimlIntegrationFailureDetector"/>
     <turboFilter class="org.zowe.sdk.UseridFilter"/>
+    <turboFilter
+      class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
+        <AllowedRepetitions>0</AllowedRepetitions>
+    </turboFilter>
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
