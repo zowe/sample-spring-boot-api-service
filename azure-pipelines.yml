@@ -33,6 +33,3 @@ steps:
     projectName: 'Sample Zowe Spring Boot API Service'
     projectVersion: '0.x'
 - task: SonarQubePublish@4
-   inputs:
-     pollingTimeoutSec: '300'
-     
