@@ -9,6 +9,8 @@
  */
 package org.zowe.sdk.apiml;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Marker;
 import org.zowe.sdk.error.SdkErrorService;
@@ -29,12 +31,26 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
             System.exit(1);
         }
 
+        if ((logger != null) && logger.getName().contains("com.netflix") && (logger.getName().contains("DiscoveryClient")
+                || logger.getName().contains("RedirectingEurekaHttpClient"))) {
+            if (logger.getLevel() == Level.ERROR) {
+                String message = ExceptionUtils.getMessage(t);
+                if (message == null) {
+                    message = ExceptionUtils.getRootCauseMessage(t);
+                }
+                if ((message != null) && !message.isEmpty()) {
+                    log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.unableToRegister", message));
+                }
+            }
+            return FilterReply.DENY;
+        }
+
         return FilterReply.NEUTRAL;
     }
 
     boolean shouldExit(Level level, Throwable t) {
         if (level.isGreaterOrEqual(Level.ERROR)) {
-            if (ExceptionUtils.indexOfType(t, javax.net.ssl.SSLHandshakeException.class) >= 0) {
+            if (ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0) {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
                     if (s.indexOf(".ApiMediationClient") >= 0) {
                         log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.serviceCertificateNotTrusted",
