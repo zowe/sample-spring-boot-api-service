@@ -10,6 +10,7 @@
 package org.zowe.sdk.apiml;
 
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Marker;
@@ -31,8 +32,9 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
             System.exit(1);
         }
 
-        if ((logger != null) && logger.getName().contains("com.netflix") && (logger.getName().contains("DiscoveryClient")
-                || logger.getName().contains("RedirectingEurekaHttpClient"))) {
+        if ((logger != null) && logger.getName().contains("com.netflix")
+                && (logger.getName().contains("DiscoveryClient")
+                        || logger.getName().contains("RedirectingEurekaHttpClient"))) {
             if (logger.getLevel() == Level.ERROR) {
                 String message = ExceptionUtils.getMessage(t);
                 if (message == null) {
@@ -40,6 +42,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                 }
                 if ((message != null) && !message.isEmpty()) {
                     log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.unableToRegister", message));
+                    logOriginalError(t);
                 }
             }
             return FilterReply.DENY;
@@ -50,11 +53,25 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
 
     boolean shouldExit(Level level, Throwable t) {
         if (level.isGreaterOrEqual(Level.ERROR)) {
-            if (ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0) {
+            if (ExceptionUtils.indexOfType(t, SSLPeerUnverifiedException.class) >= 0) {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
-                    if (s.indexOf(".ApiMediationClient") >= 0) {
+                    if ((s.indexOf(".ApiMediationClient") >= 0)
+                            || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
+                        log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.apimlCertificateNotTrusted",
+                                t.getMessage()));
+                        logOriginalError(t);
+                        if (SpringContext.getApplicationContext() == null) {
+                            return true;
+                        }
+                    }
+                }
+            } else if (ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0) {
+                for (String s : ExceptionUtils.getStackFrames(t)) {
+                    if ((s.indexOf(".ApiMediationClient") >= 0)
+                            || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
                         log.error(SdkErrorService.getReadableMessage("org.zowe.sdk.apiml.serviceCertificateNotTrusted",
                                 t.getMessage()));
+                        logOriginalError(t);
                         if (SpringContext.getApplicationContext() == null) {
                             return true;
                         }
@@ -64,6 +81,10 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
         }
 
         return false;
+    }
+
+    private void logOriginalError(Throwable t) {
+        log.debug("Original error: {}: {}", t.getClass().getName(), t.getMessage(), t);
     }
 
 }

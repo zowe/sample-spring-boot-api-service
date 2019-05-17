@@ -74,3 +74,27 @@ The description of the properties are in the Zowe documentation.
 
 * [Zowe Docs - Developing for API Mediation Layer - Java REST APIs service without Spring Boot](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-onboard-an-existing-java-rest-api-service-without-spring-boot-with-zowe-api-mediation-layer.html)
 * [Setting Up Swagger 2 with a Spring REST API](https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
+
+## Troubleshooting
+
+There are several errors that can occur during reporting:
+
+* **ERROR ZWEAS001E Unable to connect to Zowe API Mediation Layer. The certificate of the service is not trusted by the API Mediation Layer**
+
+  * *Reason*: The certificate of the service in the keystore that is define by `server.ssl.keystore*` properties is not trusted by API Mediation Layer so the registration and updates of the service cannot be completed.
+
+  * *Action*: There are following ways how to establish trust of the service by the API Mediation Layer:
+    1. Import the service certificate or the signing CA certificate into the API ML truststore. The procedure is documented at [Add a service with an existing certificate to API ML on z/OS](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-security.html#zowe-runtime-on-z-os).
+    2. Generate a new certificate for the service using API ML Certificate Management. The procedure is documented at [Generate a keystore and truststore for a new service on z/OS](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-security.html#zowe-runtime-on-z-os).
+
+* **ERROR ZWEAS002E Unable to connect to Zowe API Mediation Layer and register or update the service information: _message_**
+
+  * *Reason*: The service could not connect to the Discovery Service in the API Mediation Layer from the reason that is mentioned in the _message_.
+
+  * *Action*: Review the _message_ and verify if the URLs of the Discovery Service in the `apiml.service.discoveryServiceUrls` are correct. They need to be in the form of: `https://hostname:port/eureka`. Check the hostname, port, and if the API Mediation Layer is started up.
+
+* **ERROR ZWEAS003E Unable to connect to Zowe API Mediation Layer. The certificate of API Mediation Layer is not trusted by the service: javax.net.ssl.SSLHandshakeException: PKIX path building failed, unable to find valid certification path to requested target**
+
+  * *Reason*: The certificate of the API Mediation Layer is not trusted by the service and its truststore that is defined by `server.ssl.truststore*` properties so the registration and updates of the service cannot be completed.
+
+  * *Action*: Import the APIML server public certificate to the truststore of your service. TODO
