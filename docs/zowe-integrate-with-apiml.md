@@ -108,7 +108,7 @@ There are several errors that can occur during reporting:
     1. Download the local CA certificate to your computer. Use one of the following methods to download the local CA certificate to your computer:
 
         * Use [Zowe CLI](https://github.com/zowe/zowe-cli#zowe-cli--)
-        Issue teh following command:
+        Issue the following command:
 
         ```bash
         zowe zos-files download uss-file --binary $ZOWE_ROOT_DIR/api-mediation/keystore/local_ca/localca.cer`
