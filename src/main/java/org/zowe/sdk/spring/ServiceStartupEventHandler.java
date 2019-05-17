@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ServiceStartupEventHandler {
-    public static int DEFAULT_DELAY_FACTOR = 1;
+    public static int DEFAULT_DELAY_FACTOR = 5;
 
     public void onServiceStartup(String serviceName, int delayFactor) {
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
