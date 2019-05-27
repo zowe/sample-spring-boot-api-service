@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.zos.security;
+package org.zowe.sdk.zos.security;
 
 import java.lang.reflect.InvocationTargetException;
 

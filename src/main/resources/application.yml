@@ -8,7 +8,10 @@ logging:
         com.netflix: WARN
         com.netflix.config: ERROR
         com.netflix.discovery: ERROR
+        com.netflix.discovery.DiscoveryClient: OFF
+        com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient: OFF
         org.apache.catalina: WARN
+        org.apache.coyote: WARN
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
         springfox.documentation: WARN
@@ -79,6 +82,7 @@ logging:
         org.zowe.sample.apiservice: DEBUG
         org.springframework: INFO
         org.apache.catalina: INFO
+        org.apache.juli.logging: INFO
         com.netflix: INFO
         springfox.documentation: INFO
         com.ca.mfaas.eurekaservice.client.impl: INFO

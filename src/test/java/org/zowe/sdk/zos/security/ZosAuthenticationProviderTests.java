@@ -8,13 +8,13 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.zos.security;
+package org.zowe.sdk.zos.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.zowe.zos.security.MockPlatformUser.INVALID_PASSWORD;
-import static org.zowe.zos.security.MockPlatformUser.INVALID_USERID;
-import static org.zowe.zos.security.MockPlatformUser.VALID_PASSWORD;
-import static org.zowe.zos.security.MockPlatformUser.VALID_USERID;
+import static org.zowe.sdk.zos.security.MockPlatformUser.INVALID_PASSWORD;
+import static org.zowe.sdk.zos.security.MockPlatformUser.INVALID_USERID;
+import static org.zowe.sdk.zos.security.MockPlatformUser.VALID_PASSWORD;
+import static org.zowe.sdk.zos.security.MockPlatformUser.VALID_USERID;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

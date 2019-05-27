@@ -11,12 +11,14 @@ package org.zowe.sample.apiservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan
 public class ZoweApiServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ZoweApiServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ZoweApiServiceApplication.class, args);
+    }
 
 }
