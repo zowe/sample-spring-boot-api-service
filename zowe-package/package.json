@@ -1,6 +1,6 @@
 {
-    "name": "zowe-sample-spring-boot-api-service",
-    "version": "0.0.1",
+    "name": "@plavjanik/zowe-sample-spring-boot-api-service",
+    "version": "0.0.2",
     "javaVersion": "0.0.1-SNAPSHOT",
     "description": "Zowe Sample Spring Boot API Service",
     "main": "index.js",
@@ -24,5 +24,8 @@
     "bugs": {
         "url": "https://github.com/zowe/sample-spring-boot-api-service/issues"
     },
-    "homepage": "https://github.com/zowe/sample-spring-boot-api-service#readme"
+    "homepage": "https://github.com/zowe/sample-spring-boot-api-service#readme",
+    "dependencies": {
+        "@plavjanik/zowe-fake-cm": "0.0.1"
+    }
 }

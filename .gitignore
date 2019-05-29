@@ -3,6 +3,11 @@
 /bin/
 gradle/wrapper/gradle-wrapper.jar
 .DS_Store
+*.tgz
+package-lock.json
+*.jar
+node_modules/
+zowe-server/instance/
 
 ### STS ###
 .apt_generated

@@ -8,8 +8,8 @@ fi
 DIRNAME=$(dirname $0)
 export ZOWE_INSTANCE_DIR=$1
 export ZOWE_RUNTIME_DIR=${ZOWE_RUNTIME_DIR:-$(realpath ${DIRNAME}/..)}
-mkdir -p ${ZOWE_INSTANCE_DIR}
+mkdir -p ${ZOWE_INSTANCE_DIR}/config
+cp -v ${ZOWE_RUNTIME_DIR}/resources/default-configuration.env ${ZOWE_INSTANCE_DIR}/config/configuration.env
 export $(grep -v '^#' ${ZOWE_INSTANCE_DIR}/config/configuration.env | xargs)
-export
 
-${ZOWE_RUNTIME_DIR}/modules/zowe-sample-spring-boot-api-service/bin/config.sh
+${ZOWE_RUNTIME_DIR}/modules/@plavjanik/zowe-sample-spring-boot-api-service/bin/config.sh

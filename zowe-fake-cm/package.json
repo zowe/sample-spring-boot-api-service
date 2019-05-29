@@ -1,5 +1,5 @@
 {
-    "name": "zowe-fake-cm",
+    "name": "@plavjanik/zowe-fake-cm",
     "version": "0.0.1",
     "description": "Zowe Fake Certificate Management",
     "main": "",
