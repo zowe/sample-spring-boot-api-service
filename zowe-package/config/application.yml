@@ -1,0 +1,26 @@
+# Configuration for running the locally on your workstation
+# It overrides service defaults provided in src/main/resources/application.yml
+
+spring.profiles.active: https,diag
+
+server:
+    address: 0.0.0.0
+    port: ${ZOWE_SAMPLE_API_SERVICE_PORT}
+    ssl:
+        keyAlias: localhost
+        keyPassword: password
+        keyStore: config/keystore.p12
+        keyStorePassword: password
+        keyStoreType: PKCS12
+        trustStore: config/truststore.p12
+        trustStorePassword: password
+        trustStoreType: PKCS12
+
+apiml:
+    enabled: false
+    service:
+        serviceId: zowesample
+        hostname: ${ZOWE_SAMPLE_API_SERVICE_HOSTNAME}
+        ipAddress: ${ZOWE_SAMPLE_API_SERVICE_IPADDRESS}
+        discoveryServiceUrls:
+            - ${ZOWE_DISCOVERY_SERVICE_URL}

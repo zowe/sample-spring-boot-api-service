@@ -1,0 +1,15 @@
+{
+    "name": "zowe-fake-cm",
+    "version": "0.0.1",
+    "description": "Zowe Fake Certificate Management",
+    "main": "",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "files": [
+        "bin/**",
+        "resources/**"
+    ],
+    "author": "Petr Plavjanik <petr.plavjanik@broadcom.com>",
+    "license": "EPL-2.0"
+}

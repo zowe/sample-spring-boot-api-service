@@ -1,0 +1,28 @@
+{
+    "name": "zowe-sample-spring-boot-api-service",
+    "version": "0.0.1",
+    "javaVersion": "0.0.1-SNAPSHOT",
+    "description": "Zowe Sample Spring Boot API Service",
+    "main": "index.js",
+    "scripts": {
+        "test": "cd ..; ./gradlew test",
+        "build": "cd ..; ./gradlew clean build",
+        "prepack": "./prepack.sh",
+        "start": "./bin/start.sh",
+        "config": "./bin/config.sh"
+    },
+    "files": [
+        "bin/**",
+        "config/**"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zowe/sample-spring-boot-api-service.git"
+    },
+    "author": "Petr Plavjanik <petr.plavjanik@broadcom.com>",
+    "license": "EPL-2.0",
+    "bugs": {
+        "url": "https://github.com/zowe/sample-spring-boot-api-service/issues"
+    },
+    "homepage": "https://github.com/zowe/sample-spring-boot-api-service#readme"
+}
