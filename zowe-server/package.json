@@ -1,6 +1,6 @@
 {
     "name": "@plavjanik/zowe-server",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Zowe Server",
     "main": "index.js",
     "scripts": {
