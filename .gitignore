@@ -29,3 +29,5 @@ gradle/wrapper/gradle-wrapper.jar
 
 ### VS Code ###
 .vscode/
+zowe-package/zowe-sample-spring-boot-api-service-0.0.1.tgz
+zowe-package/bin/zowe-apiservice-0.0.1-SNAPSHOT.jar

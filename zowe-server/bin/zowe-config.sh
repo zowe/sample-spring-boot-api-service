@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# Prototype implementation of script that configures all components - see README.md
+#
+
 if [ -z "$1" ]; then
     echo "ERROR: Missing first argument with the instance directory"
     exit 1
