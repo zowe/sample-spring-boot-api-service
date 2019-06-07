@@ -1,21 +1,21 @@
 {
-  "name": "zowe-server",
-  "version": "0.0.1",
-  "description": "Zowe Server",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "ln -s node_modules modules",
-    "clean": "rm -Rf node_modules modules package-lock.json"
-  },
-  "bin": {
-    "zowe-server-start": "bin/zowe-server.sh",
-    "zowe-server-config": "bin/zowe-server-config.sh"
-  },
-  "author": "Petr Plavjanik <petr.plavjanik@broadcom.com>",
-  "license": "EPL-2.0",
-  "dependencies": {
-    "zowe-fake-cm": "file:../zowe-fake-cm/zowe-fake-cm-0.0.1.tgz",
-    "zowe-sample-spring-boot-api-service": "file:../zowe-package/zowe-sample-spring-boot-api-service-0.0.1.tgz"
-  }
+    "name": "@plavjanik/zowe-server",
+    "version": "0.0.2",
+    "description": "Zowe Server",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "postinstall": "ln -s node_modules modules",
+        "clean": "rm -Rf node_modules modules package-lock.json"
+    },
+    "bin": {
+        "zowe-server-start": "bin/zowe-server.sh",
+        "zowe-server-config": "bin/zowe-server-config.sh"
+    },
+    "author": "Petr Plavjanik <petr.plavjanik@broadcom.com>",
+    "license": "EPL-2.0",
+    "dependencies": {
+        "@plavjanik/zowe-fake-cm": "0.0.1",
+        "@plavjanik/zowe-sample-spring-boot-api-service": "0.0.2"
+    }
 }
