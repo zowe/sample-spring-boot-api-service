@@ -1,5 +1,5 @@
-#ifndef WTOEXEC_H                                                                           
-#define WTOEXEC_H                                                                           
+#ifndef WTOEXEC_H
+#define WTOEXEC_H
 
 /*
  * This program and the accompanying materials are made available under the terms of the
@@ -13,19 +13,19 @@
 
 /**                                                                                         
  * C/C++ interlanguage - "OS" meaning to call non-Language Environment conforming assembler.
- */                                                                                         
-#if defined(__cplusplus) && (defined(__IBMCPP__) || defined(__IBMC__))                      
-extern "OS"                                                                                 
-{                                                                                           
-#elif defined(__cplusplus)                                                                  
-extern "C"                                                                                  
-{                                                                                           
-#endif                                                                                      
-                                                                                            
-int WTOEXE(int *, const char *);                                                            
-                                                                                            
-#if defined(__cplusplus)                                                                    
-}                                                                                           
-#endif                                                                                      
-                                                                                            
-#endif                                                                                      
+ */
+#if defined(__cplusplus) && (defined(__IBMCPP__) || defined(__IBMC__))
+extern "OS"
+{
+#elif defined(__cplusplus)
+extern "C"
+{
+#endif
+
+    int WTOEXE(int *, const char *);
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif

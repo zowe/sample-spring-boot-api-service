@@ -21,7 +21,7 @@
         "DESC=(6),"                                             \         
         "MF=L                                               \n" \         
         "*                                                    " \         
-        : "DS"(wtom));                                                    
+        : "DS"(wtom));
 #else                                                                     
 #define WTO_MODEL(wtom)                                                   
 #endif                                                                    
@@ -42,7 +42,7 @@ WTO_MODEL(wtoModel); // make this copy in static storage
         : "+m"(plist),                                          \         
           "=m"(rc)                                              \         
         : "r"(buf)                                              \         
-        : "r0", "r1", "r14", "r15");                                      
+        : "r0", "r1", "r14", "r15");
 #else                                                                     
 #define WTO(buf, plist, rc)                                               
 #endif                                                                    
