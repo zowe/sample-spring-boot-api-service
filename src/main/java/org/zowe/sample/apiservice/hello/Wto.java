@@ -9,25 +9,25 @@
  */
 package org.zowe.sample.apiservice.hello;
 
-public class NativeGreeting {
+public class Wto {
     private static String JNI_SHARED_LIBRARY = "wtojni";
 
     static {
-        System.loadLibrary(NativeGreeting.JNI_SHARED_LIBRARY);
+        System.loadLibrary(Wto.JNI_SHARED_LIBRARY);
     }
 
     private native int wto(int id, String content);
 
-    private final int nativeCode; // integer value returned from native code
-    private String nativeMessage; // String class variable set in native code
+    private final int rc; // integer value returned from WTO code
+    private String message; // String class variable set in JNI code
 
     private final int id;
     private final String content;
 
-    public NativeGreeting(int id, String content) {
+    public Wto(int id, String content) {
         this.id = id;
         this.content = content;
-        this.nativeCode = wto(id, content);
+        this.rc = wto(id, content);
     }
 
     public int getId() {
@@ -38,11 +38,11 @@ public class NativeGreeting {
         return content;
     }
 
-    public int getNativeCode() {
-        return nativeCode;
+    public int getRc() {
+        return rc;
     }
 
-    public String getNativeMessage() {
-        return nativeMessage;
+    public String getMessage() {
+        return message;
     }
 }

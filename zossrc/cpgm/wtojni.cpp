@@ -27,7 +27,7 @@ using namespace std;
 #pragma convert(819)
 #endif
 
-const char *NATIVE_MESSAGE_FIELD = "nativeMessage";
+const char *MESSAGE_FIELD = "message";
 const char *FROM_C = "hello world from native code";
 const char *JNI_FIELD_STRING = "Ljava/lang/String;";
 
@@ -35,7 +35,7 @@ const char *JNI_FIELD_STRING = "Ljava/lang/String;";
 #pragma convert(0)
 #endif
 
-JNIEXPORT jint JNICALL Java_org_zowe_sample_apiservice_hello_NativeGreeting_wto(JNIEnv *env, jobject thisObj, jint inId, jstring inContent)
+JNIEXPORT jint JNICALL Java_org_zowe_sample_apiservice_hello_Wto_wto(JNIEnv *env, jobject thisObj, jint inId, jstring inContent)
 {
     int rc = 0;
 
@@ -54,7 +54,7 @@ JNIEXPORT jint JNICALL Java_org_zowe_sample_apiservice_hello_NativeGreeting_wto(
 
     // demonstrate setting a String class variable from JNI (simulating returning a value
     jclass clazz = env->GetObjectClass(thisObj);
-    jfieldID dataField = env->GetFieldID(clazz, NATIVE_MESSAGE_FIELD, JNI_FIELD_STRING);
+    jfieldID dataField = env->GetFieldID(clazz, MESSAGE_FIELD, JNI_FIELD_STRING);
     jstring cData = env->NewStringUTF(FROM_C);
     env->SetObjectField(thisObj, dataField, cData);
 
