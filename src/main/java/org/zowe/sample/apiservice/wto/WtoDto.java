@@ -11,9 +11,8 @@ package org.zowe.sample.apiservice.wto;
 
 public class WtoDto {
 
-    private final int rc; // integer value returned from WTO code
-    private String message; // String class variable set in JNI code
-
+    private final int rc;
+    private final String message;
     private final int id;
     private final String content;
 

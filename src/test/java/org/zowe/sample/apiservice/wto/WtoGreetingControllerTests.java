@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.hello;
+package org.zowe.sample.apiservice.wto;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,7 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -24,26 +23,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(GreetingController.class)
+@WebMvcTest(WtoGreetingControllerTests.class)
 public class WtoGreetingControllerTests {
 
     @Autowired
     private MockMvc mvc;
 
-
-    // @Test
-    // public void returnsGreeting() throws Exception {
-    //     mvc.perform(get("/api/v1/wto").header("Authorization", "Basic em93ZTp6b3dl")
-    //             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.content", is("Hello, world!")));
-    // }
+    @Test
+    public void returnsGreeting() throws Exception {
+        mvc.perform(get("/api/v1/wto").header("Authorization", "Basic em93ZTp6b3dl")
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", is("Hello, world!")))
+                .andExpect(jsonPath("$.message", is("[Mock] Message set from JNI")));
+    }
 
     @Test
     public void failsWithoutAuthentication() throws Exception {
-        // Wto
-        Wto spy = Mockito.spy(new Wto(1, "hey"));
-        Wto wto = Mockito.mock(Wto.class);
-        // Mockito.when(wto.)
         mvc.perform(get("/api/v1/wto")).andExpect(status().isUnauthorized());
     }
 }
