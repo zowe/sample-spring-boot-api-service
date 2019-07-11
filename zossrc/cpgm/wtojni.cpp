@@ -28,7 +28,7 @@ using namespace std;
 #endif
 
 const char *MESSAGE_FIELD = "message";
-const char *FROM_C = "hello world from native code";
+const char *FROM_C = "Message set from JNI";
 const char *JNI_FIELD_STRING = "Ljava/lang/String;";
 
 #if defined(__IBMC__) || defined(__IBMCPP__)

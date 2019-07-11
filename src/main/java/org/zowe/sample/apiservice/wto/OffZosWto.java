@@ -18,7 +18,7 @@ public class OffZosWto implements Wto {
 
     public WtoDto call(int id, String content) {
         int rc = 0;
-        String message = "Mock set from JNI";
+        String message = "[Mock] Message set from JNI";
         return new WtoDto(id, content, rc, message);
     }
 
