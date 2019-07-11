@@ -35,7 +35,7 @@ const char *JNI_FIELD_STRING = "Ljava/lang/String;";
 #pragma convert(0)
 #endif
 
-JNIEXPORT jint JNICALL Java_org_zowe_sample_apiservice_hello_Wto_wto(JNIEnv *env, jobject thisObj, jint inId, jstring inContent)
+JNIEXPORT jint JNICALL Java_org_zowe_sample_apiservice_wto_ZosWto_wto(JNIEnv *env, jobject thisObj, jint inId, jstring inContent)
 {
     int rc = 0;
 

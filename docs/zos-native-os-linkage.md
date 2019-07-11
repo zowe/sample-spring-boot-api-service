@@ -13,7 +13,7 @@ There are many tutorials online to describe details and examples of JNI.
 At a high level, the process involves making use of the `native` keyword in a class.  After this, you run the `javah` command against the class to emit a C/C++ header file.  This emitted header file will contain function prototypes for the native method for which you must provide the implementation.
 
 Here is the example `javah` command for this project:
-`javah -o ./zossrc/chdr/wtojni.h -classpath ./build/classes/java/main/ org.zowe.sample.apiservice.hello.Wto`
+`javah -o ./zossrc/chdr/wtojni.h -classpath ./build/classes/java/main/ org.zowe.sample.apiservice.wto.ZosWto`
 
 After you implement the function(s) from the header file, you must build the native code on z/OS into a "shared object" which is analogous to a Window's DLL.
 

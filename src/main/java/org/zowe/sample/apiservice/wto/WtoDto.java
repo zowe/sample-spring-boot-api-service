@@ -7,16 +7,9 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.hello;
+package org.zowe.sample.apiservice.wto;
 
-public class Wto {
-    private static String JNI_SHARED_LIBRARY = "wtojni";
-
-    static {
-        System.loadLibrary(Wto.JNI_SHARED_LIBRARY);
-    }
-
-    private native int wto(int id, String content);
+public class WtoDto {
 
     private final int rc; // integer value returned from WTO code
     private String message; // String class variable set in JNI code
@@ -24,10 +17,11 @@ public class Wto {
     private final int id;
     private final String content;
 
-    public Wto(int id, String content) {
+    public WtoDto(int id, String content, int rc, String message) {
         this.id = id;
         this.content = content;
-        this.rc = wto(id, content);
+        this.rc = rc;
+        this.message = message;
     }
 
     public int getId() {

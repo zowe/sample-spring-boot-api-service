@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -29,15 +30,20 @@ public class WtoGreetingControllerTests {
     @Autowired
     private MockMvc mvc;
 
-    @Test
-    public void returnsGreeting() throws Exception {
-        mvc.perform(get("/api/v1/wto").header("Authorization", "Basic em93ZTp6b3dl")
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", is("Hello, world!")));
-    }
+
+    // @Test
+    // public void returnsGreeting() throws Exception {
+    //     mvc.perform(get("/api/v1/wto").header("Authorization", "Basic em93ZTp6b3dl")
+    //             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.content", is("Hello, world!")));
+    // }
 
     @Test
     public void failsWithoutAuthentication() throws Exception {
+        // Wto
+        Wto spy = Mockito.spy(new Wto(1, "hey"));
+        Wto wto = Mockito.mock(Wto.class);
+        // Mockito.when(wto.)
         mvc.perform(get("/api/v1/wto")).andExpect(status().isUnauthorized());
     }
 }
