@@ -4,7 +4,7 @@ These steps describe how to build and test this sample REST API in a way that
 uses JNI to call a native z/OS service - WTO.  You can follow these steps and modify them to
 call your own assembler / C API.
 
-These instructions assume that you follow the [z/OS deployment setup](./zos-deployment).
+These instructions assume that you follow the [z/OS deployment setup](./zos-deployment.md).
 
 ## JNI Overview
 
