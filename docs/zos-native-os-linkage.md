@@ -15,6 +15,12 @@ At a high level, the process involves making use of the `native` keyword in a cl
 Here is the example `javah` command for this project:
 `javah -o ./zossrc/chdr/wtojni.h -classpath ./build/classes/java/main/ org.zowe.sample.apiservice.wto.ZosWto`
 
+---
+
+**Note**: The javah tool is deprecated as of JDK 9 and might be removed in a future JDK release. The tool has been superseded by the -h option added to javac in JDK 8
+
+---
+
 After you implement the function(s) from the header file, you must build the native code on z/OS into a "shared object" which is analogous to a Window's DLL.
 
 The "shared object" is located within the project and loaded at run time.  The file name for the "shared object" must be prefixed with `lib` and end in `.so`, e.g. `libwtojni.so` even though the name to be loaded is simply `wtojni`.
