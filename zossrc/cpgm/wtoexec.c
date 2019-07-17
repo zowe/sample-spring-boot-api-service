@@ -13,7 +13,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/**                                                                                   
+/**
+ * Metal C implementation running with z/OS linkage conventions and called
+ * via JNI - C++ layer.
+ * 
  * Force the compiler and assembler to treat this function as a                       
  * "main" to aquire stack space.  For production, create your                         
  * own or use your site's PROLOG & EPILOG.                                            

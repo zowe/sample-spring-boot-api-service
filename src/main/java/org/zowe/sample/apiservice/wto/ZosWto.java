@@ -12,6 +12,10 @@ package org.zowe.sample.apiservice.wto;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+/**
+ * z/OS implementation calling the native, OS-linkage service WTO via
+ * a "shared object" loaded at server runtime. 
+ */
 @Profile("zos")
 @Service
 public class ZosWto implements Wto {
