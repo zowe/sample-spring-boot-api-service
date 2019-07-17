@@ -16,7 +16,10 @@
 
 using namespace std;
 
-/**                                                                                                                                         
+/**
+ * JNI implementation in C++, accesses data passed from Java and returns data;
+ * calls the OS-linkage "WTOEXEC" service
+ * 
  * The fields between the pragmas below need to be in ASCII.                                                                                
  *                                                                                                                                          
  * Runtime translations can be done via:                                                                                                    

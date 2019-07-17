@@ -23,6 +23,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.Authorization;
 
+/**
+ * Handles the /wto endpoint and calls either the z/OS or off-z/OS implementation of
+ * Wto depending on the spring profile settings.
+ */
 @Api(tags = "WTO", description = "REST API for z/OS greetings via WTO")
 @RestApiVersion1Controller
 public class WtoController {

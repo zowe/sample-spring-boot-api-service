@@ -9,6 +9,9 @@
  */
 package org.zowe.sample.apiservice.wto;
 
+/**
+ * Class to model the data returned from the /wto endpoint
+ */
 public class WtoDto {
 
     private final int rc;

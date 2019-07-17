@@ -1,5 +1,11 @@
 # [Zowe](https://zowe.org/) Sample API Service &middot; [![Build Status](https://dev.azure.com/plavjanik/Zowe%20Sample%20API%20Service/_apis/build/status/zowe.sample-spring-boot-api-service?branchName=master)](https://dev.azure.com/plavjanik/Zowe%20Sample%20API%20Service/_build/latest?definitionId=2&branchName=master) [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [![codecov](https://codecov.io/gh/zowe/sample-spring-boot-api-service/branch/master/graph/badge.svg?token=UeytGN5vV5)](https://codecov.io/gh/zowe/sample-spring-boot-api-service)
 
+Use this sample spring boot REST API as a starting point to create a new z/OS-based micro service that:
+
+- supports basic auth via SAF validation
+- can invoke traditional z/OS services via assembler or metal C interface through JNI
+- is automatically discoverable via the [Zowe API Mediation Layer](https://github.com/zowe/api-layer)
+
 ## Prerequisites
 
 Following platform is required to run the application:
