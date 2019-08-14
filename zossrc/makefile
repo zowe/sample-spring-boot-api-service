@@ -63,6 +63,16 @@ wtoexec.o: wtoexec.s
 wtoexec.s: wtoexec.c
 	$(CC) $(MTL_FLAGS) -qlist=$*.mtl.lst $(MTL_HEADERS) -o $@ $^
 
+libsecur.so: secur.o jnitools.o
+	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
+	extattr +p $@
+
+secur.o: secur.cpp
+	$(CXX) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
+
+jnitools.o: jnitools.cpp
+	$(CXX) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
+
 clean:
 	rm *.o
 	rm *.lst
