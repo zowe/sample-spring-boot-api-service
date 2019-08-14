@@ -7,7 +7,11 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "genjcl": "node deploy/scripts/out/genjcl.js",
+    "upload": "node deploy/scripts/out/upload.js",
+    "start": "node deploy/scripts/out/start.js",
+    "build:scripts": "tsc",
+    "stop": "node deploy/scripts/out/stop.js"
   },
   "repository": {
     "type": "git",
@@ -17,11 +21,6 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/zowe/sample-spring-boot-api-service/issues"
-  },
-  "scripts": {
-    "genjcl": "node deploy/scripts/out/genjcl.js",
-    "start": "node deploy/scripts/out/start.js",
-    "stop": "node deploy/scripts/out/stop.js"
   },
   "homepage": "https://github.com/zowe/sample-spring-boot-api-service#readme",
   "devDependencies": {

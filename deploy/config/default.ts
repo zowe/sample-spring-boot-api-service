@@ -1,3 +1,5 @@
+import uploads from "./imports/uploads";
+
 export default {
 
     // settings for all other sections
@@ -9,7 +11,9 @@ export default {
         messageClass: "A",
         jobClass: "B",
     },
-    deployment: {
+    build: {
         rootDir: "/ibmuser/samplapi"
-    }
+    },
+
+    uploads,
 }

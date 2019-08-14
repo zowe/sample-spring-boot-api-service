@@ -2,6 +2,7 @@
 
 // bypass immutability
 process.env.ALLOW_CONFIG_MUTATIONS = "yes"; // value doesn't matter
+process.env["NODE_CONFIG_DIR"] = __dirname + "/deploy/config";
 
 import * as config from "config";
 import * as handlebars from "handlebars";

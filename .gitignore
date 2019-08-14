@@ -32,5 +32,5 @@ gradle/wrapper/gradle-wrapper.jar
 
 deploy/scripts/out
 deploy/templates/jcl/out
-config/local.ts
+deploy/config/local.ts
 node_modules
