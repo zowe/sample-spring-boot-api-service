@@ -2,8 +2,9 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 #include <stdio.h>
-#include "com_ca_mfaas_sampleservice_security_Secur.h"
+#include "secur.h"
 #include "jnitools.h"
 
 /*
