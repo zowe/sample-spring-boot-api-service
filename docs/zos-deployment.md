@@ -89,6 +89,11 @@ server:
 
 `zowe files upload ftu "config/local/truststore.p12" "/u/ibmuser/samplapi/config/truststore.p12" --binary`
 
+### Build Native Code
+
+You need to build the native library that provides an example how to call C code on z/OS.
+Follow instructions in [z/OS Native OS Linkage](zos-native-os-linkage.md).
+
 ### Run
 
 Lastly, you can run the sample server from the z/OS Unix Shell, started task, or batch job.
@@ -146,24 +151,25 @@ export PWD=/u/ibmuser/samplapi
 
 export JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
 
-CLASSPATH=/u/ibmuser/sampleapi/jars/*
+CLASSPATH=$PWD/jars/*
 export CLASSPATH=$CLASSPATH
 
 LIBPATH=/lib:/usr/lib:$JAVA_HOME/bin
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x/j9vm
 LIBPATH=$LIBPATH:$JAVA_HOME/bin/classic
+LIBPATH=$LIBPATH:$PWD
 export LIBPATH=$LIBPATH
 
-IJO="-Xms16m -Xmx128m"
+IJO="-Xms16m -Xmx128m -Xquickstart"
 export IBM_JAVA_OPTIONS="${IJO}"
 
 export PATH=$PATH:$JAVA_HOME:$LIBPATH
 /*
 //MAINARGS DD *
--jar -Xquickstart jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
+-jar jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
-file:/u/ibmuser/samplapi/config/application.yml
+file:config/application.yml
 /*
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
