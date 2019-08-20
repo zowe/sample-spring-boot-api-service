@@ -46,8 +46,8 @@ For further reference, please consider the following sections:
 - [Integrate with Zowe API Mediation Layer](docs/zowe-integrate-with-apiml.md)
 - [Web Security](docs/web-security.md)
 - [Deployment to z/OS](docs/zos-deployment.md)
-- [TODO - z/OS Security](docs/zos-security.md)
-- [TODO - z/OS Native code](docs/zos-native-code.md)
+- [z/OS Security](docs/zos-security.md)
+- [z/OS Native OS Linkage](docs/zos-native-os-linkage.md)
 
 ## Learn More about Gradle and Spring Boot
 
