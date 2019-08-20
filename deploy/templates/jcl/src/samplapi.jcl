@@ -13,7 +13,7 @@
 //   ARGS=,                              < Args to Java class
 //   VERSION='86',                       < JVMLDM version: 86
 //   LOGLVL='',                          < Debug LVL: +I(info) +T(trc)
-//   REGSIZE='0M',                       < EXECUTION REGION SIZE
+//   REGSIZE='0M',                       < Execution region size
 //   LEPARM=''
 //JAVAJVM  EXEC PGM=JVMLDM&VERSION,REGION=&REGSIZE,
 //   PARM='&LEPARM/&LOGLVL &JAVACLS &ARGS'
@@ -39,21 +39,13 @@ export PWD={{{deployment.rootDir}}}
 export JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
 
 CLASSPATH={{{deployment.rootDir}}}/jars/*
-#CLASSPATH=$CLASSPATH:{{{deployment.rootDir}}}
-#CLASSPATH=$CLASSPATH:{{{deployment.rootDir}}}/*
-#CLASSPATH=$CLASSPATH:{{{deployment.rootDir}}}/jars
-#CLASSPATH=$CLASSPATH:{{{deployment.rootDir}}}/jars/*
 export CLASSPATH=$CLASSPATH
 
-LIBPATH=.
-LIBPATH=$LIBPATH:/lib:/usr/lib:$JAVA_HOME/bin
+LIBPATH=/lib:/usr/lib:$JAVA_HOME/bin
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x/j9vm
 LIBPATH=$LIBPATH:$JAVA_HOME/bin/classic
-#LIBPATH=$LIBPATH:{{{deployment.rootDir}}}
-#LIBPATH=$LIBPATH:{{{deployment.rootDir}}}/*
-#LIBPATH=$LIBPATH:{{{deployment.rootDir}}}/jars
-#LIBPATH=$LIBPATH:{{{deployment.rootDir}}}/jars/*
+LIBPATH=$LIBPATH:{{{deployment.rootDir}}}
 export LIBPATH=$LIBPATH
 
 IJO="-Xms16m -Xmx128m"

@@ -1,5 +1,8 @@
-0. `npm install`
-1. Create a `config/local.ts`
-2. Create a z/OSMF profile with zowe CLI
-3. Mount a ZFS
-4. `npm run upload`
+# Native Code Deployment Scripts
+
+1. `npm install`
+2. `npm build:scripts`
+3. Create a `deploy/config/local.ts`
+4. Create a z/OSMF profile with zowe CLI
+5. Mount a ZFS
+6. `npm run upload`
