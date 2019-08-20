@@ -15,7 +15,7 @@ Login to [z/OS Unix Shell](https://www.ibm.com/support/knowledgecenter/zosbasics
 
 1. Allocate and format a [z/OS File System](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb200/zfspref.htm) (zFS):
 
-    - `zfsadm define -aggregate IBMUSER.SAMPLAPI.ZFS -cyls 100 -volumes WRKD23`
+    - `zfsadm define -aggregate IBMUSER.SAMPLAPI.ZFS -cylinders 100 -volumes WRKD23`
       - (response): `IOEZ00248I VSAM linear dataset IBMUSER.SAMPLAPI.ZFS successfully created.`
     - `zfsadm format -aggregate IBMUSER.SAMPLAPI.ZFS`
       - (response): `IOEZ00077I HFS-compatibility aggregate IBMUSER.SAMPLAPI.ZFS has been successfully created`
@@ -36,21 +36,23 @@ You can upload artifacts via `ftp`, `sftp`, `scp` or [`Zowe CLI`](https://github
 
 To obtain the sample service jar, run `gradlew build`.  The default artifact will be `build/libs/zowe-apiservice-0.0.1-SNAPSHOT.jar`.
 
-1. Create a directory for the `sample-service.jar`
+1. Create a directory for the jar on z/OS Unix filesytem:
+
    - `mkdir /u/ibmuser/samplapi/jars`
 
-2. Upload the `sample-service.jar` as a binary artifact:
+2. Upload the `zowe-apiservice-0.0.1-SNAPSHOT.jar` as a binary artifact:
 
-    - `zowe files upload ftu "<path_to_local_file>/sample-service.jar" "/u/ibmuser/samplapi/jars/sample-service.jar" --binary`
+   - `zowe files upload ftu "build/libs/zowe-apiservice-0.0.1-SNAPSHOT.jar" "/u/ibmuser/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar" --binary`
 
 #### Deploy the Sample Service Configuration YAML
 
-1. Create a directory for the `application.yml`
+1. Create a directory for the `application.yml`:
+
    - `mkdir /u/ibmuser/samplapi/config`
 
 2. Upload the `config/local/application.yml` as a binary artifact:
 
-`zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/application.yml" --binary`
+   - `zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/application.yml" --binary`
 
 **Note:** If this file is edited on z/OS, it must remain in ASCII format
 
@@ -60,13 +62,23 @@ Add `zos` profile, change the port number, and change the paths to keystore and 
 
 ```yaml
 spring.profiles.active: https,diag,zos
+#                                 ====
 
 server:
-    ssl:
-        keyStore: config/keystore.p12
-        trustStore: config/truststore.p12
-    address: 127.0.0.1
+    address: 0.0.0.0
     port: 10080
+#         =====
+    ssl:
+        keyAlias: localhost
+        keyPassword: password
+        keyStore: config/keystore.p12
+#                 ===================
+        keyStorePassword: password
+        keyStoreType: PKCS12
+        trustStore: config/truststore.p12
+#                   =====================
+        trustStorePassword: password
+        trustStoreType: PKCS12
 ```
 
 **Note:** This uses the existing keystore and truststore for localhost without integration to API ML. If you want to integrate to Zowe API ML, you need to follow the instructions in [Generate a keystore and truststore for a new service on z/OS](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-security.html#zowe-runtime-on-z-os) and modify the `application.yml`.
