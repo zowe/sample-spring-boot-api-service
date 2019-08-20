@@ -8,7 +8,7 @@ These instructions assume that you follow the [z/OS deployment setup](./zos-depl
 
 ## JNI Overview
 
-There are many tutorials online to describe details and examples of JNI.  
+There are many tutorials online to describe details and examples of JNI.
 
 At a high level, the process involves making use of the `native` keyword in a class.  After this, you run the `javah` command against the class to emit a C/C++ header file.  This emitted header file will contain function prototypes for the native method for which you must provide the implementation.
 
@@ -27,16 +27,39 @@ The "shared object" is located within the project and loaded at run time.  The f
 
 ## Uploading Source Code to z/OS
 
+You can use the following CLI commands to upload sources in `zossrc` folder to z/OS Unix.
+
+On z/OS Unix:
+
+- `cd /u/ibmuser/samplapi`
+- `mkdir -p zossrc/chdr`
+- `mkdir -p zossrc/cpgm`
+
+On your workstation:
+
+- `export ZOS_TARGET_DIR="/u/ibmuser/samplapi"` (Bash)
+  - or `set -gx ZOS_TARGET_DIR "/u/ibmuser/samplapi"` (Fish)
+- `zowe files upload ftu zossrc/chdr/wto.h $ZOS_TARGET_DIR/zossrc/chdr/wto.h`
+- `zowe files upload ftu zossrc/chdr/wtoexec.h $ZOS_TARGET_DIR/zossrc/chdr/wtoexec.h`
+- `zowe files upload ftu zossrc/chdr/wtojni.h $ZOS_TARGET_DIR/zossrc/chdr/wtojni.h`
+- `zowe files upload ftu zossrc/cpgm/wtoexec.c $ZOS_TARGET_DIR/zossrc/cpgm/wtoexec.c`
+- `zowe files upload ftu zossrc/cpgm/wtojni.cpp $ZOS_TARGET_DIR/zossrc/cpgm/wtojni.cpp`
+- `zowe files upload ftu zossrc/makefile $ZOS_TARGET_DIR/zossrc/makefile`
+
 ## Building JNI
 
 You can build the JNI code via:
 
-- [make](#makefile)
+- using [make](#makefile)
 - [manually](#manual-build-steps)
 
 ### Makefile
 
-You can upload the [makefile](../zossrc/makefile) to build via `make`.
+You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS Unix:
+
+- `cd /u/ibmuser/samplapi/zossrc`
+- `make`
+- `cp -p *.so ..` to copy `libwtojni.so` to the folder above so `java` can find it (`-p` preserves the extended attribute that is set by `makefile`)
 
 ### Manual Build Steps
 
@@ -65,3 +88,26 @@ Be sure to add the [program control](https://github.com/zowe/sample-spring-boot-
 ## Testing
 
 To test this new endpoint, provide the `Authorizaton: Basic ...` header and use the `../api/v1/wto` endpoint.
+
+You can use the [HTTPie](https://httpie.org/) client:
+
+```bash
+http -a "ibmuser:<password>" --verify=False --body GET "https://ca32.ca.com:10087/api/v1/wto?name=KELDA"
+```
+
+You should get:
+
+```json
+{
+    "content": "Hello, KELDA!",
+    "id": 1,
+    "message": "Message set from JNI",
+    "rc": 0
+}
+```
+
+And the message should be in the z/OS syslog:
+
+```text
+03:51:18.64 STC46227 00000014 +Number was: '1'; String was: 'Hello, KELDA!'
+```

@@ -37,6 +37,8 @@ MTL_FLAGS = -S -W "c,$(MTL_OPTS)"
 MACLIBS = -ISYS1.MACLIB \
  -ICBC.SCCNSAM
 
+HEADERS = -Ichdr
+
 MTL_HEADERS = -I/usr/include/metal
 
 DLL_CPP_FLAGS = -W "c,lp64,langlvl(extended),dll,XPLINK,exportall" \
@@ -54,14 +56,14 @@ libwtojni.so: wtojni.o wtoexec.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
 	extattr +p $@
 
-wtojni.o: wtojni.cpp
-	$(CXX) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
+wtojni.o: cpgm/wtojni.cpp
+	$(CXX) $(DLL_CPP_FLAGS) $(HEADERS) -qlist=$*.cpp.lst -o $@ $^
 
 wtoexec.o: wtoexec.s
 	$(ASM) $(ASM_FLAGS) -a=$*.asm.lst $(MACLIBS) -o $@ $^
 
-wtoexec.s: wtoexec.c
-	$(CC) $(MTL_FLAGS) -qlist=$*.mtl.lst $(MTL_HEADERS) -o $@ $^
+wtoexec.s: cpgm/wtoexec.c
+	$(CC) $(MTL_FLAGS) -qlist=$*.mtl.lst $(MTL_HEADERS) $(HEADERS) -o $@ $^
 
 clean:
 	rm *.o

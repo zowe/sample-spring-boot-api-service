@@ -26,7 +26,11 @@ apiml:
 
 Example of setting these value on command line:
 
-    ./gradlew bootRun --args='--spring.config.additional-location=file:./config/local/application.yml --apiml.enabled=true --apiml.service.serviceId=zowesample --apiml.service.hostname=localhost --apiml.service.ipAddress=127.0.0.1 --apiml.service.discoveryServiceUrls=https://localhost:10011/eureka'
+```bash
+./gradlew bootRun --args='--spring.config.additional-location=file:./config/local/application.yml
+--apiml.enabled=true --apiml.service.serviceId=zowesample --apiml.service.hostname=localhost
+--apiml.service.ipAddress=127.0.0.1 --apiml.service.discoveryServiceUrls=https://localhost:10011/eureka'
+```
 
 ## Setting API Service Metadata
 
