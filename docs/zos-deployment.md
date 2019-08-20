@@ -3,7 +3,7 @@
 There are multiple approaches to deploying the sample API service to z/OS; the following
 serves as a reference to deploy the sample API as-is.  For a production instance of an API, your deployment process may differ.
 
-**&ast;Note:&ast;** Substitute values below for your site configuration
+**Note:** Substitute values below for your site configuration
 
 ## Manual Deployment
 
@@ -11,7 +11,7 @@ First, create a space to deploy the API artifacts.
 
 Login to [z/OS Unix Shell](https://www.ibm.com/support/knowledgecenter/zosbasics/com.ibm.zos.zconcepts/zconcepts_146.htm).
 
-**&ast;Note:&ast;** You may need privileged authority to issue the command examples below
+**Note:** You may need privileged authority to issue the command examples below
 
 1. Allocate and format a [z/OS File System](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb200/zfspref.htm) (zFS):
 
@@ -52,7 +52,7 @@ To obtain the sample service jar, run `gradlew build`.  The default artifact wil
 
 `zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/application.yml" --binary`
 
-**&ast;Note:&ast;** If this file is edited on z/OS, it must remain in ASCII format
+**Note:** If this file is edited on z/OS, it must remain in ASCII format
 
 When the server is started, options will be provided to specify `--spring.config.additional-location` to refer to `config/application.yml`.  Settings in this file will override values found in the same-named `src/main/resources/application.yml`.  For example:
 
@@ -69,7 +69,7 @@ server:
     port: 10080
 ```
 
-**&ast;Note:&ast;** This uses the existing keystore and truststore for localhost without integration to API ML. If you want to integrate to Zowe API ML, you need to follow the instructions in [Generate a keystore and truststore for a new service on z/OS](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-security.html#zowe-runtime-on-z-os) and modify the `application.yml`.
+**Note:** This uses the existing keystore and truststore for localhost without integration to API ML. If you want to integrate to Zowe API ML, you need to follow the instructions in [Generate a keystore and truststore for a new service on z/OS](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-security.html#zowe-runtime-on-z-os) and modify the `application.yml`.
 
 #### Deploy `keystore` and `truststore`
 
@@ -97,7 +97,7 @@ Stop the server via:
 
 Customize the JCL below to run the server as a batch job:
 
-```
+```jcl
 //SAMPLAPI JOB ACCT#,'SAMPLE API',MSGCLASS=A,CLASS=B,
 //             MSGLEVEL=(1,1),REGION=0M
 /*JOBPARM SYSAFF=*
