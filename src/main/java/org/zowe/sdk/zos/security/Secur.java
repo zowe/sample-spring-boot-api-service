@@ -16,8 +16,6 @@ public class Secur {
         System.loadLibrary(LIBRARY_NAME);
     }
 
-    // Native methods have to be in sync with
-    // "zossrc/com/ca/mfaas/sampleservice/security/Secur.java"
     native int createSecurityEnvironment(String userid, String password, String applId);
 
     native int createSecurityEnvironmentByDaemon(String userid, String applId);

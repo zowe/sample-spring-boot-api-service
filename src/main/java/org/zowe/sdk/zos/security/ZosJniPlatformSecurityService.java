@@ -17,14 +17,15 @@ import org.springframework.stereotype.Service;
 @Profile("zos")
 @Service("platformSecurityService")
 /**
- * Implements low-level security function using pthread_security_np that is
- * called via JIN in module libSecuur.so.
+ * Implements low-level security functions using pthread_security_np() that is
+ * called via JNI in module libsecur.so.
  */
 public class ZosJniPlatformSecurityService implements PlatformSecurityService {
     private static final int CREATE_THREAD_SECURITY_CONTEXT = 0;
     private static final int REMOVE_THREAD_SECURITY_CONTEXT = 1;
 
     private final Secur secur = new Secur();
+    private final PlatformThread safPlatformThread = new SafPlatformThread();
 
     @Override
     public void createThreadSecurityContext(String userId, String password, String applId) {
@@ -40,6 +41,11 @@ public class ZosJniPlatformSecurityService implements PlatformSecurityService {
     @Override
     public void createThreadSecurityContextByDaemon(String userId, String applId) {
         checkRc(secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
+    }
+
+    @Override
+    public String getCurrentThreadUserId() {
+        return safPlatformThread.getUserName();
     }
 
     @Override

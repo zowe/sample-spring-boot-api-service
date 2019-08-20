@@ -23,6 +23,6 @@ public class SafPlatformClassFactory implements PlatformClassFactory {
 
     @Override
     public Object getPlatformUser() {
-        return null;
+        return null;  // the com.ibm.os390.security.PlatformUser has static methods and no instances
     }
 }

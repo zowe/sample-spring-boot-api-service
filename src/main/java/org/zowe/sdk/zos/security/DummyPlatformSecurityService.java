@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 @Profile("!zos")
 @Service("platformSecurityService")
+/**
+ * Implements security functions that provide dummy behavior outside of z/OS.
+ */
 public class DummyPlatformSecurityService implements PlatformSecurityService {
     static String INVALID_VALUE = "INVALID";
 
@@ -40,6 +43,11 @@ public class DummyPlatformSecurityService implements PlatformSecurityService {
             throw SECURITY_REQUEST_FAILED;
         }
         threadLocalUserId.set(userId);
+    }
+
+    @Override
+    public String getCurrentThreadUserId() {
+        return threadLocalUserId.get();
     }
 
     @Override
