@@ -10,7 +10,7 @@
 package org.zowe.sdk.zos.security;
 
 public class Secur {
-    private static final String LIBRARY_NAME = "Secur";
+    private static final String LIBRARY_NAME = "secur";
 
     Secur() {
         System.loadLibrary(LIBRARY_NAME);

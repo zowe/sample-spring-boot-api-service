@@ -41,8 +41,10 @@ HEADERS = -Ichdr
 
 MTL_HEADERS = -I/usr/include/metal
 
+JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
+
 DLL_CPP_FLAGS = -W "c,lp64,langlvl(extended),dll,XPLINK,exportall" \
- -qsearch=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64/include \
+ -qsearch=$(JAVA_HOME)/include \
  -qsource \
  -c
 
@@ -51,6 +53,9 @@ DLL_BND_FLAGS = -W "l,lp64,dll,dynam=DLL,XPLINK,map,list" \
 
 ASM = as
 ASM_FLAGS = -mrent
+
+SIDEDECKPATH = $(JAVA_HOME)/bin/j9vm
+SIDEDECK = libjvm
 
 libwtojni.so: wtojni.o wtoexec.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
@@ -64,6 +69,16 @@ wtoexec.o: wtoexec.s
 
 wtoexec.s: cpgm/wtoexec.c
 	$(CC) $(MTL_FLAGS) -qlist=$*.mtl.lst $(MTL_HEADERS) $(HEADERS) -o $@ $^
+
+libsecur.so: secur.o jnitools.o
+	$(CXX) $(DLL_BND_FLAGS) -o $@ $(SIDEDECKPATH)/$(SIDEDECK).x jnitools.o $^ > $*.bind.lst
+	extattr +p $@
+
+secur.o: secur.c
+	$(CC) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
+
+jnitools.o: jnitools.c
+	$(CC) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
 
 clean:
 	rm *.o
