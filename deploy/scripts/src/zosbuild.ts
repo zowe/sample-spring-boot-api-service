@@ -23,10 +23,16 @@ const uploads: Uploads = config.get<Uploads>('uploads');
 
 // upload everything
 Object.keys(uploads).forEach((key) => {
-    uploadFolder(key);
+    var p = uploadFolder(key);
+    Promise.all(p).then(function(values: boolean[]) {
+        if (values.every(x => x === true)) {
+            issueSshCommand("make; make install", rootDir);
+        }
+        else {
+            console.error("No build started because upload has failed");
+        }
+    });
 });
-
-issueSshCommand("make; make install", rootDir);
 
 function issueSshCommand(command: string, currentWorkingDirectory: string) {
     const cmd = `zowe zos-uss issue ssh "${command}" --cwd "${currentWorkingDirectory}"`;
@@ -37,3 +43,4 @@ function issueSshCommand(command: string, currentWorkingDirectory: string) {
         if (stderr) console.log(stderr.toString());
     });
 }
+
