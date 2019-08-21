@@ -6,3 +6,7 @@
 4. Create a z/OSMF profile with zowe CLI
 5. Mount a ZFS
 6. `npm run upload`
+
+## Upload and Build Using make
+
+`npm run zosbuild`

@@ -5,10 +5,10 @@
  *
  * Examples:
  *  npm run upload
- *  npm run upload -- asmpgm 
+ *  npm run upload -- asmpgm
  *  npm run upload -- asmpgm asmmac/#entry asmmac/#exit
  */
- 
+
 import { basename, dirname, normalize } from "path";
 process.env.NODE_CONFIG_DIR = normalize(__dirname + "../../../../deploy/config");
 
@@ -46,7 +46,7 @@ if (numOfParms > 0) {
  * @param {string} folder - folder name
  * @param {string} [file] - option file within the folder
  */
-function uploadFolder(folder: string, file?: string) {
+export function uploadFolder(folder: string, file?: string) {
     const dir = `zossrc/${folder}`;
 
     // make sure file exists
@@ -54,18 +54,18 @@ function uploadFolder(folder: string, file?: string) {
 
         // upload a specific file
         if (file) {
-            issueUploadCommnad(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`);
+            issueUploadCommand(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`);
 
             // upload all files in a folder
         } else {
             if (lstatSync(dir).isDirectory()) {
                 const files = readdirSync(dir);
                 files.forEach((file) => {
-                    issueUploadCommnad(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`);
+                    issueUploadCommand(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`);
                 });
             }
             else {
-                issueUploadCommnad(`${dir}`, `${rootDir}/${folder}`);
+                issueUploadCommand(`${dir}`, `${rootDir}/${folder}`);
             }
         }
     } else {
@@ -79,7 +79,7 @@ function uploadFolder(folder: string, file?: string) {
  * @param {string} localFile - local file source
  * @param {string} dataSet - data set target
  */
-function issueUploadCommnad(localFile: string, dataSet: string) {
+function issueUploadCommand(localFile: string, dataSet: string) {
     const cmd = `zowe files upload ftu "${localFile}" "${dataSet}"`;
     console.log(cmd);
     exec(cmd, (err, stdout, stderr) => {
