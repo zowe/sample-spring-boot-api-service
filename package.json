@@ -12,7 +12,8 @@
     "start": "node deploy/scripts/out/start.js",
     "postinstall": "tsc",
     "stop": "node deploy/scripts/out/stop.js",
-    "zosbuild": "node deploy/scripts/out/zosbuild.js"
+    "zosbuild": "node deploy/scripts/out/zosbuild.js",
+    "build:scripts": "tsc"
   },
   "repository": {
     "type": "git",
