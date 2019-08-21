@@ -8,7 +8,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.authentication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +21,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.zowe.sdk.zos.security.platform.MockPlatformUser;
+import org.zowe.sdk.zos.security.platform.PlatformReturned;
+import org.zowe.sdk.zos.security.platform.PlatformUser;
+import org.zowe.sdk.zos.security.platform.SafPlatformClassFactory;
+import org.zowe.sdk.zos.security.platform.SafPlatformUser;
 
 import lombok.extern.slf4j.Slf4j;
 

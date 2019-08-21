@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.thread;
 
 import java.util.concurrent.Callable;
 
@@ -17,6 +17,7 @@ import org.springframework.security.concurrent.DelegatingSecurityContextRunnable
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.zowe.sdk.zos.security.service.PlatformSecurityService;
 
 @Service
 public class PlatformThreadLevelSecurityByDaemon implements PlatformThreadLevelSecurity {

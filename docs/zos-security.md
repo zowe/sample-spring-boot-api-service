@@ -1,5 +1,7 @@
 # z/OS Security
 
+## Types of API Services
+
 The are two possible types of API services for z/OS:
 
 1. Running on z/OS
@@ -156,9 +158,9 @@ TODO: Update links to classes
 
 The flow of the execution from the top layer to bottom:
 
-1. [`MyController.endpoint()`](/src/main/java/com/ca/mfaas/sampleservice/api/v1/MyController.java#42) - example of an REST API controller that is using security context switching
+1. [`SecurityContextController.authenticatedUser()`](/src/main/java/org/zowe/sample/apiservice/security/SecurityContextController.java#47) - example of an REST API controller that is using security context switching
 
-2. [`SecurityConfiguration.configure(HttpSecurity)`](/src/main/java/com/ca/mfaas/sampleservice/configuration/SecurityConfiguration.java#118) - configures the HTTP endpoint security and requires authentication for the HTTP requests that is necessary for changing the security context:
+2. [`WebSecurityConfig.configure(HttpSecurity)`](/src/main/java/org/zowe/sample/apiservice/config/WebSecurityConfig.java#29) - configures the HTTP endpoint security and requires authentication for the HTTP requests that is necessary for changing the security context:
 
     ```java
     .antMatchers("/api/v1/my/endpoint").authenticated()
@@ -166,17 +168,17 @@ The flow of the execution from the top layer to bottom:
 
 3. `platformThreadLevelSecurity` - a bean that implements [`PlatformThreadLevelSecurity`](/src/main/java/com/ca/mfaas/sampleservice/security/PlatformThreadLevelSecurity.java) interface to to thread-level security context change functions such as `wrapCallableInEnvironmentForAuthenticatedUser` or `wrapRunnableInEnvironmentForAuthenticatedUser` that allows you to wrap any code to the z/OS security environment of the user that has authenticated to the REST API
 
-4. [`CallInThreadLevelSecurityEnvironmentByDaemon`](/src/main/java/com/ca/mfaas/sampleservice/security/CallInThreadLevelSecurityEnvironmentByDaemon.java) and [`RunInThreadLevelSecurityEnvironmentByDaemon`](/src/main/java/com/ca/mfaas/sampleservice/security/RunInThreadLevelSecurityEnvironmentByDaemon.java) - classes that implement standard Java interfaces `Callable` and `Runnable` that can wrap any existing code in `Callable` and `Runnable` into a code that will switch the security context just for the code in them
+4. [`CallInThreadLevelSecurityEnvironmentByDaemon`](src/main/java/org/zowe/sdk/zos/security/thread/PlatformThreadLevelSecurity.java) and [`RunInThreadLevelSecurityEnvironmentByDaemon`](src/main/java/org/zowe/sdk/zos/security/thread/RunInThreadLevelSecurityEnvironmentByDaemon.java) - classes that implement standard Java interfaces `Callable` and `Runnable` that can wrap any existing code in `Callable` and `Runnable` into a code that will switch the security context just for the code in them
 
 5. `PlatformSecurityService` - interfaces for low-level security functions that are z/OS platform dependent
    - `ZosJniPlatformSecurityService` - implementation of the previous interface for z/OS that is using JNI to call the native code that provides security functionality on z/OS - this is annotated by `@Profile("zos")` so it is used only when the application is running on z/OS
    - `DummyPlatformSecurityService` - dummy implementation that can run anywhere but it is not integrated with z/OS security
 
-6. [`Secur.java`](/src/main/java/com/ca/mfaas/sampleservice/security/Secur.java) - defines the native methods to Java and load the shared library to Java
+6. [`Secur.java`](/src/main/java/org/zowe/sdk/zos/security/jni/Secur.java) - defines the native methods to Java and load the shared library to Java
 
-7. [`Secur.c`](/zossrc/Secur.c) implements the native code in XL C, it is linked to `libsecur.so` library
+7. [`secur.c`](/zossrc/Secur.c) implements the native code in XL C, it is linked to `libsecur.so` library
 
-> **Note** The files above are a part of the sample application so you need to copy them to your application. There is a future work defined to move them to an SDK library (https://rally1.rallydev.com/#/106710376756d/detail/userstory/291036100284).
+> **Note** The files above are a part of the sample application so you need to copy them to your application. There is a future work defined to move them to an SDK library (<https://github.com/zowe/sample-spring-boot-api-service/issues/5>).
 
 At this point, we leave our code and we are calling services provided by z/OS:
 
@@ -200,4 +202,4 @@ The shared library `libsecur.so` is expected to be in zFS filesystem in the a di
 
 #### Links
 
-- https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb100/tls.htm
+- <https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb100/tls.htm>

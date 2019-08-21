@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.thread;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.zowe.sdk.zos.security.service.DummyPlatformSecurityService;
+import org.zowe.sdk.zos.security.service.PlatformSecurityService;
 
 public class PlatformThreadLevelSecurityByDaemonTest {
     @Test

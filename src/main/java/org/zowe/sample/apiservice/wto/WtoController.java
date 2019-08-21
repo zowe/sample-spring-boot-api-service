@@ -11,17 +11,15 @@ package org.zowe.sample.apiservice.wto;
 
 import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.zowe.sample.apiservice.config.RestApiVersion1Controller;
-import org.zowe.sdk.zos.security.PlatformSecurityService;
-import org.zowe.sdk.zos.security.PlatformThreadLevelSecurity;
-import org.zowe.sample.apiservice.wto.WtoDto;
+import org.zowe.sdk.zos.security.service.PlatformSecurityService;
+import org.zowe.sdk.zos.security.thread.PlatformThreadLevelSecurity;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

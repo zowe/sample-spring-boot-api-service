@@ -7,31 +7,34 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.thread;
+
+import java.util.concurrent.Callable;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
+import org.zowe.sdk.zos.security.service.PlatformSecurityService;
 
-public final class RunInThreadLevelSecurityEnvironmentByDaemon implements Runnable {
+public final class CallInThreadLevelSecurityEnvironmentByDaemon<T> implements Callable<T> {
     private final PlatformSecurityService service;
-    private final Runnable runnable;
+    private final Callable<T> callable;
     private final Authentication authentication;
 
-    public RunInThreadLevelSecurityEnvironmentByDaemon(PlatformSecurityService service, Runnable runnable,
+    public CallInThreadLevelSecurityEnvironmentByDaemon(PlatformSecurityService service, Callable<T> callable,
             Authentication authentication) {
         Assert.notNull(service, "service cannot be null");
-        Assert.notNull(runnable, "runnable cannot be null");
+        Assert.notNull(callable, "callable cannot be null");
         Assert.notNull(authentication, "authentication cannot be null");
         this.service = service;
-        this.runnable = runnable;
+        this.callable = callable;
         this.authentication = authentication;
     }
 
     @Override
-    public void run() {
+    public T call() throws Exception {
         createSecurityEnvironment();
         try {
-            runnable.run();
+            return callable.call();
         } finally {
             service.removeThreadSecurityContext();
         }
@@ -43,6 +46,6 @@ public final class RunInThreadLevelSecurityEnvironmentByDaemon implements Runnab
 
     @Override
     public String toString() {
-        return runnable.toString();
+        return callable.toString();
     }
 }

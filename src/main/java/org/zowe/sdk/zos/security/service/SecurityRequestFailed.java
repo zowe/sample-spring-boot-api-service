@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.service;
 
 public class SecurityRequestFailed extends RuntimeException {
     private static final long serialVersionUID = 6832104396884487813L;

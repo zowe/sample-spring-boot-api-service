@@ -7,12 +7,13 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
-
-import org.zowe.sdk.zos.security.PlatformSecurityService;
+package org.zowe.sdk.zos.security.service;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.zowe.sdk.zos.security.jni.Secur;
+import org.zowe.sdk.zos.security.platform.PlatformThread;
+import org.zowe.sdk.zos.security.platform.SafPlatformThread;
 
 @Profile("zos")
 @Service("platformSecurityService")

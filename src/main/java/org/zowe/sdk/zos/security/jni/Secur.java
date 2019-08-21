@@ -7,20 +7,20 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.jni;
 
 public class Secur {
     private static final String LIBRARY_NAME = "secur";
 
-    Secur() {
+    public Secur() {
         System.loadLibrary(LIBRARY_NAME);
     }
 
-    native int createSecurityEnvironment(String userid, String password, String applId);
+    public native int createSecurityEnvironment(String userid, String password, String applId);
 
-    native int createSecurityEnvironmentByDaemon(String userid, String applId);
+    public native int createSecurityEnvironmentByDaemon(String userid, String applId);
 
-    native int removeSecurityEnvironment();
+    public native int removeSecurityEnvironment();
 
     public String getLibraryName() {
         return LIBRARY_NAME;

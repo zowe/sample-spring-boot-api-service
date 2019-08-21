@@ -20,8 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zowe.sdk.zos.security.PlatformSecurityService;
-import org.zowe.sdk.zos.security.PlatformThreadLevelSecurity;
+import org.zowe.sdk.zos.security.service.PlatformSecurityService;
+import org.zowe.sdk.zos.security.thread.PlatformThreadLevelSecurity;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
