@@ -48,6 +48,7 @@ For further reference, please consider the following sections:
 - [Deployment to z/OS](docs/zos-deployment.md)
 - [z/OS Security](docs/zos-security.md)
 - [z/OS Native OS Linkage](docs/zos-native-os-linkage.md)
+- [Error Handling](docs/error-handling.md)
 
 ## Learn More about Gradle and Spring Boot
 
