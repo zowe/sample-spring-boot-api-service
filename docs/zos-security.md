@@ -154,8 +154,6 @@ Currenly **#1 a)** - `pthread_security_applid_np` via JNI without password and `
 
 #### Implementation
 
-TODO: Update links to classes
-
 The flow of the execution from the top layer to bottom:
 
 1. [`SecurityContextController.authenticatedUser()`](/src/main/java/org/zowe/sample/apiservice/security/SecurityContextController.java#47) - example of an REST API controller that is using security context switching

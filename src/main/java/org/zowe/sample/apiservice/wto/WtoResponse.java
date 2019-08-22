@@ -12,14 +12,14 @@ package org.zowe.sample.apiservice.wto;
 /**
  * Class to model the data returned from the /wto endpoint
  */
-public class WtoDto {
+public class WtoResponse {
 
     private final int rc;
     private final String message;
     private final int id;
     private final String content;
 
-    public WtoDto(int id, String content, int rc, String message) {
+    public WtoResponse(int id, String content, int rc, String message) {
         this.id = id;
         this.content = content;
         this.rc = rc;

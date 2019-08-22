@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OffZosWto implements Wto {
 
-    public WtoDto call(int id, String content) {
+    public WtoResponse call(int id, String content) {
         int rc = 0;
         String message = "[Mock] Message set from JNI";
-        return new WtoDto(id, content, rc, message);
+        return new WtoResponse(id, content, rc, message);
     }
 
 }

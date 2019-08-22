@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * z/OS implementation calling the native, OS-linkage service WTO via
- * a "shared object" loaded at server runtime. 
+ * a "shared object" loaded at server runtime.
  */
 @Profile("zos")
 @Service
@@ -29,8 +29,8 @@ public class ZosWto implements Wto {
 
     private String message; // String class variable set in JNI code
 
-    public WtoDto call(int id, String content) {
+    public WtoResponse call(int id, String content) {
         int rc = wto(id, content);
-        return new WtoDto(id, content, rc, message);
+        return new WtoResponse(id, content, rc, message);
     }
 }
