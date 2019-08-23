@@ -9,14 +9,16 @@
  */
 package org.zowe.sdk.zos.security.service;
 
+import lombok.Getter;
+
 public class SecurityRequestFailed extends RuntimeException {
     private static final long serialVersionUID = 6832104396884487813L;
 
-    private final String module;
-    private final int function;
-    private final int returnValue;
-    private final int returnCode;
-    private final int reasonCode;
+    @Getter private final String module;
+    @Getter private final int function;
+    @Getter private final int returnValue;
+    @Getter private final int returnCode;
+    @Getter private final int reasonCode;
 
     public SecurityRequestFailed(String module, int function, int returnValue, int returnCode, int reasonCode,
             Throwable cause) {
@@ -28,25 +30,5 @@ public class SecurityRequestFailed extends RuntimeException {
         this.returnValue = returnValue;
         this.returnCode = returnCode;
         this.reasonCode = reasonCode;
-    }
-
-    public int getReturnCode() {
-        return returnCode;
-    }
-
-    public int getReasonCode() {
-        return reasonCode;
-    }
-
-    public int getReturnValue() {
-        return returnValue;
-    }
-
-    public int getFunction() {
-        return function;
-    }
-
-    public String getModule() {
-        return module;
     }
 }

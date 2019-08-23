@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.wto;
+package org.zowe.sample.apiservice.security;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,22 +24,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.zowe.sample.apiservice.TestUtils;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(WtoGreetingControllerTests.class)
-public class WtoGreetingControllerTests {
+@WebMvcTest(SecurityContextController.class)
+public class SecurityContextControllerTests {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void returnsGreeting() throws Exception {
-        mvc.perform(get("/api/v1/wto").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+    public void returnsDataAboutSwitchedContext() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", is("Hello, world!")))
-                .andExpect(jsonPath("$.message", is("[Mock] Message set from JNI")));
+                .andExpect(jsonPath("$.afterSwitchUserName", is("zowe")));
     }
 
     @Test
     public void failsWithoutAuthentication() throws Exception {
-        mvc.perform(get("/api/v1/wto")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/v1/securityTest/authenticatedUser")).andExpect(status().isUnauthorized());
     }
 }

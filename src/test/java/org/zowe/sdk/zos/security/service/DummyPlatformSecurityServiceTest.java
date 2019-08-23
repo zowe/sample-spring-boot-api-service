@@ -34,6 +34,18 @@ public class DummyPlatformSecurityServiceTest {
         securityService.createThreadSecurityContext("USER", DummyPlatformSecurityService.INVALID_VALUE, null);
     }
 
+    @Test(expected = SecurityRequestFailed.class)
+    public void testCreateThreadSecurityContextWithInvalidUserid() {
+        DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
+        securityService.createThreadSecurityContext(DummyPlatformSecurityService.INVALID_VALUE, null, null);
+    }
+
+    @Test(expected = SecurityRequestFailed.class)
+    public void testCreateThreadSecurityContextByDaemonWithInvalidUserid() {
+        DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
+        securityService.createThreadSecurityContextByDaemon(DummyPlatformSecurityService.INVALID_VALUE, null);
+    }
+
     @Test
     public void testRemoveThreadSecurityContext() {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
