@@ -41,4 +41,11 @@ public class GreetingControllerTests {
     public void failsWithoutAuthentication() throws Exception {
         mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void exceptionCausesFailure() throws Exception {
+        mvc.perform(get("/api/v1/failedGreeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
+    }
+
 }
