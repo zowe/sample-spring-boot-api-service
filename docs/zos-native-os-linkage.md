@@ -32,18 +32,17 @@ You can use the following CLI commands to upload sources in `zossrc` folder to z
 On z/OS Unix:
 
 - `cd /u/ibmuser/samplapi`
-- `mkdir -p zossrc/chdr`
-- `mkdir -p zossrc/cpgm`
+- `mkdir -p zossrc`
 
-On your workstation:
+You can use the [deployment script](deploy-scripts.md) or issue followinng commands your workstation:
 
 - `export ZOS_TARGET_DIR="/u/ibmuser/samplapi"` (Bash)
   - or `set -gx ZOS_TARGET_DIR "/u/ibmuser/samplapi"` (Fish)
-- `zowe files upload ftu zossrc/chdr/wto.h $ZOS_TARGET_DIR/zossrc/chdr/wto.h`
-- `zowe files upload ftu zossrc/chdr/wtoexec.h $ZOS_TARGET_DIR/zossrc/chdr/wtoexec.h`
-- `zowe files upload ftu zossrc/chdr/wtojni.h $ZOS_TARGET_DIR/zossrc/chdr/wtojni.h`
-- `zowe files upload ftu zossrc/cpgm/wtoexec.c $ZOS_TARGET_DIR/zossrc/cpgm/wtoexec.c`
-- `zowe files upload ftu zossrc/cpgm/wtojni.cpp $ZOS_TARGET_DIR/zossrc/cpgm/wtojni.cpp`
+- `zowe files upload ftu zossrc/wto.h $ZOS_TARGET_DIR/zossrc/wto.h`
+- `zowe files upload ftu zossrc/wtoexec.h $ZOS_TARGET_DIR/zossrc/wtoexec.h`
+- `zowe files upload ftu zossrc/wtojni.h $ZOS_TARGET_DIR/zossrc/wtojni.h`
+- `zowe files upload ftu zossrc/wtoexec.c $ZOS_TARGET_DIR/zossrc/wtoexec.c`
+- `zowe files upload ftu zossrc/wtojni.cpp $ZOS_TARGET_DIR/zossrc/wtojni.cpp`
 - `zowe files upload ftu zossrc/makefile $ZOS_TARGET_DIR/zossrc/makefile`
 
 ## Building JNI
@@ -59,7 +58,21 @@ You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS 
 
 - `cd /u/ibmuser/samplapi/zossrc`
 - `make`
-- `cp -p *.so ..` to copy `libwtojni.so` to the folder above so `java` can find it (`-p` preserves the extended attribute that is set by `makefile`)
+- `make install` to copy `libwtojni.so` to the directory above so the Java can load it (`-p` preserves the extended attribute that is set by `makefile`)
+
+You can issue these commands from your workstation using Zowe CLI.
+
+You need to setup an SSH profile:
+
+```bash
+zowe profiles create ssh-profile ssh_host --host host.domain --user userid --password "password"
+```
+
+And issue the commands:
+
+```bash
+zowe zos-uss issue ssh "make; make install" --cwd "/u/ibmuser/samplapi/zossrc"
+```
 
 ### Manual Build Steps
 
@@ -75,11 +88,11 @@ Assemble an assembly source file:
 
 Generate object code from C++ file:
 
-`xlC -o libwtojni.so -W "l,xplink,dll" -W "c,lp64,langlvl(extended),xplink,dll,exportall" -I/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64/include wtojni.cpp`
+`xlc++ -o libwtojni.so -W "l,xplink,dll" -W "c,lp64,langlvl(extended),xplink,dll,exportall" -I/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64/include wtojni.cpp`
 
 Create the `libwtojni.so`:
 
-`xlC -W "l,lp64,dll,dynam=DLL,XPLINK,map,list"  -qsource -o libwtojni.so wtojni.o wtoexec.o`
+`xlc++ -W "l,lp64,dll,dynam=DLL,XPLINK,map,list"  -qsource -o libwtojni.so wtojni.o wtoexec.o`
 
 Be sure to add the [program control](https://github.com/zowe/sample-spring-boot-api-service/issues/14) attribute to avoid `java.lang.UnsatisfiedLinkError` errors:
 

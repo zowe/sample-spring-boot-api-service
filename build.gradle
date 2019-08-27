@@ -54,7 +54,12 @@ jacocoTestReport {
         xml.enabled true
         html.enabled true
     }
+    doLast {
+        println "JaCoCo Test report written to: ${jacocoTestReport.reports.html.destination}/index.html"
+    }
 }
+
+jacocoTestReport.dependsOn test
 
 check.dependsOn jacocoTestReport
 

@@ -18,7 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.zowe.sdk.zos.security.ZosAuthenticationProvider;
+import org.zowe.sdk.zos.security.authentication.ZosAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity

@@ -49,7 +49,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         schemes.add(new BasicAuth(DOC_SCHEME_BASIC_AUTH));
 
         return new Docket(DocumentationType.SWAGGER_2).groupName("v1").select().apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/v1/*")).build().apiInfo(apiInfo()).securitySchemes(schemes)
+                .paths(PathSelectors.ant("/api/v1/**")).build().apiInfo(apiInfo()).securitySchemes(schemes)
                 .pathProvider(new BasePathProvider("/api/v1"));
     }
 

@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.platform;
 
 public class MockPlatformUser implements PlatformUser {
     public static final String VALID_USERID = "zowe";

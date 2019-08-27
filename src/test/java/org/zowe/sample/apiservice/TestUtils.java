@@ -7,12 +7,8 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sample.apiservice;
 
-public interface PlatformClassFactory {
-    Class<?> getPlatformUserClass() throws ClassNotFoundException;
-
-    Class<?> getPlatformReturnedClass() throws ClassNotFoundException;
-
-	Object getPlatformUser();
+public class TestUtils {
+    public static final String ZOWE_BASIC_AUTHENTICATION = "Basic em93ZTp6b3dl";
 }

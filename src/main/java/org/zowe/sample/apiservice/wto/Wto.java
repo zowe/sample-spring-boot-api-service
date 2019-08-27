@@ -13,5 +13,5 @@ package org.zowe.sample.apiservice.wto;
  * Generic interface implemented in for z/OS and off-z/OS
  */
 public interface Wto {
-    WtoDto call(int id, String content);
+    WtoResponse call(int id, String content);
 }

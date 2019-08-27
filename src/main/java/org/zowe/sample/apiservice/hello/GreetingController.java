@@ -36,4 +36,11 @@ public class GreetingController {
             @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name) {
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
+
+    @ApiOperation(value = "This greeting always fails and provides example how unhandled exceptions are reported", nickname = "failedGreeting", authorizations = {
+            @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
+    @GetMapping("/failedGreeting")
+    public Greeting failedGreeting() {
+        throw new RuntimeException("exception");
+    }
 }

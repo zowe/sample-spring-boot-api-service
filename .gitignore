@@ -29,3 +29,8 @@ gradle/wrapper/gradle-wrapper.jar
 
 ### VS Code ###
 .vscode/
+
+deploy/scripts/out
+deploy/templates/jcl/out
+deploy/config/local.ts
+node_modules

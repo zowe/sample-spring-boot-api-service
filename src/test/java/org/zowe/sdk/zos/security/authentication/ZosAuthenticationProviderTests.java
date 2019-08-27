@@ -8,18 +8,19 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.authentication;
 
 import static org.junit.Assert.assertEquals;
-import static org.zowe.sdk.zos.security.MockPlatformUser.INVALID_PASSWORD;
-import static org.zowe.sdk.zos.security.MockPlatformUser.INVALID_USERID;
-import static org.zowe.sdk.zos.security.MockPlatformUser.VALID_PASSWORD;
-import static org.zowe.sdk.zos.security.MockPlatformUser.VALID_USERID;
+import static org.zowe.sdk.zos.security.platform.MockPlatformUser.INVALID_PASSWORD;
+import static org.zowe.sdk.zos.security.platform.MockPlatformUser.INVALID_USERID;
+import static org.zowe.sdk.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
+import static org.zowe.sdk.zos.security.platform.MockPlatformUser.VALID_USERID;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.zowe.sdk.zos.security.authentication.ZosAuthenticationProvider;
 
 public class ZosAuthenticationProviderTests {
     private static ZosAuthenticationProvider provider = new ZosAuthenticationProvider();

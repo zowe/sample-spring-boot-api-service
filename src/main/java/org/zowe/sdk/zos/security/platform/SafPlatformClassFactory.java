@@ -7,22 +7,22 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.platform;
 
-public class MockPlatformClassFactory implements PlatformClassFactory {
+public class SafPlatformClassFactory implements PlatformClassFactory {
 
     @Override
     public Class<?> getPlatformUserClass() throws ClassNotFoundException {
-        return Class.forName("org.zowe.sdk.zos.security.MockPlatformUser");
+        return Class.forName("com.ibm.os390.security.PlatformUser");
     }
 
     @Override
     public Class<?> getPlatformReturnedClass() throws ClassNotFoundException {
-        return Class.forName("org.zowe.sdk.zos.security.PlatformReturned");
+        return Class.forName("com.ibm.os390.security.PlatformReturned");
     }
 
     @Override
     public Object getPlatformUser() {
-        return new MockPlatformUser();
+        return null;  // the com.ibm.os390.security.PlatformUser has static methods and no instances
     }
 }

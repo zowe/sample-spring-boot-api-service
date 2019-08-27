@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.zowe.sample.apiservice.TestUtils;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(GreetingController.class)
@@ -31,7 +32,7 @@ public class GreetingControllerTests {
 
     @Test
     public void returnsGreeting() throws Exception {
-        mvc.perform(get("/api/v1/greeting").header("Authorization", "Basic em93ZTp6b3dl")
+        mvc.perform(get("/api/v1/greeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", is("Hello, world!")));
     }
@@ -40,4 +41,11 @@ public class GreetingControllerTests {
     public void failsWithoutAuthentication() throws Exception {
         mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void exceptionCausesFailure() throws Exception {
+        mvc.perform(get("/api/v1/failedGreeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
+    }
+
 }

@@ -11,6 +11,7 @@ package org.zowe.sdk.error;
 
 import com.ca.mfaas.error.ErrorService;
 import com.ca.mfaas.error.impl.ErrorServiceImpl;
+import com.ca.mfaas.rest.response.ApiMessage;
 
 public final class SdkErrorService {
     private static ErrorService errorService = new ErrorServiceImpl("/sdk-messages.yml");
@@ -23,5 +24,9 @@ public final class SdkErrorService {
 
     public static String getReadableMessage(String key, Object... parameters) {
         return SdkErrorService.get().createApiMessage(key, parameters).getMessages().get(0).toReadableText();
+    }
+
+    public static String getReadableMessage(ApiMessage apiMessage) {
+        return apiMessage.getMessages().get(0).toReadableText();
     }
 }

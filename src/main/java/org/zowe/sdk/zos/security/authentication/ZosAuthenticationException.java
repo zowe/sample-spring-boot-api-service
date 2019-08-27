@@ -7,9 +7,10 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sdk.zos.security;
+package org.zowe.sdk.zos.security.authentication;
 
 import org.springframework.security.core.AuthenticationException;
+import org.zowe.sdk.zos.security.platform.PlatformReturned;
 
 public class ZosAuthenticationException extends AuthenticationException {
 
