@@ -11,7 +11,6 @@ package org.zowe.sample.apiservice.wto;
 
 import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +33,10 @@ import io.swagger.annotations.Authorization;
 public class WtoController {
 
     private final Wto wto;
-    private final PlatformThreadLevelSecurity platformThreadLevelSecurity;
 
     @Autowired
     public WtoController(Wto wto, PlatformThreadLevelSecurity platformThreadLevelSecurity) {
         this.wto = wto;
-        this.platformThreadLevelSecurity = platformThreadLevelSecurity;
     }
 
     private static final String template = "Hello, %s!";
@@ -51,12 +48,6 @@ public class WtoController {
     public WtoResponse greeting(
             @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name)
             throws Exception {
-        return (WtoResponse) platformThreadLevelSecurity
-                .wrapCallableInEnvironmentForAuthenticatedUser(new Callable<WtoResponse>() {
-                    @Override
-                    public WtoResponse call() throws Exception {
-                        return wto.call(counter.incrementAndGet(), String.format(template, name));
-                    }
-                }).call();
+        return wto.call(counter.incrementAndGet(), String.format(template, name));
     }
 }
