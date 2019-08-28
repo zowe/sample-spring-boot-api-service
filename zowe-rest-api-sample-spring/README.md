@@ -1,6 +1,6 @@
-# [Zowe](https://zowe.org/) Sample API Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [![codecov](https://codecov.io/gh/zowe/sample-spring-boot-api-service/branch/master/graph/badge.svg?token=UeytGN5vV5)](https://codecov.io/gh/zowe/sample-spring-boot-api-service)
+# [Zowe](https://zowe.org/) Sample API Service
 
-Use this sample spring boot REST API as a starting point to create a new z/OS-based micro service that:
+Use this sample Spring Boot REST API as a starting point to create a new z/OS-based microservice that:
 
 - Supports basic auth via SAF validation (when running on z/OS)
 - Can invoke traditional z/OS services via assembler or metal C interface through JNI
@@ -34,7 +34,7 @@ Use `zowe` as the username and `zowe` as the password.
 
 The default page <https://localhost:10080/> opens Swagger UI with the API Documentation.
 
-![Swagger UI](/docs/images/swagger.png)
+![Swagger UI](docs/images/swagger.png)
 
 ## Customize and Extend Your Application
 
