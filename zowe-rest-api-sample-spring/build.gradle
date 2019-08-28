@@ -38,7 +38,7 @@ def sdkProject = { ->
         try {
             return project(':zowe-rest-api-sdk-spring')
         } catch (ignored) {
-            return 'org.zowe:zowe-rest-api-sdk-spring:0.0.0-SNAPSHOT'
+            return 'org.zowe:zowe-rest-api-sdk-spring:0.0.1'
         }
     }
 

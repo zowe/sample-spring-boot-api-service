@@ -5,7 +5,6 @@ allprojects {
             exec {
                 commandLine 'git', 'describe', '--abbrev=0', '--tags'
                 standardOutput = stdout
-                standardError = null
             }
             return stdout.toString().trim()
         } catch (ignored) {
@@ -19,7 +18,6 @@ allprojects {
             exec {
                 commandLine 'git', 'describe', '--tags'
                 standardOutput = stdout
-                standardError = null
             }
             return stdout.toString().trim()
         } catch (ignored) {
