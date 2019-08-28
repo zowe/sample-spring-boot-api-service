@@ -1,0 +1,78 @@
+// apply plugin: 'maven-publish'
+// apply plugin: 'com.jfrog.bintray'
+
+ext {
+    githubUrl = 'https://github.com/zowe/sample-spring-boot-api-service'
+    projectUrl = "$githubUrl/zowe-rest-api-sdk-spring"
+    licenseName = 'EPL-2.0'
+    artifactId = 'zowe-rest-api-sdk-spring'
+    packageDescription = 'Zowe REST API SDK for Spring'
+    repositoryId = 'zowe'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier 'javadoc'
+}
+
+task testsJar(type: Jar) {
+    from sourceSets.test.allSource
+    classifier 'tests'
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            groupId 'org.zowe'
+            artifactId artifactId
+
+            pom {
+                withXml {
+                    def root = asNode()
+                    def scm = root.appendNode('scm')
+                    scm.appendNode('url', projectUrl)
+
+                    def issueManagement = root.appendNode('issueManagement')
+                    issueManagement.appendNode('system', 'GitHub Issues')
+                    issueManagement.appendNode('url', "$githubUrl/issues")
+
+                    def licenses = root.appendNode('licenses')
+                    def license = licenses.appendNode('license')
+                    license.appendNode('name', licenseName)
+                    license.appendNode('url', 'https://www.eclipse.org/legal/epl-2.0/')
+                }
+            }
+
+            artifact sourcesJar
+            artifact javadocJar
+            artifact testsJar
+        }
+    }
+}
+
+bintray {
+	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenPublication']
+    publish = true
+
+    pkg {
+        repo = repositoryId
+        name = artifactId
+        desc = packageDescription
+        websiteUrl = githubUrl
+        issueTrackerUrl = "$githubUrl/issues"
+        vcsUrl = githubUrl
+        licenses = [licenseName]
+
+        version {
+            desc = packageDescription
+        }
+    }
+}

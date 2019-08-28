@@ -3,5 +3,8 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-rootProject.name = 'zowe-apiservice'
-include 'sample'
+
+include 'zowe-rest-api-sample-spring'
+include 'zowe-rest-api-sdk-spring'
+
+rootProject.name = 'zowe'

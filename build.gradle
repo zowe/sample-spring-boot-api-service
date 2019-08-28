@@ -1,0 +1,40 @@
+allprojects {
+    ext.getLastGitTag = { ->
+        try {
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--abbrev=0', '--tags'
+                standardOutput = stdout
+                standardError = null
+            }
+            return stdout.toString().trim()
+        } catch (ignored) {
+            return null
+        }
+    }
+
+    ext.getLastGitTagWithNewCommit = { ->
+        try {
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--tags'
+                standardOutput = stdout
+                standardError = null
+            }
+            return stdout.toString().trim()
+        } catch (ignored) {
+            return null
+        }
+    }
+
+    ext.getVersionFromGitTag = { ->
+        def pattern = ~/^v(\d{1,3})\.(\d{1,3})\.\d{1,4}$/
+        def lastTag = getLastGitTag() ?: 'v0.0.0'
+        if ((lastTag != null) && lastTag.matches(pattern) && (lastTag == getLastGitTagWithNewCommit())) {
+            return lastTag.substring(1)
+        }
+        else {
+            return lastTag.substring(1) + "-SNAPSHOT"
+        }
+    }
+}

@@ -10,19 +10,16 @@
 package org.zowe.sdk.zos.security.platform;
 
 /**
- * Interface to query z/OS user information.
+ * Interface to z/OS thread-level information.
  *
  * It is inspired by
- * https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformUser.html
+ * https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformThread.html
  * class. But it provides interface instead of class with static methods so
  * non-z/OS implementation of this inteface can be created.
  */
-public interface PlatformUser {
+public interface PlatformThread {
     /**
-     * Authenticates an user.
-     *
-     * If successful, a null object is returned. If not successful an instance of
-     * the PlatformReturned class is returned.
+     * @return User ID associated with the current thread.
      */
-    PlatformReturned authenticate(java.lang.String userid, java.lang.String password);
+    String getUserName();
 }

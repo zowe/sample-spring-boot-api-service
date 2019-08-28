@@ -12,11 +12,13 @@ package org.zowe.sdk.zos.security.service;
 /**
  * Provides low-level security function that are z/OS platform dependent.
  *
- * @see DummyPlatformSecurityService, ZosJniPlatformSecurityService
+ * Known implementations:
+ * {@link org.zowe.sdk.zos.security.service.DummyPlatformSecurityService},
+ * {@link org.zowe.sdk.zos.security.service.ZosJniPlatformSecurityService}
  */
 public interface PlatformSecurityService {
     /**
-     * Returns the current user ID of the security context of the current thread.
+     * @return The current user ID of the security context of the current thread.
      */
     String getCurrentThreadUserId();
 

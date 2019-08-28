@@ -22,6 +22,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     maven {
         url zoweArtifactoryRepository
         credentials {
@@ -29,10 +30,20 @@ repositories {
             password zoweArtifactoryPassword
         }
     }
+    jcenter()
     mavenCentral()
 }
 
+def sdkProject = { ->
+        try {
+            return project(':zowe-rest-api-sdk-spring')
+        } catch (ignored) {
+            return 'org.zowe:zowe-rest-api-sdk-spring:0.0.0-SNAPSHOT'
+        }
+    }
+
 dependencies {
+    implementation sdkProject()
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'

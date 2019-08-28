@@ -1,0 +1,61 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'jacoco'
+    id 'com.github.hierynomus.license' version '0.15.0'
+}
+
+version getVersionFromGitTag()
+
+ext {
+    zoweApimlVersion = '1.1.2'
+    springBootVersion = '2.1.7.RELEASE'
+}
+
+license {
+    header rootProject.file('.licence/EPL-2.0-licence-header.txt')
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks"])
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+    maven {
+        url zoweArtifactoryRepository
+        credentials {
+            username zoweArtifactoryUser
+            password zoweArtifactoryPassword
+        }
+    }
+    jcenter()
+}
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
+    implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
+    implementation "com.ca.mfaas.sdk:mfaas-common-service-core:$zoweApimlVersion"
+    // implementation 'io.springfox:springfox-swagger2:2.9.2'
+    // implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	compileOnly 'org.projectlombok:lombok:1.18.8'
+	annotationProcessor 'org.projectlombok:lombok:1.18.8'
+	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                   'Implementation-Version': project.version)
+    }
+}
+
+apply from: "$projectDir/gradle/publishing.gradle"
