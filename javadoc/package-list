@@ -1,0 +1,9 @@
+org.zowe.sdk
+org.zowe.sdk.apiml
+org.zowe.sdk.error
+org.zowe.sdk.spring
+org.zowe.sdk.zos.security.authentication
+org.zowe.sdk.zos.security.jni
+org.zowe.sdk.zos.security.platform
+org.zowe.sdk.zos.security.service
+org.zowe.sdk.zos.security.thread
