@@ -9,36 +9,24 @@
  *  npm run upload -- asmpgm asmmac/#entry asmmac/#exit
  */
 
-import { basename, dirname, normalize } from "path";
-process.env.NODE_CONFIG_DIR = normalize(__dirname + "../../../../deploy/config");
+import { ExecException } from "child_process";
+import { existsSync, lstatSync, readdirSync } from "fs";
+import { join } from "path";
+import { readConfiguration } from "./config";
+import { Config } from "./doc/IConfig";
 
-import * as config from "config";
-import { exec, ExecException } from "child_process";
-import { readdirSync, existsSync, lstatSync } from "fs";
-import { Uploads } from "./doc/IUploads";
+const sourceDir = (process.argv.length >= 3) ? process.argv[2] : ".";
+upload(sourceDir);
 
-// get config
-const rootDir: string = config.get<string>('build.rootDir');
-const uploads: Uploads = config.get<Uploads>('uploads');
+function upload(sourceDir: string) {
+    // get config
+    const config: Config = readConfiguration(sourceDir);
+    const rootDir: string = config.build.rootDir;
 
-// get command args
-const numOfParms = process.argv.length - 2;
+    // get command args
+    const numOfParms = process.argv.length - 2;
 
-// upload command line input only
-if (numOfParms > 0) {
-    for (let i = 0; i < numOfParms; i++) {
-        if (dirname(process.argv[2 + i]) === ".") {
-            uploadFolder(process.argv[2 + i]);
-        } else {
-            uploadFolder(dirname(process.argv[2 + i]), basename(process.argv[2 + i]));
-        }
-    }
-
-    // otherwise upload everything by default
-} else {
-    Object.keys(uploads).forEach((key) => {
-        uploadFolder(key);
-    });
+    uploadFolder(join(sourceDir, 'zossrc'), `${rootDir}/zossrc`);
 }
 
 /**
@@ -46,43 +34,30 @@ if (numOfParms > 0) {
  * @param {string} folder - folder name
  * @param {string} [file] - option file within the folder
  */
-export function uploadFolder(folder: string, file?: string): Promise<boolean>[] {
-    const dir = `zossrc/${folder}`;
-    var promises = [];
+export async function uploadFolder(dir: string, zosDir: string): Promise<boolean[]> {
+    var promises: Promise<boolean>[] = [];
 
+    const value = await issueSshCommand(`mkdir -p "${zosDir}"`, "/");
     // make sure file exists
-    if (existsSync(dir)) {
-
-        // upload a specific file
-        if (file) {
-            promises.push(issueUploadCommand(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`));
-
-            // upload all files in a folder
-        } else {
-            if (lstatSync(dir).isDirectory()) {
-                const files = readdirSync(dir);
-                files.forEach((file) => {
-                    promises.push(issueUploadCommand(`${dir}/${file}`, `${rootDir}${uploads[folder]}/${file}`));
-                });
-            }
-            else {
-                promises.push(issueUploadCommand(`${dir}`, `${rootDir}/${folder}`));
-            }
-        }
-    } else {
+    if (existsSync(dir) && lstatSync(dir).isDirectory()) {
+        const files = readdirSync(dir);
+        files.forEach((file) => {
+            promises.push(issueUploadCommand(`${dir}/${file}`, `${zosDir}/${file}`));
+        });
+    }
+    else {
         console.error(`>>> ${dir} does not exist`);
     }
-
-    return promises;
+    return Promise.all(promises);
 }
 
 /**
  * Create and invoke the zowe files upload command
  * @param {string} localFile - local file source
- * @param {string} dataSet - data set target
+ * @param {string} zosFile - z/OS Unix file targe path
  */
-function issueUploadCommand(localFile: string, dataSet: string) {
-    const cmd = `zowe files upload ftu "${localFile}" "${dataSet}"`;
+function issueUploadCommand(localFile: string, zosFile: string): Promise<boolean> {
+    const cmd = `zowe files upload ftu "${localFile}" "${zosFile}"`;
     console.log(cmd);
     return execShellCommand(cmd);
 }
@@ -97,6 +72,20 @@ function execShellCommand(cmd: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         exec(cmd, (err: ExecException | null, stdout: string, stderr: string) => {
             if (err) console.log(err);
+            if (stdout) console.log(stdout.toString());
+            if (stderr) console.log(stderr.toString());
+            resolve(err ? false : true);
+        });
+    });
+}
+
+export function issueSshCommand(command: string, currentWorkingDirectory: string): Promise<boolean> {
+    const exec = require('child_process').exec;
+    const cmd = `zowe zos-uss issue ssh "${command}" --cwd "${currentWorkingDirectory}"`;
+    console.log(cmd);
+    return new Promise((resolve, reject) => {
+        exec(cmd, (err: ExecException | null, stdout: string, stderr: string) => {
+            if (err) console.log(err)
             if (stdout) console.log(stdout.toString());
             if (stderr) console.log(stderr.toString());
             resolve(err ? false : true);

@@ -56,27 +56,26 @@ SIDEDECK = libjvm
 
 PREFIX := ".."
 
-all: libwtojni.so
+LIB_SECUR = "libzowe-sdk-secur.so"
+
+all: $(LIB_SECUR)
 
 install:
 	cp -vp *.so $(PREFIX)
 
-libwtojni.so: wtojni.o wtoexec.o
-	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
+$(LIB_SECUR): secur.o jnitools.o
+	$(CXX) $(DLL_BND_FLAGS) -o $@ $(SIDEDECKPATH)/$(SIDEDECK).x jnitools.o $^ > $*.bind.lst
 	extattr +p $@
 
-wtojni.o: wtojni.cpp
-	$(CXX) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
+secur.o: secur.c
+	$(CC) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
 
-wtoexec.o: wtoexec.s
-	$(ASM) $(ASM_FLAGS) -a=$*.asm.lst $(MACLIBS) -o $@ $^
-
-wtoexec.s: wtoexec.c
-	$(CC) $(MTL_FLAGS) -qlist=$*.mtl.lst $(MTL_HEADERS) -o $@ $^
+jnitools.o: jnitools.c
+	$(CC) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
 
 clean:
 	rm *.o
 	rm *.lst
 	rm *.x
 	rm *.so
-	rm wtoexec.s
+	rm *.s

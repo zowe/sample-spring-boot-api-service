@@ -12,6 +12,7 @@
         "preserveConstEnums": true,
         "removeComments": true,
         "inlineSourceMap": true,
+        "esModuleInterop": true,
         "typeRoots": [
             "./node_modules/@types"
         ]

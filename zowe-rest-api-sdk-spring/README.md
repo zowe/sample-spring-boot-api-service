@@ -22,7 +22,7 @@ You need to provide your credentials to Bintray. You can get it from <https://bi
 `BINTRAY_USER=user BINTRAY_API_KEY=apikey ./gradlew uploadBintray`
 
 ## Using the library
-
+        
 ```gradle
 plugins {
     id 'java'

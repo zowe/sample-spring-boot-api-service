@@ -2,11 +2,13 @@
 
 These scripts are experimental and will be improved a lot in future.
 
-1. `npm install`
-2. Create a `deploy/config/local.ts`
-3. Create a z/OSMF profile with zowe CLI
-4. Mount a ZFS
-5. `npm run upload`
+1. `cd zowe-rest-api-sample-spring`
+2. `npm install`
+3. `npm run init`
+4. Edit `deploy-config.json5`
+5. Create a z/OSMF profile with zowe CLI
+6. Mount a zFS file system
+7. `npm run upload`
 
 ## Upload and Build Using make
 

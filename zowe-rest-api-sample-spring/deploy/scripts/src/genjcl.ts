@@ -1,12 +1,12 @@
 #! /bin/env node
 
-// bypass immutability
-process.env.ALLOW_CONFIG_MUTATIONS = "yes"; // value doesn't matter
-process.env["NODE_CONFIG_DIR"] = __dirname + "/deploy/config";
-
-import * as config from "config";
 import * as handlebars from "handlebars";
 import * as fs from "fs";
+
+import { readConfiguration } from "./config";
+import { Config } from "./doc/IConfig";
+
+const config: Config = readConfiguration();
 
 // render the JCL
 const jcl = fs.readFileSync("./deploy/templates/jcl/src/samplapi.jcl").toString();

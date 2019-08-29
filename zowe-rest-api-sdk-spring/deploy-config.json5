@@ -1,0 +1,14 @@
+{
+    // This is a template that needs to be copied to `deploy-config.json`
+    jobcard: {
+        hlq: "PLAPE03.JCL",
+        name: "TEMPLATE",
+        account: "12390000",
+        description: "ASM/BIND/RUN",
+        messageClass: "A",
+        jobClass: "A"
+    },
+    build: {
+        rootDir: "/a/plape03/sample/sdk"
+    }
+}

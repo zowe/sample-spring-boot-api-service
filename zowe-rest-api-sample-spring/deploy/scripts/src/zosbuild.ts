@@ -8,39 +8,23 @@
  *   npm run zosbuild
  */
 
-import { basename, dirname, normalize } from "path";
-process.env.NODE_CONFIG_DIR = normalize(__dirname + "../../../../deploy/config");
-
-import * as config from "config";
-import { exec } from "child_process";
-import { readdirSync, existsSync, lstatSync } from "fs";
-import { Uploads } from "./doc/IUploads";
-import { uploadFolder } from "./upload";
+import { join } from "path";
+import { readConfiguration } from "./config";
+import { Config } from "./doc/IConfig";
+import { issueSshCommand, uploadFolder } from "./upload";
 
 // get config
-const rootDir: string = config.get<string>('build.rootDir');
-const uploads: Uploads = config.get<Uploads>('uploads');
+const sourceDir = (process.argv.length >= 3) ? process.argv[2] : ".";
+const config: Config = readConfiguration(sourceDir);
+const rootDir: string = config.build.rootDir;
 
 // upload everything
-Object.keys(uploads).forEach((key) => {
-    var p = uploadFolder(key);
-    Promise.all(p).then(function(values: boolean[]) {
-        if (values.every(x => x === true)) {
-            issueSshCommand("make; make install", rootDir);
-        }
-        else {
-            console.error("No build started because upload has failed");
-        }
-    });
+const promise = uploadFolder(join(sourceDir, 'zossrc'), rootDir);
+promise.then(function (values: boolean[]) {
+    if (values.every(x => x === true)) {
+        issueSshCommand("make; make install", rootDir);
+    }
+    else {
+        console.error("No build started because upload has failed");
+    }
 });
-
-function issueSshCommand(command: string, currentWorkingDirectory: string) {
-    const cmd = `zowe zos-uss issue ssh "${command}" --cwd "${currentWorkingDirectory}"`;
-    console.log(cmd);
-    exec(cmd, (err, stdout, stderr) => {
-        if (err) console.log(err)
-        if (stdout) console.log(stdout.toString());
-        if (stderr) console.log(stderr.toString());
-    });
-}
-

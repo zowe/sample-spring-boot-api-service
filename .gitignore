@@ -34,3 +34,4 @@ deploy/scripts/out
 deploy/templates/jcl/out
 deploy/config/local.ts
 node_modules
+*.so

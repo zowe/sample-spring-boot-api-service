@@ -1,19 +1,14 @@
-import uploads from "./imports/uploads";
-
-export default {
-
-    // settings for all other sections
+{
+    // This is a template that needs to be copied to `deploy-config.json5`
     jobcard: {
         hlq: "PUBLIC.TEMPLATE",
         name: "TEMPLATE",
         account: "#ACCT",
         description: "ASM/BIND/RUN",
         messageClass: "A",
-        jobClass: "B",
+        jobClass: "A"
     },
     build: {
         rootDir: "/ibmuser/samplapi"
-    },
-
-    uploads,
+    }
 }
