@@ -7,13 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "init": "node deploy/scripts/out/config.js init",
     "genjcl": "node deploy/scripts/out/genjcl.js",
-    "upload": "node deploy/scripts/out/upload.js",
     "start": "node deploy/scripts/out/start.js",
-    "postinstall": "tsc",
     "stop": "node deploy/scripts/out/stop.js",
-    "zosbuild": "node deploy/scripts/out/zosbuild.js",
     "build:scripts": "tsc"
   },
   "repository": {
@@ -33,7 +29,6 @@
     "@types/node": "^10.14.16",
     "config": "^2.0.2",
     "handlebars": "^4.0.12",
-    "json5": "^2.1.0",
     "nodemon": "^1.18.7",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4"
