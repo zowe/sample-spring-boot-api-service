@@ -9,11 +9,11 @@
  */
 package org.zowe.sdk.zos.security.jni;
 
-public class Secur {
-    private static final String LIBRARY_NAME = "zowe-sdk-secur";
+import static org.zowe.sdk.zos.SdkNativeLibraries.SECUR_LIBRARY_NAME;
 
+public class Secur {
     public Secur() {
-        System.loadLibrary(LIBRARY_NAME);
+        System.loadLibrary(SECUR_LIBRARY_NAME);
     }
 
     public native int createSecurityEnvironment(String userid, String password, String applId);
@@ -21,8 +21,4 @@ public class Secur {
     public native int createSecurityEnvironmentByDaemon(String userid, String applId);
 
     public native int removeSecurityEnvironment();
-
-    public String getLibraryName() {
-        return LIBRARY_NAME;
-    }
 }

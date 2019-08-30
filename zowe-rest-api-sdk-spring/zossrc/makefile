@@ -54,13 +54,14 @@ ASM_FLAGS=-mrent
 SIDEDECKPATH = $(JAVA_HOME)/bin/j9vm
 SIDEDECK = libjvm
 
-PREFIX := ".."
+PREFIX := "../"
 
 LIB_SECUR = "libzowe-sdk-secur.so"
 
 all: $(LIB_SECUR)
 
 install:
+	mkdir -p $(PREFIX)
 	cp -vp *.so $(PREFIX)
 
 $(LIB_SECUR): secur.o jnitools.o

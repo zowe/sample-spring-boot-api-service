@@ -80,7 +80,7 @@ The follow commands can be used to build individual pieces of the "shared object
 
 Compile Metal C code to assembler:
 
-`xlc -S -W "c,metal, langlvl(extended), sscom, nolongname, inline, genasm, inlrpt, csect, nose, lp64, list, warn64, optimize(2), list, showinc, showmacro, source, aggregate" -qlist=wtoexec.mtl.lst -I/usr/include/metal -o wtoexec.s wtoexec.c`
+`xlc -S -W "c,metal,langlvl(extended),sscom,nolongname,inline,genasm,inlrpt,csect,nose,lp64,list,warn64,optimize(2),list,showinc,showmacro,source,aggregate" -qlist=wtoexec.mtl.lst -I/usr/include/metal -o wtoexec.s wtoexec.c`
 
 Assemble an assembly source file:
 
@@ -92,7 +92,7 @@ Generate object code from C++ file:
 
 Create the `libwtojni.so`:
 
-`xlc++ -W "l,lp64,dll,dynam=DLL,XPLINK,map,list"  -qsource -o libwtojni.so wtojni.o wtoexec.o`
+`xlc++ -W "l,lp64,dll,dynam=dll,xplink,map,list"  -qsource -o libwtojni.so wtojni.o wtoexec.o`
 
 Be sure to add the [program control](https://github.com/zowe/sample-spring-boot-api-service/issues/14) attribute to avoid `java.lang.UnsatisfiedLinkError` errors:
 
@@ -105,7 +105,7 @@ To test this new endpoint, provide the `Authorizaton: Basic ...` header and use 
 You can use the [HTTPie](https://httpie.org/) client:
 
 ```bash
-http -a "ibmuser:<password>" --verify=False --body GET "https://ca32.ca.com:10087/api/v1/wto?name=KELDA"
+http -a "ibmuser:<password>" --verify=False --body GET "https://ca32.lvn.broadcom.net:10087/api/v1/wto?name=KELDA"
 ```
 
 You should get:
@@ -124,3 +124,27 @@ And the message should be in the z/OS syslog:
 ```text
 03:51:18.64 STC46227 00000014 +Number was: '1'; String was: 'Hello, KELDA!'
 ```
+
+## Packaging
+
+There are multiple ways how native libraries can be packaged. Java applications outside of z/OS can package the `.so` files for various platforms
+into their `.jar` file and extract them into a temporary directory and load them from there.
+
+That option is not useful for z/OS since the extended attribute `+p` needs to set and that cannot be done by the user ID that starts the Java application.
+
+We want to make the distribution of the native libraries (`.so`) easy.
+The `.so` files are packaged into the `.jar` libraries that are using them.
+For example, the SDK library `.so` files are packaged into `libs/` directory inside the SDK library JAR.
+The same is done for `.so` files of the sample and they will be packaged in the sample application JAR.
+The sample is able to extract all the `.so` files to a target directory.
+The developer can just care about deploying the application JAR to z/OS and then extracting all `.so` files to a LIBPATH directory and calling `extattr +p`.
+For SMP/E packaging, the `.so` are extracted during the packaging process and distributed via SMP/E.
+The benefit of packaging `.so` into jars is that we do not need care about additional channel for publishing via Maven.
+
+After successful build you need to download the `.so` file from z/OSMF in your `zowe-rest-api-sample-spring` directory:
+
+```bash
+zowe files download uss-file "/u/ibmuser/samplapi/zossrc/libwtojni.so" -f "src/main/resources/lib/libwtojni.so" --binary
+```
+
+The Gradle build includes the `.so` file into the application jar automatically.

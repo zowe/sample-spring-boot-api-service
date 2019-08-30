@@ -15,6 +15,8 @@ import org.zowe.sdk.zos.security.jni.Secur;
 import org.zowe.sdk.zos.security.platform.PlatformThread;
 import org.zowe.sdk.zos.security.platform.SafPlatformThread;
 
+import static org.zowe.sdk.zos.SdkNativeLibraries.SECUR_LIBRARY_NAME;
+
 @Profile("zos")
 @Service("platformSecurityService")
 /**
@@ -35,7 +37,7 @@ public class ZosJniPlatformSecurityService implements PlatformSecurityService {
 
     private void checkRc(int rc, int function) {
         if (rc != 0) {
-            throw new SecurityRequestFailed(secur.getLibraryName(), function, rc, 0, 0, null);
+            throw new SecurityRequestFailed(SECUR_LIBRARY_NAME, function, rc, 0, 0, null);
         }
     }
 

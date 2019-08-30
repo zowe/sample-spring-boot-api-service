@@ -45,7 +45,7 @@ LIBPATH=/lib:/usr/lib:$JAVA_HOME/bin
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x
 LIBPATH=$LIBPATH:$JAVA_HOME/lib/s390x/j9vm
 LIBPATH=$LIBPATH:$JAVA_HOME/bin/classic
-LIBPATH=$LIBPATH:{{{deployment.rootDir}}}
+LIBPATH=$LIBPATH:{{{deployment.rootDir}}}/lib
 export LIBPATH=$LIBPATH
 
 IJO="-Xms16m -Xmx128m"
@@ -56,7 +56,7 @@ export PATH=$PATH:$JAVA_HOME:$LIBPATH:$CLASSPATH
 echo $PATH
 /*
 //MAINARGS DD *
--jar jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
+-jar jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
 file:{{{deployment.rootDir}}}/config/local/application.yml
 /*

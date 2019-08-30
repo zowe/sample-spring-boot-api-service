@@ -15,7 +15,7 @@ Login to [z/OS Unix Shell](https://www.ibm.com/support/knowledgecenter/zosbasics
 
 1. Allocate and format a [z/OS File System](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb200/zfspref.htm) (zFS):
 
-    - `zfsadm define -aggregate IBMUSER.SAMPLAPI.ZFS -cylinders 100 -volumes WRKD23`
+    - `zfsadm define -aggregate IBMUSER.SAMPLAPI.ZFS -cylinders 200 -volumes WRKD23`
       - (response): `IOEZ00248I VSAM linear dataset IBMUSER.SAMPLAPI.ZFS successfully created.`
     - `zfsadm format -aggregate IBMUSER.SAMPLAPI.ZFS`
       - (response): `IOEZ00077I HFS-compatibility aggregate IBMUSER.SAMPLAPI.ZFS has been successfully created`
@@ -34,15 +34,16 @@ You can upload artifacts via `ftp`, `sftp`, `scp` or [`Zowe CLI`](https://github
 
 #### Deploy the Sample Service API Jar
 
-To obtain the sample service jar, run `gradlew build`.  The default artifact will be `build/libs/zowe-apiservice-0.0.1-SNAPSHOT.jar`.
+To obtain the sample service jar, run `gradlew build`. The default artifact will be `build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar`.
 
-1. Create a directory for the jar on z/OS Unix filesytem:
+1. Create a directory for the jar and native libraries on z/OS Unix filesytem:
 
    - `mkdir /u/ibmuser/samplapi/jars`
+   - `mkdir /u/ibmuser/samplapi/lib`
 
-2. Upload the `zowe-apiservice-0.0.1-SNAPSHOT.jar` as a binary artifact:
+2. Upload the `zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar` as a binary artifact:
 
-   - `zowe files upload ftu "build/libs/zowe-apiservice-0.0.1-SNAPSHOT.jar" "/u/ibmuser/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar" --binary`
+   - `zowe files upload ftu "build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar" "/u/ibmuser/samplapi/jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar" --binary`
 
 #### Deploy the Sample Service Configuration YAML
 
@@ -89,10 +90,27 @@ server:
 
 `zowe files upload ftu "config/local/truststore.p12" "/u/ibmuser/samplapi/config/truststore.p12" --binary`
 
-### Build Native Code
+### Native Code
+
+#### Build Native Code
 
 You need to build the native library that provides an example how to call C code on z/OS.
 Follow instructions in [z/OS Native OS Linkage](zos-native-os-linkage.md).
+
+#### Extract Native Code
+
+The native `.so` libraries need to be extracted to a LIBPATH directory. The sample JCL expects `.so` file in the root directory of the application.
+
+You can extract them using following commands on z/OS:
+
+```sh
+cd /u/ibmuser/samplapi
+java -cp jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher .
+extattr +p *.so
+
+Extracting lib/libwtojni.so to libwtojni.so
+Extracting lib/libzowe-sdk-secur.so to libzowe-sdk-secur.so
+```
 
 ### Run
 
@@ -100,8 +118,17 @@ Lastly, you can run the sample server from the z/OS Unix Shell, started task, or
 
 #### Start via Java Commands
 
-Start the server via:
-`java -Xquickstart -jar /u/ibmuser/samplapi/jars/zowe-apiservice-0.0.1-SNAPSHOT.jar --spring.config.additional-location=file:/u/ibmuser/samplapi/config/application.yml`
+Start the server in z/OS Unix via:
+
+```sh
+java -Xquickstart -jar jars/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:config/application.yml
+```
+
+Or using `zowe-api`:
+
+```bash
+zowe-api start
+```
 
 Here is a snippet of the messages seen after startup on z/OS (using git bash terminal and ssh):
 
@@ -167,7 +194,7 @@ export IBM_JAVA_OPTIONS="${IJO}"
 export PATH=$PATH:$JAVA_HOME:$LIBPATH
 /*
 //MAINARGS DD *
--jar jars/zowe-apiservice-0.0.1-SNAPSHOT.jar
+-jar jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
 file:config/application.yml
 /*
