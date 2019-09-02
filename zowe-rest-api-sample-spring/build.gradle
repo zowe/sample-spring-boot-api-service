@@ -30,6 +30,9 @@ repositories {
             password zoweArtifactoryPassword
         }
     }
+	maven {
+		url  "https://dl.bintray.com/plavjanik/zowe"
+	}
     jcenter()
     mavenCentral()
 }
