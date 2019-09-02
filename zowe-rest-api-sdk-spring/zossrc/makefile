@@ -63,6 +63,7 @@ all: $(LIB_SECUR)
 install:
 	mkdir -p $(PREFIX)
 	cp -vp *.so $(PREFIX)
+	ls -E $(PREFIX)
 
 $(LIB_SECUR): secur.o jnitools.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $(SIDEDECKPATH)/$(SIDEDECK).x jnitools.o $^ > $*.bind.lst

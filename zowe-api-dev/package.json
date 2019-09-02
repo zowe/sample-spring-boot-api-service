@@ -1,7 +1,7 @@
 {
   "name": "@zowedev/zowe-api-dev",
   "description": "Zowe REST API Development CLI",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "zowe",
   "bin": {
     "zowe-api-dev": "./bin/run"
@@ -11,9 +11,10 @@
     "@oclif/command": "^1.5.18",
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
-    "tslib": "^1.10.0",
-    "json5": "^2.1.0",
-    "tmp": "^0.1.0"
+    "debug": "^4.1.1",
+    "handlebars": "^4.1.2",
+    "tmp": "^0.1.0",
+    "tslib": "^1.10.0"
   },
   "peerDependencies": {
     "@zowe/cli": "^6.0.0"
