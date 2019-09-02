@@ -6,7 +6,7 @@ The are two possible types of API services for z/OS:
 
 1. Running on z/OS
 
-    - Such service can work directly with z/OS resources (data sets, zFS file systems, spool, call other z/OS services via native code - HLASM, Metal C, or XL C/C++ via JNI or [IBM JZOS](https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.jzos/index.html) or other [z/OS specific Java APIs provided by IBM](https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/zsecurity-overview.html)
+    - Such service can work directly with z/OS resources (datasets, zFS filesystems, spool, call other z/OS services via native code - HLASM, Metal C, or XL C/C++ via JNI or [IBM JZOS](https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.jzos/index.html) or other [z/OS specific Java APIs provided by IBM](https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/zsecurity-overview.html)
     - Runs under **service user ID**
       - This user ID should have only the necessary permissions for the operation of the service (access to the working directory - e.g. instance directory that can contain temporary or persisted data of the service)
       - This user ID should not be given access to mainframe resources of the user. If the service needs to access such data in need to switch the security context of the current thread

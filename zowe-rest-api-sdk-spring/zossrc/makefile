@@ -54,7 +54,7 @@ ASM_FLAGS=-mrent
 SIDEDECKPATH = $(JAVA_HOME)/bin/j9vm
 SIDEDECK = libjvm
 
-PREFIX := "../"
+PREFIX := "../lib/"
 
 LIB_SECUR = "libzowe-sdk-secur.so"
 

@@ -38,12 +38,12 @@ To obtain the sample service jar, run `gradlew build`. The default artifact will
 
 1. Create a directory for the jar and native libraries on z/OS Unix filesytem:
 
-   - `mkdir /u/ibmuser/samplapi/jars`
+   - `mkdir /u/ibmuser/samplapi/bin`
    - `mkdir /u/ibmuser/samplapi/lib`
 
-2. Upload the `zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar` as a binary artifact:
+2. Upload the `zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar` as a binary artifact without the version information:
 
-   - `zowe files upload ftu "build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar" "/u/ibmuser/samplapi/jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar" --binary`
+   - `zowe files upload ftu "build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar" "/u/ibmuser/samplapi/bin/zowe-rest-api-sample-spring.jar" --binary`
 
 #### Deploy the Sample Service Configuration YAML
 
@@ -105,8 +105,9 @@ You can extract them using following commands on z/OS:
 
 ```sh
 cd /u/ibmuser/samplapi
-java -cp jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher .
-extattr +p *.so
+java -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher lib
+extattr +p lib/*.so
+chmod a+x lib/*.so
 
 Extracting lib/libwtojni.so to libwtojni.so
 Extracting lib/libzowe-sdk-secur.so to libzowe-sdk-secur.so
@@ -121,7 +122,7 @@ Lastly, you can run the sample server from the z/OS Unix Shell, started task, or
 Start the server in z/OS Unix via:
 
 ```sh
-java -Xquickstart -jar jars/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:config/application.yml
+java -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:config/application.yml
 ```
 
 Or using `zowe-api`:
@@ -178,7 +179,7 @@ export PWD=/u/ibmuser/samplapi
 
 export JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
 
-CLASSPATH=$PWD/jars/*
+CLASSPATH=$PWD/bin/*
 export CLASSPATH=$CLASSPATH
 
 LIBPATH=/lib:/usr/lib:$JAVA_HOME/bin
@@ -194,7 +195,7 @@ export IBM_JAVA_OPTIONS="${IJO}"
 export PATH=$PATH:$JAVA_HOME:$LIBPATH
 /*
 //MAINARGS DD *
--jar jars/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar
+-jar bin/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
 file:config/application.yml
 /*

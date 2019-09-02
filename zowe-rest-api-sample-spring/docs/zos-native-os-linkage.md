@@ -34,7 +34,7 @@ On z/OS Unix:
 - `cd /u/ibmuser/samplapi`
 - `mkdir -p zossrc`
 
-You can use the [deployment script](deploy-scripts.md) or issue followinng commands your workstation:
+You can use the [Zowe API Development tool](devtool.md) or issue following commands your workstation:
 
 - `export ZOS_TARGET_DIR="/u/ibmuser/samplapi"` (Bash)
   - or `set -gx ZOS_TARGET_DIR "/u/ibmuser/samplapi"` (Fish)
@@ -58,7 +58,7 @@ You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS 
 
 - `cd /u/ibmuser/samplapi/zossrc`
 - `make`
-- `make install` to copy `libwtojni.so` to the directory above so the Java can load it (`-p` preserves the extended attribute that is set by `makefile`)
+- `make install` to copy `libwtojni.so` to the directory `../lib` so the Java can load it (`-p` preserves the extended attribute that is set by `makefile`)
 
 You can issue these commands from your workstation using Zowe CLI.
 
@@ -125,7 +125,7 @@ And the message should be in the z/OS syslog:
 03:51:18.64 STC46227 00000014 +Number was: '1'; String was: 'Hello, KELDA!'
 ```
 
-## Packaging
+## Packaging shared objects (.so) in Java archives (.jar)
 
 There are multiple ways how native libraries can be packaged. Java applications outside of z/OS can package the `.so` files for various platforms
 into their `.jar` file and extract them into a temporary directory and load them from there.

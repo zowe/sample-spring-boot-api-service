@@ -54,12 +54,14 @@ ASM_FLAGS=-mrent
 SIDEDECKPATH = $(JAVA_HOME)/bin/j9vm
 SIDEDECK = libjvm
 
-PREFIX := "../"
+PREFIX := "../lib/"
 
 all: libwtojni.so
 
 install:
+	mkdir -p $(PREFIX)
 	cp -vp *.so $(PREFIX)
+	extattr +p $(PREFIX)/*.so
 
 libwtojni.so: wtojni.o wtoexec.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
