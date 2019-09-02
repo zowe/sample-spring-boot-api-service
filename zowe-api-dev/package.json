@@ -31,6 +31,7 @@
     "globby": "^10.0.1",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
+    "prettier": "1.18.2",
     "ts-node": "^8.3.0",
     "tslint": "^5.19.0",
     "typescript": "^3.6.2"
@@ -62,6 +63,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prettier": "npx prettier --write \"src/**/*.ts\"",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
