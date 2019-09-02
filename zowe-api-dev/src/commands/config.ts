@@ -1,5 +1,5 @@
 import { Command, flags } from "@oclif/command";
-import { readConfiguration, Configuration } from "../config";
+import { Configuration, readConfiguration } from "../config";
 import { transferFiles } from "../files";
 import { checkZowe } from "../zowe";
 

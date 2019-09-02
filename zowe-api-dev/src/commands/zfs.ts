@@ -32,7 +32,7 @@ export default class Zfs extends Command {
 
         if (flags.unmount) {
             const mp = mountPoint(user.zosTargetDir);
-            if (mp && mp.path == user.zosTargetDir && mp.filesystem == zfsDsn) {
+            if (mp && mp.path === user.zosTargetDir && mp.filesystem === zfsDsn) {
                 console.log(`Unmounting filesystem ${zfsDsn} at mount point ${user.zosTargetDir}`);
                 zoweSync(`zos-uss issue ssh "/usr/sbin/unmount ${user.zosTargetDir}"`);
                 console.log(`${mp.filesystem} is no longer mounted at ${mp.path}`);
@@ -62,7 +62,7 @@ export default class Zfs extends Command {
 
             zoweSync(`zos-uss issue ssh "mkdir -p ${user.zosTargetDir}"`);
             const mp = mountPoint(user.zosTargetDir);
-            if (mp === null || mp.path != user.zosTargetDir) {
+            if (mp === null || (mp.path !== user.zosTargetDir)) {
                 console.log(`Mounting zFS filesystem ${zfsDsn} to ${user.zosTargetDir}`);
                 zoweSync(`zos-uss issue ssh "/usr/sbin/mount -v -o aggrgrow -f ${zfsDsn} ${user.zosTargetDir}"`);
                 console.log(`${zfsDsn} mounted at ${user.zosTargetDir}`);

@@ -1,5 +1,5 @@
-import { execSync } from "child_process";
 import { Command } from "@oclif/command";
+import { execSync } from "child_process";
 
 const debug = require("debug")("zowe");
 
@@ -43,7 +43,7 @@ export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
         }
     } catch (error) {
         debug(error);
-        var result: ZoweResult;
+        let result: ZoweResult;
         try {
             result = JSON.parse(error.stdout);
             debug(result);
@@ -77,14 +77,14 @@ function logResult(result: ZoweResult) {
 export function checkZowe(command: Command) {
     try {
         const zosmfProfiles = zoweSync("profiles list zosmf-profiles", { logOutput: false }).data as [];
-        if (zosmfProfiles.length == 0) {
+        if (zosmfProfiles.length === 0) {
             command.error(
                 'No zosmf-profile defined in Zowe CLI. Use "zowe profiles create zosmf-profile" to define it'
             );
         }
 
         const sshProfiles = zoweSync("profiles list ssh-profiles", { logOutput: false }).data as [];
-        if (sshProfiles.length == 0) {
+        if (sshProfiles.length === 0) {
             command.error('No ssh-profile defined in Zowe CLI. Use "zowe profiles create ssh-profile" to define it');
         }
     } catch (error) {

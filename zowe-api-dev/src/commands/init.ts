@@ -1,8 +1,8 @@
 import { Command, flags } from "@oclif/command";
 import { existsSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { zoweSync, checkZowe } from "../zowe";
 import { readProjectConfiguration } from "../config";
+import { checkZowe, zoweSync } from "../zowe";
 
 const debug = require("debug")("init");
 

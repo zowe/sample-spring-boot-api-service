@@ -1,5 +1,5 @@
 import { Command } from "@oclif/command";
-import { clearLastJob, findJob, readLastJob, saveLastJob, Job } from "../jes";
+import { clearLastJob, findJob, Job, readLastJob, saveLastJob } from "../jes";
 import { zoweSync } from "../zowe";
 
 const debug = require("debug")("stop");
@@ -19,7 +19,7 @@ export default class Stop extends Command {
             } else {
                 debug(job);
                 saveLastJob(job);
-                if (job.status == "ACTIVE") {
+                if (job.status === "ACTIVE") {
                     console.log(`Cancelling job ${job.jobname} (${job.jobid})`);
                     const updatedJob = zoweSync(`jobs cancel job ${job.jobid}`).data as Job;
                     saveLastJob(updatedJob);

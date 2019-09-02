@@ -1,8 +1,8 @@
 import { Command, flags } from "@oclif/command";
+import { readFileSync, writeFileSync } from "fs";
+import * as Handlebars from "handlebars";
 import { readConfiguration } from "../config";
 import { zoweSync } from "../zowe";
-import * as Handlebars from "handlebars";
-import { readFileSync, writeFileSync } from "fs";
 
 const debug = require("debug")("start");
 

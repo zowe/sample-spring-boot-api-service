@@ -1,9 +1,9 @@
-import { TransferredFile } from "./config";
-import { zoweSync } from "./zowe";
+import { readFileSync, writeFileSync } from "fs";
+import * as Handlebars from "handlebars";
 import { dirname } from "path";
 import * as tmp from "tmp";
-import * as Handlebars from "handlebars";
-import { readFileSync, writeFileSync } from "fs";
+import { TransferredFile } from "./config";
+import { zoweSync } from "./zowe";
 
 const debug = require("debug")("files");
 

@@ -47,9 +47,9 @@ function readConfigFile(path: string): UserConfig | ProjectConfig {
     try {
         return JSON.parse(readFileSync(path, "utf8"));
     } catch (e) {
-        const code: string = e["code"];
+        const code: string = e.code;
         if (code === "ENOENT") {
-            console.error(`File '${path}' not found. Use 'zowe-api init' to initalize it`);
+            console.error(`File '${path}' not found. Use 'zowe-api init' to initialize it`);
         }
         process.exit(1);
         throw e;
