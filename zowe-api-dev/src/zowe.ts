@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { Command } from '@oclif/command';
 
 const debug = require('debug')('zowe');
 
@@ -22,9 +23,9 @@ export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
     if (options === undefined) {
         options = default_options
     }
-    const direct = options.direct || default_options.direct
-    const logOutput = options.logOutput || default_options.logOutput
-    const throwError = options.direct || default_options.throwError
+    const direct = (options.direct === undefined) ? default_options.direct : options.direct
+    const logOutput = (options.logOutput === undefined) ? default_options.logOutput : options.logOutput
+    const throwError = (options.throwError === undefined) ? default_options.throwError : options.throwError
 
     try {
         debug(command);
@@ -74,5 +75,27 @@ function logResult(result: ZoweResult) {
     }
     if (result.stderr.trim().length) {
         console.log(result.stderr)
+    }
+}
+
+export function checkZowe(command: Command) {
+    try {
+        const zosmfProfiles = zoweSync('profiles list zosmf-profiles', {logOutput: false}).data as []
+        if (zosmfProfiles.length == 0) {
+            command.error('No zosmf-profile defined in Zowe CLI. Use "zowe profiles create zosmf-profile" to define it')
+        }
+
+        const sshProfiles = zoweSync('profiles list ssh-profiles', {logOutput: false}).data as []
+        if (sshProfiles.length == 0) {
+            command.error('No ssh-profile defined in Zowe CLI. Use "zowe profiles create ssh-profile" to define it')
+        }
+    }
+    catch (error) {
+        if (error.message.indexOf('command not found') > -1) {
+            command.error('Zowe CLI is not installed. Use "npm install -g @zowe/cli" to install it')
+        }
+        else {
+            throw error
+        }
     }
 }

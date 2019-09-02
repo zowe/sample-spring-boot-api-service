@@ -41,7 +41,7 @@ You need to setup `zosmf` and `ssh` profiles:
 
 ```bash
 zowe profiles create zosmf-profile ca32 --host ca32.lvn.broadcom.net --port 1443 --user <userid> --pass "<password>" --reject-unauthorized false
-zowe profiles create ssh-profile ssh_ca32 --host ca32.lvn.broadcom.net --user <userid> --password "<password>"
+zowe profiles create ssh-profile ca32 --host ca32.lvn.broadcom.net --user <userid> --password "<password>"
 ```
 
 ## Using

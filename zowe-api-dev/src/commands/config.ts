@@ -1,6 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { readConfiguration, Configuration } from '../config';
 import { transferFiles } from '../files';
+import { checkZowe } from '../zowe';
 
 export default class Config extends Command {
     static description = 'configure the API service on z/OS'
@@ -12,9 +13,9 @@ export default class Config extends Command {
 
     async run() {
         const { args, flags } = this.parse(Config)
-
         const [userConfig, projectConfig] = readConfiguration()
 
+        checkZowe(this)
 
         if (!projectConfig.configurations) {
             this.error('There are no defined configurations for this project')

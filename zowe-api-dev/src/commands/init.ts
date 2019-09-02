@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command';
 import { existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-import { zoweSync } from '../zowe';
+import { zoweSync, checkZowe } from '../zowe';
 import { readProjectConfiguration } from '../config';
 
 const debug = require('debug')('init')
@@ -21,6 +21,8 @@ export default class Init extends Command {
         const configPath = 'user-zowe-api.json'
         const projectConfig = readProjectConfiguration()
 
+        checkZowe(this)
+
         if (flags.force || !existsSync(configPath)) {
             console.log('Getting information about your Zowe profile')
             const profiles = zoweSync('profiles list zosmf-profiles --show-contents').data as [{ profile: { user: string } }]
@@ -38,7 +40,7 @@ export default class Init extends Command {
             }
             const config = JSON.stringify(data, null, 4);
             writeFileSync(configPath, config);
-            console.log(`Configuration initalized in: ${resolve(configPath)}`)
+            console.log(`Configuration initialized in: ${resolve(configPath)}`)
             console.log(config)
         }
         else {

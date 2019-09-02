@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { readConfiguration } from '../config';
-import { zoweSync } from '../zowe';
+import { zoweSync, checkZowe } from '../zowe';
 
 const debug = require('debug')('zfs')
 
@@ -22,6 +22,8 @@ export default class Zfs extends Command {
         const { args, flags } = this.parse(Zfs)
         const [user, project] = readConfiguration()
         const zfsDsn = user.zosHlq + '.ZFS'
+
+        checkZowe(this)
 
         if (flags.unmount) {
             const mp = mountPoint(user.zosTargetDir)
