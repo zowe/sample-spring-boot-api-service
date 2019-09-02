@@ -18,6 +18,15 @@ npm link
 
 In future, the NPM package will be published.
 
+Install Zowe CLI as documented at [Zowe CLI quick start](https://docs.zowe.org/stable/getting-started/cli-getting-started.html). Version 2.31.1 or above is required.
+
+You need to setup `zosmf` and `ssh` profiles:
+
+```bash
+zowe profiles create zosmf-profile ca32 --host ca32.lvn.broadcom.net --port 1443 --user <userid> --pass "<password>" --reject-unauthorized false
+zowe profiles create ssh-profile ssh_ca32 --host ca32.lvn.broadcom.net --user <userid> --password "<password>"
+```
+
 ## Using
 
 Change directory to the project that you want to work with.

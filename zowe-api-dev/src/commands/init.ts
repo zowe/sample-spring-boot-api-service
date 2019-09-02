@@ -22,7 +22,7 @@ export default class Init extends Command {
         const projectConfig = readProjectConfiguration()
 
         if (flags.force || !existsSync(configPath)) {
-            console.log('Getting inforation about your Zowe profile')
+            console.log('Getting information about your Zowe profile')
             const profiles = zoweSync('profiles list zosmf-profiles --show-contents').data as [{ profile: { user: string } }]
             const userid = profiles[0].profile.user.toUpperCase()
             console.log(`Your user ID is ${userid}`)
