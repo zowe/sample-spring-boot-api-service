@@ -17,7 +17,7 @@ Here is the example `javah` command for this project:
 
 ---
 
-**Note**: The javah tool is deprecated as of JDK 9 and might be removed in a future JDK release. The tool has been superseded by the -h option added to javac in JDK 8
+**Note**: The `javah` tool is deprecated as of JDK 9 and might be removed in a future JDK release. The tool has been superseded by the `-h` option added to `javac` in JDK 8
 
 ---
 
@@ -27,9 +27,9 @@ The "shared object" is located within the project and loaded at run time.  The f
 
 ## Uploading Source Code to z/OS
 
-You can use the following CLI commands to upload sources in `zossrc` folder to z/OS Unix.
+You can use the following CLI commands to upload sources in `zossrc` folder to z/OS UNIX.
 
-On z/OS Unix:
+On z/OS UNIX:
 
 - `cd /u/ibmuser/samplapi`
 - `mkdir -p zossrc`
@@ -49,12 +49,18 @@ You can use the [Zowe API Development tool](devtool.md) or issue following comma
 
 You can build the JNI code via:
 
+- using [`zowe-api-dev` tool](#zowe-api-dev)
 - using [make](#makefile)
 - [manually](#manual-build-steps)
 
+### zowe-api-dev
+
+You can use `zowe-api-dev zosbuild` command to automate the tasks described below.
+The tool is described at [zowe-api-dev - Zowe API Development CLI Tool](devtool.md).
+
 ### Makefile
 
-You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS Unix:
+You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS UNIX:
 
 - `cd /u/ibmuser/samplapi/zossrc`
 - `make`

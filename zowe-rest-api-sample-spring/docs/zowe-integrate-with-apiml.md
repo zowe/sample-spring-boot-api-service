@@ -134,8 +134,8 @@ There are several errors that can occur during reporting:
         -----END CERTIFICATE-----
         ```
 
-    2. Import the certificate to your root certificate store and trust it. If the service has a truststore in file `config/truststore.p12` then the command to import the API ML local CA public certificate.
+    2. Import the certificate to your root certificate store and trust it. If the service has a truststore in file `config/local/truststore.p12` then the command to import the API ML local CA public certificate.
 
         ```bash
-        keytool -importcert -trustcacerts -noprompt -file localca.cer -alias apimlca -keystore config/truststore.p12 -storepass <store-password> -storetype PKCS12
+        keytool -importcert -trustcacerts -noprompt -file localca.cer -alias apimlca -keystore config/local/truststore.p12 -storepass <store-password> -storetype PKCS12
         ```

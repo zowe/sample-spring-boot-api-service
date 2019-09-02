@@ -3,10 +3,23 @@
 `zowe-api-dev` is a command-line tool to automate some tasks during API development on z/OS.
 This tool is experimental.
 
+**Warning!** This tool is in experimental state. It will be improved a lot in future and some
+things may change and break before a table version is released.
+
 It uses the project-specific definitions in `zowe-api.json`.
 This file is check in to the version control system and it does not contain user specific information.
 
 ## Installation
+
+## From NPM
+
+```bash
+npm -g install @zowedev/zowe-api-dev
+```
+
+**Note:** The organization will be changed to `@zowe` when the tool is stable.
+
+### From sources
 
 ```bash
 https://github.com/zowe/sample-spring-boot-api-service
@@ -16,9 +29,13 @@ cd zowe-api-dev
 npm link
 ```
 
-In future, the NPM package will be published.
+### Configuration
 
-Install Zowe CLI as documented at [Zowe CLI quick start](https://docs.zowe.org/stable/getting-started/cli-getting-started.html). Version 2.31.1 or above is required.
+Install Zowe CLI from NPM [@zowe/cli](https://www.npmjs.com/package/@zowe/cli). Version 6.0.0 or above is required.
+
+```bash
+npm install -g @zowe/cli
+```
 
 You need to setup `zosmf` and `ssh` profiles:
 

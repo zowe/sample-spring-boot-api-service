@@ -14,17 +14,32 @@ Following platform is required to run the application:
   - For example: <https://adoptopenjdk.net/releases.html?variant=openjdk8&jvmVariant=openj9>
   - Set `JAVA_HOME` system variable with a valid JDK path and add `${JAVA_HOME}/bin` to the PATH variable
 
+- Zowe CLI (optional)
+  - For example: <https://www.npmjs.com/package/@zowe/cli>
+
 ## Quick Start
+
+Download the source code of the sample from <https://github.com/zowe/sample-spring-boot-api-service/releases/download/v0.0.1/zowe-rest-api-sample-spring.zip> and unzip it:
+
+```bash
+curl -OL https://github.com/zowe/sample-spring-boot-api-service/releases/download/v0.0.1/zowe-rest-api-sample-spring.zip
+unzip zowe-rest-api-sample-spring.zip
+cd zowe-rest-api-sample-spring
+```
 
 Build you application:
 
-    ./gradlew build
+```bash
+./gradlew build
+```
 
 **Note:** On Windows use `gradlew` instead of `./gradlew`
 
 Start your application:
 
-    ./gradlew bootRun
+```bash
+./gradlew bootRun
+```
 
 ## Use the Application
 

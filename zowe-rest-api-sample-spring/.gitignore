@@ -34,3 +34,6 @@ deploy/scripts/out
 deploy/templates/jcl/out
 deploy-config.json5
 node_modules
+*.so
+user-zowe-api.json
+lastJob.json

@@ -5,11 +5,36 @@ serves as a reference to deploy the sample API as-is.  For a production instance
 
 **Note:** Substitute values below for your site configuration
 
+**Table of Contents:**
+
+- [z/OS Deployment Instructions](#zos-deployment-instructions)
+  - [Automated Deployment](#automated-deployment)
+  - [Manual Deployment](#manual-deployment)
+    - [Deploy Artifacts](#deploy-artifacts)
+      - [Deploy the Sample Service API Jar](#deploy-the-sample-service-api-jar)
+      - [Deploy the Sample Service Configuration YAML](#deploy-the-sample-service-configuration-yaml)
+      - [Deploy `keystore` and `truststore`](#deploy-keystore-and-truststore)
+    - [Native Code](#native-code)
+      - [Build Native Code](#build-native-code)
+      - [Extract Native Code](#extract-native-code)
+    - [Run](#run)
+      - [Start via Java Commands](#start-via-java-commands)
+      - [Start via z/OS Batch Job](#start-via-zos-batch-job)
+    - [Running Example](#running-example)
+      - [Landing Page](#landing-page)
+      - [Sign In](#sign-in)
+      - [Sample API Response](#sample-api-response)
+
+## Automated Deployment
+
+You can use `zowe-api-dev` tool to automate the tasks described below.
+The tool is described at [zowe-api-dev - Zowe API Development CLI Tool](devtool.md).
+
 ## Manual Deployment
 
 First, create a space to deploy the API artifacts.
 
-Login to [z/OS Unix Shell](https://www.ibm.com/support/knowledgecenter/zosbasics/com.ibm.zos.zconcepts/zconcepts_146.htm).
+Login to [z/OS UNIX Shell](https://www.ibm.com/support/knowledgecenter/zosbasics/com.ibm.zos.zconcepts/zconcepts_146.htm).
 
 **Note:** You may need privileged authority to issue the command examples below
 
@@ -36,7 +61,7 @@ You can upload artifacts via `ftp`, `sftp`, `scp` or [`Zowe CLI`](https://github
 
 To obtain the sample service jar, run `gradlew build`. The default artifact will be `build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar`.
 
-1. Create a directory for the jar and native libraries on z/OS Unix filesytem:
+1. Create a directory for the jar and native libraries on z/OS UNIX filesystem:
 
    - `mkdir /u/ibmuser/samplapi/bin`
    - `mkdir /u/ibmuser/samplapi/lib`
@@ -49,15 +74,15 @@ To obtain the sample service jar, run `gradlew build`. The default artifact will
 
 1. Create a directory for the `application.yml`:
 
-   - `mkdir /u/ibmuser/samplapi/config`
+   - `mkdir /u/ibmuser/samplapi/etc`
 
 2. Upload the `config/local/application.yml` as a binary artifact:
 
-   - `zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/config/application.yml" --binary`
+   - `zowe files upload ftu "config/local/application.yml" "/u/ibmuser/samplapi/etc/application.yml" --binary`
 
 **Note:** If this file is edited on z/OS, it must remain in ASCII format
 
-When the server is started, options will be provided to specify `--spring.config.additional-location` to refer to `config/application.yml`.  Settings in this file will override values found in the same-named `src/main/resources/application.yml`.  For example:
+When the server is started, options will be provided to specify `--spring.config.additional-location` to refer to `etc/application.yml`.  Settings in this file will override values found in the same-named `src/main/resources/application.yml`.  For example:
 
 Add `zos` profile, change the port number, and change the paths to keystore and truststore
 
@@ -72,11 +97,11 @@ server:
     ssl:
         keyAlias: localhost
         keyPassword: password
-        keyStore: config/keystore.p12
+        keyStore: etc/keystore.p12
 #                 ===================
         keyStorePassword: password
         keyStoreType: PKCS12
-        trustStore: config/truststore.p12
+        trustStore: etc/truststore.p12
 #                   =====================
         trustStorePassword: password
         trustStoreType: PKCS12
@@ -86,9 +111,9 @@ server:
 
 #### Deploy `keystore` and `truststore`
 
-`zowe files upload ftu "config/local/keystore.p12" "/u/ibmuser/samplapi/config/keystore.p12" --binary`
+`zowe files upload ftu "config/local/keystore.p12" "/u/ibmuser/samplapi/etc/keystore.p12" --binary`
 
-`zowe files upload ftu "config/local/truststore.p12" "/u/ibmuser/samplapi/config/truststore.p12" --binary`
+`zowe files upload ftu "config/local/truststore.p12" "/u/ibmuser/samplapi/etc/truststore.p12" --binary`
 
 ### Native Code
 
@@ -115,14 +140,14 @@ Extracting lib/libzowe-sdk-secur.so to libzowe-sdk-secur.so
 
 ### Run
 
-Lastly, you can run the sample server from the z/OS Unix Shell, started task, or batch job.
+Lastly, you can run the sample server from the z/OS UNIX Shell, started task, or batch job.
 
 #### Start via Java Commands
 
-Start the server in z/OS Unix via:
+Start the server in z/OS UNIX via:
 
 ```sh
-java -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:config/application.yml
+java -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml
 ```
 
 Or using `zowe-api`:
@@ -197,7 +222,7 @@ export PATH=$PATH:$JAVA_HOME:$LIBPATH
 //MAINARGS DD *
 -jar bin/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar
 --spring.config.additional-location=\
-file:config/application.yml
+file:etc/application.yml
 /*
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
@@ -212,7 +237,7 @@ When the server is started (either through a java command or JCL), you can test 
 
 #### Landing Page
 
-Navigate to the host and port configured in your `config/application.yml`:
+Navigate to the host and port configured in your `etc/application.yml`:
 
 ![Landing](images/landing-page.png)
 
