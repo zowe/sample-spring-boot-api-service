@@ -12,7 +12,7 @@ This file is check in to the version control system and it does not contain user
 https://github.com/zowe/sample-spring-boot-api-service
 cd sample-spring-boot-api-service
 git checkout sdk-split
-cd zowe-rest-api-sdk-cli
+cd zowe-app-dev
 npm link
 ```
 
