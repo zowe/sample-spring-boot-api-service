@@ -27,6 +27,7 @@ export default class Start extends Command {
             const jcl = template({ user: userConfig, project: projectConfig })
             debug(jcl)
             writeFileSync(projectConfig.jobPath, jcl)
+            console.log(`Submitting job ${projectConfig.jobPath}`)
             const result = zoweSync(`jobs submit lf ${projectConfig.jobPath}`)
             debug(result)
             if (result) {

@@ -11,8 +11,10 @@ export default class Zosbuild extends Command {
         const zosDir = `${userConfig.zosTargetDir}/${projectConfig.zosSourcesDir}`
         zoweSync(`zos-uss issue ssh "mkdir -p ${zosDir}"`)
         uploadDir(projectConfig.zosSourcesDir, zosDir);
+        console.log(`Building z/OS native code at ${zosDir} using command "${projectConfig.buildCommand}"`)
         zoweSync(`zos-uss issue ssh "${projectConfig.buildCommand}" --cwd "${zosDir}"`)
         for (const [zosFile, targetFile] of Object.entries(projectConfig.buildFiles)) {
+            console.log(`Downloading ${zosDir}/${zosFile} to ${targetFile}`)
             zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`)
         }
     }

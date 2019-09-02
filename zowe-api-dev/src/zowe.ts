@@ -71,10 +71,10 @@ export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
 
 function logResult(result: ZoweResult) {
     if (result.stdout.trim().length > 0) {
-        console.log(result.stdout)
+        console.log(result.stdout.trim())
     }
     if (result.stderr.trim().length) {
-        console.log(result.stderr)
+        console.log(result.stderr.trim())
     }
 }
 
