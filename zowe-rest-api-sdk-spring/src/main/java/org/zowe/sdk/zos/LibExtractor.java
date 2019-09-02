@@ -22,9 +22,11 @@ import org.springframework.util.ResourceUtils;
 public class LibExtractor {
     private static final int BUFFER_SIZE = 4096;
 
+    private LibLoader libLoader = new LibLoader();
+
     public void extractLibrary(String libraryName, String targetDir) {
         String filename = "lib/lib" + libraryName + ".so";
-        Path targetPath = Paths.get(targetDir, "lib" + libraryName + ".so");
+        Path targetPath = Paths.get(targetDir, libLoader.libraryFileName(libraryName));
         System.out.println(String.format("Extracting %s to %s", filename, targetPath));
         try {
             URL url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + filename);
