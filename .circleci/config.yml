@@ -84,7 +84,9 @@ workflows:
               ignore: /.*/
       - build_node:
           filters:
-            tags:g"//registry.npmjs.org/
+            tags:
+              only: /v.*/
+            branches:
               ignore: /.*/
   tagged_build:
     jobs:
