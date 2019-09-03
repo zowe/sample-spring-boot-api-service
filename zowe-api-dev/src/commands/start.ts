@@ -43,8 +43,15 @@ export default class Start extends Command {
                 this.error("No job result returned");
             }
         } else {
-            this.log(`Starting application in SSH UNIX session using command '${projectConfig.shellStartCommand}' in directory '${userConfig.zosTargetDir}'`);
-            zoweSync(`zos-uss issue ssh "${projectConfig.shellStartCommand}" --cwd "${userConfig.zosTargetDir}"`, {
+            let startCommand = projectConfig.shellStartCommand;
+            if (startCommand.startsWith("java") && userConfig.javaHome) {
+                startCommand = userConfig.javaHome + "/bin/" + startCommand;
+            }
+            this.log(
+                `Starting application in SSH UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
+            );
+            this.log(logSymbols.info, "You can stop it using Ctrl+C");
+            zoweSync(`zos-uss issue ssh "${startCommand}" --cwd "${userConfig.zosTargetDir}"`, {
                 direct: true
             });
         }

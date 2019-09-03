@@ -15,9 +15,12 @@ export default class Deploy extends Command {
         if (!projectConfig.deployment.files) {
             this.warn("Nothing to deploy");
         } else {
-            transferFiles(projectConfig.deployment.files, userConfig.zosTargetDir, this);
+            transferFiles(projectConfig.deployment.files, userConfig.zosTargetDir, userConfig, this);
             this.log(logSymbols.success, "Deployment to z/OS completed");
-            this.log(logSymbols.info, "Use 'zowe-api-dev config' to configure your application to z/OS or 'zowe-api-dev start' to start already configured application");
+            this.log(
+                logSymbols.info,
+                "Use 'zowe-api-dev config' to configure your application to z/OS or 'zowe-api-dev start' to start already configured application"
+            );
         }
     }
 }

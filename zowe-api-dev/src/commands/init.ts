@@ -19,6 +19,12 @@ export default class Init extends Command {
             helpValue: "<account>"
         }),
         force: flags.boolean({ char: "f", description: "overwrite existing configuration" }),
+        javaHome: flags.string({
+            char: "j",
+            default: "",
+            description: "home of Java 8 on z/OS (JAVA_HOME)",
+            helpValue: "<path>"
+        }),
         zosHlq: flags.string({ char: "h", default: "", helpValue: "<HLQ>", description: "target z/OS dataset HLQ" }),
         zosTargetDir: flags.string({
             char: "t",
@@ -44,6 +50,7 @@ export default class Init extends Command {
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
             const data = {
+                javaHome: validateJavaHome(f.javaHome, this) || detectJavaHome(this),
                 jobcard: [
                     `//${jobname} JOB ${f.account},'ZOWE API',MSGCLASS=A,CLASS=A,`,
                     "//  MSGLEVEL=(1,1),REGION=0M",
@@ -64,8 +71,54 @@ export default class Init extends Command {
 }
 
 function zosUnixHomeDir() {
-    const words = zoweSync('zos-uss issue ssh "echo ~"')
+    const words = zoweSync('zos-uss issue ssh "echo ~"', { logOutput: false })
         .stdout.trim()
         .split(" ");
     return words[words.length - 1];
+}
+
+function validateJavaHome(javaHome: string, command: Command): string | null {
+    const path = stripTrailingSlash(javaHome);
+    if (path) {
+        debug(path);
+        command.log(`Validating JAVA_HOME ${path}`);
+        if (
+            zoweSync(`zos-uss issue ssh "${path}/bin/java -version"`, { throwError: false }).stdout.indexOf(
+                'java version "1.8.0_'
+            ) > -1
+        ) {
+            return path;
+        }
+    }
+    return null;
+}
+
+function stripTrailingSlash(path: string): string {
+    return path.endsWith("/") ? path.slice(0, -1) : path;
+}
+
+function detectJavaHome(command: Command): string | null {
+    const candidates = ["/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64", "/usr/lpp/java/J8.0_64"];
+    const type = zoweSync('zos-uss issue ssh "type java"').stdout.trim();
+    const javaIs = "java is /";
+    const javaIsIndex = type.indexOf(javaIs);
+    if (javaIsIndex > -1) {
+        const javaHome = type.substring(javaIsIndex + javaIs.length - 1).replace("/bin/java", "");
+        if (candidates.indexOf(javaHome) === -1) {
+            candidates.unshift(javaHome);
+        }
+    }
+    debug(candidates);
+    for (const candidate of candidates) {
+        const validated = validateJavaHome(candidate, command);
+        if (validated !== null) {
+            command.log(`JAVA_HOME detected as ${validated}`);
+            return validated;
+        }
+    }
+    command.log(
+        logSymbols.warning,
+        "No JAVA_HOME detected. Please update the configuration file manually or add path to Java into your .profile on z/OS"
+    );
+    return null;
 }

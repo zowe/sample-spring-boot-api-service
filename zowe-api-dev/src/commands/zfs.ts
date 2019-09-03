@@ -72,7 +72,10 @@ export default class Zfs extends Command {
             } else {
                 this.warn(`${mp.filesystem} already mounted at ${mp.path}`);
             }
-            this.log(logSymbols.info, "Use 'zowe-api-dev zosbuild' to build z/OS native code, 'zowe-api-dev deploy' to deploy your application to z/OS, 'zowe-api-dev --help' for more information");
+            this.log(
+                logSymbols.info,
+                "Use 'zowe-api-dev zosbuild' to build z/OS native code, 'zowe-api-dev deploy' to deploy your application to z/OS, 'zowe-api-dev --help' for more information"
+            );
         }
     }
 }

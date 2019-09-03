@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from "fs";
 import * as Handlebars from "handlebars";
 import { dirname } from "path";
 import * as tmp from "tmp";
-import { ITransferredFile } from "./config";
+import { ITransferredFile, IUserConfig } from "./config";
 import { zoweSync } from "./zowe";
 
 const debug = Debug("files");
@@ -12,6 +12,7 @@ const debug = Debug("files");
 export function transferFiles(
     files: { [filename: string]: ITransferredFile },
     zosTargetDir: string,
+    userConfig: IUserConfig,
     command: Command,
     context?: {}
 ) {
@@ -33,7 +34,12 @@ export function transferFiles(
             zoweSync(`files upload ftu ${file} ${zosFile}${options.binary ? " --binary" : ""}`);
         }
         for (const postCommand of options.postCommands || []) {
-            zoweSync(`zos-uss issue ssh "${postCommand}" --cwd "${zosTargetDir}"`);
+            let finalCommand = postCommand;
+            if (postCommand.startsWith("java") && userConfig.javaHome) {
+                finalCommand = userConfig.javaHome + "/bin/" + postCommand;
+            }
+            command.log(`Executing post-command: '${finalCommand}'`);
+            zoweSync(`zos-uss issue ssh "${finalCommand}" --cwd "${zosTargetDir}"`);
         }
     }
 }

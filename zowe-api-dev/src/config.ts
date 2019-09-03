@@ -6,6 +6,7 @@ export interface IUserConfig {
     zosTargetDir: string;
     zosHlq: string;
     jobcard: [string];
+    javaHome: string;
 }
 
 export interface ITransferredFile {

@@ -12,8 +12,12 @@ export default class ZosBuild extends Command {
         const zosDir = `${userConfig.zosTargetDir}/${projectConfig.zosSourcesDir}`;
         zoweSync(`zos-uss issue ssh "mkdir -p ${zosDir}"`);
         uploadDir(projectConfig.zosSourcesDir, zosDir, this);
-        this.log(`Building z/OS native code at ${zosDir} using command "${projectConfig.buildCommand}"`);
-        zoweSync(`zos-uss issue ssh "${projectConfig.buildCommand}" --cwd "${zosDir}"`);
+        let env = "";
+        if (userConfig.javaHome) {
+            env = `export JAVA_HOME=${userConfig.javaHome}; `;
+        }
+        this.log(`Building z/OS native code at ${zosDir} using command "${env}${projectConfig.buildCommand}"`);
+        zoweSync(`zos-uss issue ssh "${env}${projectConfig.buildCommand}" --cwd "${zosDir}"`);
         for (const [zosFile, targetFile] of Object.entries(projectConfig.buildFiles)) {
             this.log(`Downloading ${zosDir}/${zosFile} to ${targetFile}`);
             zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`);

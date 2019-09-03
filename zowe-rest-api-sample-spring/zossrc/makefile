@@ -39,7 +39,7 @@ MACLIBS=-ISYS1.MACLIB \
 
 MTL_HEADERS=-I/usr/include/metal
 
-JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
+JAVA_HOME := /usr/lpp/java/J8.0_64
 
 DLL_CPP_FLAGS=-W "c,lp64,langlvl(extended),dll,xplink,exportall" \
  -qsearch=$(JAVA_HOME)/include \
