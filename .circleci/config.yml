@@ -64,8 +64,8 @@ jobs:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
             cd zowe-api-dev
-            npm version `git describe --tags --abbrev=0 | cut -c2-`
             npm install
+            npm version `git describe --tags --abbrev=0 | cut -c2-`
             npm pack
             echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
             npm publish --access public
