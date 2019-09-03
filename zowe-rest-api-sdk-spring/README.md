@@ -34,6 +34,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.zowe:zowe-rest-api-sdk-spring:0.0.1'
+    implementation 'org.zowe:zowe-rest-api-sdk-spring:<replace with desired version>'
 }
 ```
