@@ -64,8 +64,8 @@ jobs:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
             cd zowe-api-dev
-            npm version `git describe --tags --abbrev=0 | cut -c2-`
             npm install -g @oclif/dev-cli
+            npm version `git describe --tags --abbrev=0 | cut -c2-`
             npm install
             npm pack
             echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
@@ -87,12 +87,12 @@ workflows:
       - publish_java:
           filters:
             tags:
-              only: /.*/
+              only: /v.*/
             branches:
               ignore: /.*/
       - publish_node:
           filters:
             tags:
-              only: /.*/
+              only: /v.*/
             branches:
               ignore: /.*/
