@@ -30,6 +30,7 @@ repositories {
             password zoweArtifactoryPassword
         }
     }
+    // TODO: Remove when the library is on JCenter
 	maven {
 		url  "https://dl.bintray.com/plavjanik/zowe"
 	}

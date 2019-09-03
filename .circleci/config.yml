@@ -20,3 +20,19 @@ jobs:
           key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test
+  build_node:
+    docker:
+      - image: circleci/node:lts
+    working_directory: ~/code
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
+      - run: cd zowe-api-dev; node install
+      - run: cd zowe-api-dev; node pack
+      - run: echo $PWD
+      - save_cache:
+          paths:
+            - ~/zowe-api-dev/node_modules
+          key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
