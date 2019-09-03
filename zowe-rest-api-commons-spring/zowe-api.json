@@ -1,0 +1,7 @@
+{
+    "zosSourcesDir": "zossrc",
+    "buildCommand": "make; make install",
+    "buildFiles": {
+        "libzowe-commons-secur.so": "src/main/resources/lib/libzowe-commons-secur.so"
+    }
+}

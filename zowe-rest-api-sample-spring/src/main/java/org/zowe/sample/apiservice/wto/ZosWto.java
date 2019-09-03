@@ -11,7 +11,7 @@ package org.zowe.sample.apiservice.wto;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.zowe.sdk.zos.LibLoader;
+import org.zowe.commons.zos.LibLoader;
 
 import static org.zowe.sample.apiservice.AppNativeLibraries.WTO_LIBRARY_NAME;
 

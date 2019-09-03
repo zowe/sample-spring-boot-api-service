@@ -20,15 +20,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zowe.sdk.zos.security.service.PlatformSecurityService;
-import org.zowe.sdk.zos.security.thread.PlatformThreadLevelSecurity;
+import org.zowe.commons.zos.security.service.PlatformSecurityService;
+import org.zowe.commons.zos.security.thread.PlatformThreadLevelSecurity;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "Security", description = "REST API to test security functions in SDK")
+@Api(tags = "Security", description = "REST API to test security functions in the commons library")
 @RestController
 @RequestMapping("/api/v1/securityTest")
 public class SecurityContextController {

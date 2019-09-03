@@ -48,7 +48,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/zowe/sample-spring-boot-api-service/zowe-rest-api-sdk-cli",
+  "homepage": "https://github.com/zowe/sample-spring-boot-api-service/zowe-rest-api-commons-cli",
   "keywords": [
     "oclif"
   ],

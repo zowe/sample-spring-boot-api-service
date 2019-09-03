@@ -38,16 +38,16 @@ repositories {
     mavenCentral()
 }
 
-def sdkProject = { ->
+def commonsProject = { ->
         try {
-            return project(':zowe-rest-api-sdk-spring')
+            return project(':zowe-rest-api-commons-spring')
         } catch (ignored) {
-            return 'org.zowe:zowe-rest-api-sdk-spring:0.0.3'
+            return 'org.zowe:zowe-rest-api-commons-spring:0.0.3'
         }
     }
 
 dependencies {
-    implementation sdkProject()
+    implementation commonsProject()
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'

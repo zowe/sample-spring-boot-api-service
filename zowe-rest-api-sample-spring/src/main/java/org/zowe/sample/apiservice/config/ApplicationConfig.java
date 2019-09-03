@@ -19,10 +19,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.zowe.sdk.spring.ServiceStartupEventHandler;
+import org.zowe.commons.spring.ServiceStartupEventHandler;
 
 @Configuration
-@ComponentScan("org.zowe.sdk")
+@ComponentScan("org.zowe.commons")
 public class ApplicationConfig implements ApplicationListener<ApplicationReadyEvent> {
 
     @Value("${apiml.service.title}")

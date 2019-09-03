@@ -18,11 +18,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.zowe.sdk.zos.security.authentication.ZosAuthenticationProvider;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("org.zowe.sdk.zos.security")
+@ComponentScan("org.zowe.commons.zos.security")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override

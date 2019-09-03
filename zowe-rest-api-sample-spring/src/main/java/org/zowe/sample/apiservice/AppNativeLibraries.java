@@ -12,7 +12,7 @@ package org.zowe.sample.apiservice;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.zowe.sdk.zos.NativeLibraries;
+import org.zowe.commons.zos.NativeLibraries;
 
 public class AppNativeLibraries implements NativeLibraries {
     public static final String WTO_LIBRARY_NAME = "wtojni";

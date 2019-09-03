@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <turboFilter class="org.zowe.sdk.apiml.ApimlIntegrationFailureDetector"/>
-    <turboFilter class="org.zowe.sdk.UseridFilter"/>
+    <turboFilter class="org.zowe.commons.apiml.ApimlIntegrationFailureDetector"/>
+    <turboFilter class="org.zowe.commons.UseridFilter"/>
     <turboFilter
       class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
         <AllowedRepetitions>0</AllowedRepetitions>

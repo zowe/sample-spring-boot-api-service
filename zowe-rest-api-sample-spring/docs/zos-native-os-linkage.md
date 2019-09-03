@@ -140,7 +140,7 @@ That option is not useful for z/OS since the extended attribute `+p` needs to se
 
 We want to make the distribution of the native libraries (`.so`) easy.
 The `.so` files are packaged into the `.jar` libraries that are using them.
-For example, the SDK library `.so` files are packaged into `libs/` directory inside the SDK library JAR.
+For example, the commons library `.so` files are packaged into `libs/` directory inside the commons library JAR.
 The same is done for `.so` files of the sample and they will be packaged in the sample application JAR.
 The sample is able to extract all the `.so` files to a target directory.
 The developer can just care about deploying the application JAR to z/OS and then extracting all `.so` files to a LIBPATH directory and calling `extattr +p`.

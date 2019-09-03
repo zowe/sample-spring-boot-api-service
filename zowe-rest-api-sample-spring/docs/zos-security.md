@@ -40,7 +40,7 @@ HTTP requests in the API services are processed by thread that are started under
 1. Enforce authentication for the API request
 2. Switch security context for the code that needs it
 
-Both tasks are easy with the REST API SDK.
+Both tasks are easy with the REST API commons library.
 
 Let's assume that we have REST API endpoint `/api/v1/my/endpoint` implemented in `MyController` class implemented by method `endpoint`:
 
@@ -99,7 +99,7 @@ The term **as you need** means that you can:
  3. Use a thread pool
 
 ```java
-import org.zowe.sdk.zos.security.PlatformThreadLevelSecurity;
+import org.zowe.commons.zos.security.PlatformThreadLevelSecurity;
 import com.ibm.jzos.ZUtil;
 
     @GetMapping("/endpoint")
@@ -166,17 +166,15 @@ The flow of the execution from the top layer to bottom:
 
 3. `platformThreadLevelSecurity` - a bean that implements [`PlatformThreadLevelSecurity`](/src/main/java/com/ca/mfaas/sampleservice/security/PlatformThreadLevelSecurity.java) interface to to thread-level security context change functions such as `wrapCallableInEnvironmentForAuthenticatedUser` or `wrapRunnableInEnvironmentForAuthenticatedUser` that allows you to wrap any code to the z/OS security environment of the user that has authenticated to the REST API
 
-4. `org.zowe.sdk.zos.security.thread.CallInThreadLevelSecurityEnvironmentByDaemon` and `org.zowe.sdk.zos.security.thread.RunInThreadLevelSecurityEnvironmentByDaemon`] classes that implement standard Java interfaces `Callable` and `Runnable` that can wrap any existing code in `Callable` and `Runnable` into a code that will switch the security context just for the code in them
+4. `org.zowe.commons.zos.security.thread.CallInThreadLevelSecurityEnvironmentByDaemon` and `org.zowe.commons.zos.security.thread.RunInThreadLevelSecurityEnvironmentByDaemon`] classes that implement standard Java interfaces `Callable` and `Runnable` that can wrap any existing code in `Callable` and `Runnable` into a code that will switch the security context just for the code in them
 
 5. `PlatformSecurityService` - interfaces for low-level security functions that are z/OS platform dependent
    - `ZosJniPlatformSecurityService` - implementation of the previous interface for z/OS that is using JNI to call the native code that provides security functionality on z/OS - this is annotated by `@Profile("zos")` so it is used only when the application is running on z/OS
    - `DummyPlatformSecurityService` - dummy implementation that can run anywhere but it is not integrated with z/OS security
 
-6. `org.zowe.sdk.zos.security.jin.Secur.java` defines the native methods to Java and load the shared library to Java
+6. `org.zowe.commons.zos.security.jin.Secur.java` defines the native methods to Java and load the shared library to Java
 
-7. `zowe-rest-api-sdk-spring/zossrc/secur.c` implements the native code in XL C, it is linked to `libsecur.so` library
-
-> **Note** The files above are a part of the sample application so you need to copy them to your application. There is a future work defined to move them to an SDK library (<https://github.com/zowe/sample-spring-boot-api-service/issues/5>).
+7. `zowe-rest-api-commons-spring/zossrc/secur.c` implements the native code in XL C, it is linked to `libsecur.so` library
 
 At this point, we leave our code and we are calling services provided by z/OS:
 

@@ -14,15 +14,15 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.zowe.sdk.zos.LibExtractor;
-import org.zowe.sdk.zos.SdkNativeLibraries;
+import org.zowe.commons.zos.LibExtractor;
+import org.zowe.commons.zos.CommonsNativeLibraries;
 
 public class LibsExtractor {
     public static void main(String[] args) throws URISyntaxException, IOException {
         LibExtractor ex = new LibExtractor();
         List<String> libraries = new ArrayList<>();
         libraries.addAll(new AppNativeLibraries().getNativeLibrariesNames());
-        libraries.addAll(new SdkNativeLibraries().getNativeLibrariesNames());
+        libraries.addAll(new CommonsNativeLibraries().getNativeLibrariesNames());
         if (args.length == 1) {
             for(String library: libraries) {
                 ex.extractLibrary(library, args[0]);

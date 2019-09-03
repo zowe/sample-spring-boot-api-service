@@ -135,7 +135,7 @@ extattr +p lib/*.so
 chmod a+x lib/*.so
 
 Extracting lib/libwtojni.so to libwtojni.so
-Extracting lib/libzowe-sdk-secur.so to libzowe-sdk-secur.so
+Extracting lib/libzowe-commons-secur.so to libzowe-commons-secur.so
 ```
 
 ### Run

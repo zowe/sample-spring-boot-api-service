@@ -127,7 +127,7 @@ zowe-api-dev start
 2019-09-02 05:12:30.715 <ZWEASA1:main:17171692> PLAPE03 (org.springframework.boot.web.embedded.tomcat.TomcatWebServer:90) INFO Tomcat initialized with port(s): 10180 (https)
 2019-09-02 05:12:34.730 <ZWEASA1:main:17171692> PLAPE03 (org.springframework.boot.web.embedded.tomcat.TomcatWebServer:204) INFO Tomcat started on port(s): 10180 (https) with context path ''
 2019-09-02 05:12:34.732 <ZWEASA1:main:17171692> PLAPE03 (org.zowe.sample.apiservice.ZoweApiServiceApplication:59) INFO Started ZoweApiServiceApplication in 8.648 seconds (JVM running for 9.504)
-2019-09-02 05:12:34.743 <ZWEASA1:main:17171692> PLAPE03 (org.zowe.sdk.spring.ServiceStartupEventHandler:25) INFO Zowe Sample API Service has been started in 9.515 seconds
+2019-09-02 05:12:34.743 <ZWEASA1:main:17171692> PLAPE03 (org.zowe.commons.spring.ServiceStartupEventHandler:25) INFO Zowe Sample API Service has been started in 9.515 seconds
 ```
 
 But the application stops when your session is terminated.

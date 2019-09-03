@@ -5,6 +5,6 @@ pluginManagement {
 }
 
 include 'zowe-rest-api-sample-spring'
-include 'zowe-rest-api-sdk-spring'
+include 'zowe-rest-api-commons-spring'
 
 rootProject.name = 'zowe'

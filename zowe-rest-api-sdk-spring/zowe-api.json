@@ -1,7 +1,0 @@
-{
-    "zosSourcesDir": "zossrc",
-    "buildCommand": "make; make install",
-    "buildFiles": {
-        "libzowe-sdk-secur.so": "src/main/resources/lib/libzowe-sdk-secur.so"
-    }
-}

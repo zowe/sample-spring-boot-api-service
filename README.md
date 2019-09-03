@@ -4,7 +4,7 @@ This project provides:
 
 1. [Sample REST API service](zowe-rest-api-sample-spring/README.md) that run on z/OS and can use native z/OS interfaces
 2. SDK (software development kit) for creating such services that includes:
-   - [Java library](zowe-rest-api-sdk-spring/README.md) that includes the reusable functionality for developing such API services
+   - [Common Java library for REST APIs on z/OS](zowe-rest-api-commons-spring/README.md) that includes the reusable functionality for developing such API services on z/OS
    - [CLI tool zowe-api-dev](zowe-api-dev/README.md) that will allow use to develop your API service on PC and deploy it to z/OS UNIX environment
 
 ## Getting Started
