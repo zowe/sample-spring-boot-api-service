@@ -1,8 +1,9 @@
 import { Command } from "@oclif/command";
-import { clearLastJob, findJob, Job, readLastJob, saveLastJob } from "../jes";
+import * as Debug from "debug";
+import { clearLastJob, findJob, IJob, readLastJob, saveLastJob } from "../jes";
 import { zoweSync } from "../zowe";
 
-const debug = require("debug")("stop");
+const debug = Debug("stop");
 
 export default class Stop extends Command {
     static description = "stop the API service on z/OS";
@@ -20,8 +21,8 @@ export default class Stop extends Command {
                 debug(job);
                 saveLastJob(job);
                 if (job.status === "ACTIVE") {
-                    console.log(`Cancelling job ${job.jobname} (${job.jobid})`);
-                    const updatedJob = zoweSync(`jobs cancel job ${job.jobid}`).data as Job;
+                    this.log(`Cancelling job ${job.jobname} (${job.jobid})`);
+                    const updatedJob = zoweSync(`jobs cancel job ${job.jobid}`).data as IJob;
                     saveLastJob(updatedJob);
                 } else {
                     this.warn(`Cancelling job ${job.jobname} (${job.jobid}) is not active but in ${job.status} status`);

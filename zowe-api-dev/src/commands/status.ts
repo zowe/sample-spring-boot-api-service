@@ -1,7 +1,8 @@
 import { Command } from "@oclif/command";
+import * as Debug from "debug";
 import { clearLastJob, findJob, readLastJob, saveLastJob } from "../jes";
 
-const debug = require("debug")("status");
+const debug = Debug("status");
 
 export default class Status extends Command {
     static description = "get status of API service";
@@ -18,7 +19,7 @@ export default class Status extends Command {
             } else {
                 debug(job);
                 saveLastJob(job);
-                console.log(`Job ${job.jobname} (${job.jobid}) is in ${job.status} status, retcode=${job.retcode}`);
+                this.log(`Job ${job.jobname} (${job.jobid}) is in ${job.status} status, retcode=${job.retcode}`);
             }
         }
     }

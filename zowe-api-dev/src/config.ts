@@ -1,29 +1,30 @@
+import Command from "@oclif/command";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-export interface UserConfig {
+export interface IUserConfig {
     zosTargetDir: string;
     zosHlq: string;
     jobcard: [string];
 }
 
-export interface TransferredFile {
+export interface ITransferredFile {
     binary: boolean;
     template: boolean;
     target: string;
     postCommands: [string];
 }
 
-export interface Configuration {
-    files: { [filename: string]: TransferredFile };
+export interface IConfiguration {
+    files: { [filename: string]: ITransferredFile };
 }
 
-export interface ProjectConfig {
+export interface IProjectConfig {
     zosSourcesDir: string;
     buildCommand: string;
     buildFiles: { [filename: string]: string };
-    deployment: { files: { [filename: string]: TransferredFile } };
-    configurations: { [id: string]: Configuration };
+    deployment: { files: { [filename: string]: ITransferredFile } };
+    configurations: { [id: string]: IConfiguration };
     shellStartCommand: string;
     jobTemplatePath: string;
     jobPath: string;
@@ -32,24 +33,27 @@ export interface ProjectConfig {
     zfsMegabytes: number;
 }
 
-export function readConfiguration(dir: string = "."): [UserConfig, ProjectConfig] {
+export function readConfiguration(command: Command, dir: string = "."): [IUserConfig, IProjectConfig] {
     const userConfigPath: string = join(dir, "user-zowe-api.json");
     const projectConfigPath: string = join(dir, "zowe-api.json");
-    return [readConfigFile(userConfigPath) as UserConfig, readConfigFile(projectConfigPath) as ProjectConfig];
+    return [
+        readConfigFile(userConfigPath, command) as IUserConfig,
+        readConfigFile(projectConfigPath, command) as IProjectConfig
+    ];
 }
 
-export function readProjectConfiguration(dir: string = "."): ProjectConfig {
+export function readProjectConfiguration(command: Command, dir: string = "."): IProjectConfig {
     const projectConfigPath: string = join(dir, "zowe-api.json");
-    return readConfigFile(projectConfigPath) as ProjectConfig;
+    return readConfigFile(projectConfigPath, command) as IProjectConfig;
 }
 
-function readConfigFile(path: string): UserConfig | ProjectConfig {
+function readConfigFile(path: string, command: Command): IUserConfig | IProjectConfig {
     try {
         return JSON.parse(readFileSync(path, "utf8"));
     } catch (e) {
         const code: string = e.code;
         if (code === "ENOENT") {
-            console.error(`File '${path}' not found. Use 'zowe-api init' to initialize it`);
+            command.error(`File '${path}' not found. Use 'zowe-api init' to initialize it`);
         }
         process.exit(1);
         throw e;

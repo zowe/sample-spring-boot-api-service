@@ -1,5 +1,6 @@
 import { Command, flags } from "@oclif/command";
-import { Configuration, readConfiguration } from "../config";
+import * as logSymbols from "log-symbols";
+import { IConfiguration, readConfiguration } from "../config";
 import { transferFiles } from "../files";
 import { checkZowe } from "../zowe";
 
@@ -12,8 +13,8 @@ export default class Config extends Command {
     };
 
     async run() {
-        const { args, flags } = this.parse(Config);
-        const [userConfig, projectConfig] = readConfiguration();
+        const f = this.parse(Config).flags;
+        const [userConfig, projectConfig] = readConfiguration(this);
 
         checkZowe(this);
 
@@ -22,19 +23,20 @@ export default class Config extends Command {
         }
 
         const configurationNames = Object.keys(projectConfig.configurations);
-        if (!flags.name || !configurationNames.includes(flags.name)) {
+        if (!f.name || !configurationNames.includes(f.name)) {
             this.error(
                 `Configuration name is missing or invalid. Available names are: ${configurationNames.join(", ")}`
             );
         } else {
-            let context: { [key: string]: string } = {};
-            for (const param of flags.parameter || []) {
+            const context: { [key: string]: string } = {};
+            for (const param of f.parameter || []) {
                 const [key, value] = param.split("=");
                 context[key] = value;
             }
             this.debug(context);
-            const configuration: Configuration = projectConfig.configurations[flags.name];
-            transferFiles(configuration.files, userConfig.zosTargetDir, context);
+            const configuration: IConfiguration = projectConfig.configurations[f.name];
+            transferFiles(configuration.files, userConfig.zosTargetDir, this, context);
+            this.log(logSymbols.success, "Configuration on z/OS completed");
         }
     }
 }

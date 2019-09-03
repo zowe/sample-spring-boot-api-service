@@ -1,9 +1,10 @@
 import { Command } from "@oclif/command";
 import { execSync } from "child_process";
+import * as Debug from "debug";
 
-const debug = require("debug")("zowe");
+const debug = Debug("zowe");
 
-export interface ZoweResult {
+export interface IZoweResult {
     success: boolean;
     exitCode: number;
     message: string;
@@ -12,26 +13,26 @@ export interface ZoweResult {
     data: {};
 }
 
-export interface ZoweOptions {
+export interface IZoweOptions {
     direct?: boolean;
     logOutput?: boolean;
     throwError?: boolean;
 }
 
-export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
-    const default_options: ZoweOptions = { direct: false, logOutput: true, throwError: true };
+export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
+    const defaultOptions: IZoweOptions = { direct: false, logOutput: true, throwError: true };
     if (options === undefined) {
-        options = default_options;
+        options = defaultOptions;
     }
-    const direct = options.direct === undefined ? default_options.direct : options.direct;
-    const logOutput = options.logOutput === undefined ? default_options.logOutput : options.logOutput;
-    const throwError = options.throwError === undefined ? default_options.throwError : options.throwError;
+    const direct = options.direct === undefined ? defaultOptions.direct : options.direct;
+    const logOutput = options.logOutput === undefined ? defaultOptions.logOutput : options.logOutput;
+    const throwError = options.throwError === undefined ? defaultOptions.throwError : options.throwError;
 
     try {
         debug(command);
         if (!direct) {
             const json: string = execSync(`zowe --rfj ${command}`, { encoding: "utf8" });
-            const result: ZoweResult = JSON.parse(json);
+            const result: IZoweResult = JSON.parse(json);
             debug(result);
             if (logOutput) {
                 logResult(result);
@@ -43,7 +44,7 @@ export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
         }
     } catch (error) {
         debug(error);
-        let result: ZoweResult;
+        let result: IZoweResult;
         try {
             result = JSON.parse(error.stdout);
             debug(result);
@@ -65,12 +66,14 @@ export function zoweSync(command: string, options?: ZoweOptions): ZoweResult {
     }
 }
 
-function logResult(result: ZoweResult) {
+function logResult(result: IZoweResult) {
     if (result.stdout.trim().length > 0) {
-        console.log(result.stdout.trim());
+        process.stdout.write(result.stdout.trim());
+        process.stdout.write("\n");
     }
-    if (result.stderr.trim().length) {
-        console.log(result.stderr.trim());
+    if (result.stderr.trim().length > 0) {
+        process.stdout.write(result.stderr.trim());
+        process.stdout.write("\n");
     }
 }
 
