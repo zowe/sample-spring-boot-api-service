@@ -50,6 +50,7 @@ export default class Zfs extends Command {
         }
 
         if (!f.delete && !f.unmount) {
+            this.log("Making sure that zFS filesystem is ready for development")
             this.log("Listing existing datasets");
             const data = zoweSync(`zos-files list data-set "${zfsDsn}"`).data as { apiResponse: { items: [] } };
             if (data.apiResponse.items.length > 0) {

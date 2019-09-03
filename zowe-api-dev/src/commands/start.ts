@@ -48,7 +48,7 @@ export default class Start extends Command {
                 startCommand = userConfig.javaHome + "/bin/" + startCommand;
             }
             this.log(
-                `Starting application in SSH UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
+                `Starting application in SSH z/OS UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
             );
             this.log(logSymbols.info, "You can stop it using Ctrl+C");
             zoweSync(`zos-uss issue ssh "${startCommand}" --cwd "${userConfig.zosTargetDir}"`, {

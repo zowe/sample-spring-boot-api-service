@@ -21,6 +21,7 @@ export interface IConfiguration {
 }
 
 export interface IProjectConfig {
+    name: string;
     zosSourcesDir: string;
     buildCommand: string;
     buildFiles: { [filename: string]: string };

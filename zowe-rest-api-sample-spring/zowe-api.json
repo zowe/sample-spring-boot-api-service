@@ -1,4 +1,5 @@
 {
+    "name": "Zowe Sample REST API Service",
     "zosSourcesDir": "zossrc",
     "buildCommand": "make; make install",
     "buildFiles": {

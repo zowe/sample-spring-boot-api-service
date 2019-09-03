@@ -1,4 +1,5 @@
 {
+    "name": "Zowe REST API Commons Library for Spring",
     "zosSourcesDir": "zossrc",
     "buildCommand": "make; make install",
     "buildFiles": {

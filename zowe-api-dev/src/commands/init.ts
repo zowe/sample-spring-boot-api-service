@@ -42,6 +42,7 @@ export default class Init extends Command {
         checkZowe(this);
 
         if (f.force || !existsSync(configPath)) {
+            this.log(`Initializing user configuration file for ${projectConfig.name}`)
             this.log("Getting information about your Zowe profile");
             const profiles = zoweSync("profiles list zosmf-profiles --show-contents").data as [
                 { profile: { user: string } }
