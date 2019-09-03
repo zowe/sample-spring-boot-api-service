@@ -34,6 +34,11 @@ jobs:
       - run:
           name: Upload Java Libraries to Bintray using Gradle
           command: ./gradlew build bintrayUpload
+      - run:
+          name: Upload Sample Source Code to GitHub Release
+          command: |
+            scripts/package-sample.sh
+            scripts/publish-sample.sh
       - codecov/upload
       - save_cache:
           paths:
@@ -79,7 +84,7 @@ workflows:
               ignore: /.*/
       - build_node:
           filters:
-            tags:
+            tags:g"//registry.npmjs.org/
               ignore: /.*/
   tagged_build:
     jobs:
