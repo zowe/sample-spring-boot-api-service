@@ -1,6 +1,7 @@
 import { Command, flags } from "@oclif/command";
 import * as Debug from "debug";
 import { existsSync, writeFileSync } from "fs";
+import * as logSymbols from "log-symbols";
 import { resolve } from "path";
 import { readProjectConfiguration } from "../config";
 import { checkZowe, zoweSync } from "../zowe";
@@ -53,11 +54,12 @@ export default class Init extends Command {
             };
             const config = JSON.stringify(data, null, 4);
             writeFileSync(configPath, config);
-            this.log(`Configuration initialized in: ${resolve(configPath)}`);
+            this.log(logSymbols.success, `Configuration initialized in: ${resolve(configPath)}`);
             this.log(config);
         } else {
             this.log(`Configuration already exists in: ${resolve(configPath)}`);
         }
+        this.log(logSymbols.info, "Use 'zowe-api-dev zosbuild' to build z/OS native code, 'zowe-api-dev deploy' to deploy your application to z/OS, 'zowe-api-dev --help' for more information");
     }
 }
 

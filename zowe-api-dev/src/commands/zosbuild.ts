@@ -19,6 +19,7 @@ export default class ZosBuild extends Command {
             zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`);
         }
         this.log(logSymbols.success, "z/OS build completed");
+        this.log(logSymbols.info, "Use 'zowe-api-dev deploy' to deploy your application to z/OS");
     }
 }
 

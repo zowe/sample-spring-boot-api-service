@@ -37,6 +37,7 @@ export default class Config extends Command {
             const configuration: IConfiguration = projectConfig.configurations[f.name];
             transferFiles(configuration.files, userConfig.zosTargetDir, this, context);
             this.log(logSymbols.success, "Configuration on z/OS completed");
+            this.log(logSymbols.info, "Use 'zowe-api-dev start' or 'zowe-api-dev start --job' to start the application");
         }
     }
 }

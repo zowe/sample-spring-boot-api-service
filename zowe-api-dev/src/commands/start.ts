@@ -43,6 +43,7 @@ export default class Start extends Command {
                 this.error("No job result returned");
             }
         } else {
+            this.log(`Starting application in SSH UNIX session using command '${projectConfig.shellStartCommand}' in directory '${userConfig.zosTargetDir}'`);
             zoweSync(`zos-uss issue ssh "${projectConfig.shellStartCommand}" --cwd "${userConfig.zosTargetDir}"`, {
                 direct: true
             });
