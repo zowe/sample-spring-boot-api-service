@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.4
 jobs:
-  build:
+  build_java:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/code
@@ -11,7 +11,9 @@ jobs:
       - restore_cache:
           keys:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - run: gradle build
+      - run:
+          name: Building Java Code using Gradle
+          command: ./gradlew build
       - codecov/upload
       - save_cache:
           paths:
@@ -29,10 +31,25 @@ jobs:
       - restore_cache:
           keys:
           - zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
-      - run: cd zowe-api-dev; node install
-      - run: cd zowe-api-dev; node pack
-      - run: echo $PWD
+      - run:
+          name: Building zowe-api-dev Tool
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm pack
       - save_cache:
           paths:
             - ~/zowe-api-dev/node_modules
           key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
+workflows:
+  version: 2
+  untagged_build:
+    jobs:
+      - build_java:
+          filters:
+            tags:
+              ignore: /.*/
+      - build_node:
+          filters:
+            tags:
+              ignore: /.*/
