@@ -19,10 +19,10 @@ Following platform is required to run the application:
 
 ## Quick Start
 
-Download the source code of the sample from <https://github.com/zowe/sample-spring-boot-api-service/releases/download/v0.0.1/zowe-rest-api-sample-spring.zip> and unzip it:
+Download the source code of the sample from <https://github.com/zowe/sample-spring-boot-api-service/releases/latest/download/zowe-rest-api-sample-spring.zip> and unzip it:
 
 ```bash
-curl -OL https://github.com/zowe/sample-spring-boot-api-service/releases/download/v0.0.1/zowe-rest-api-sample-spring.zip
+curl -OL https://github.com/zowe/sample-spring-boot-api-service/releases/latest/download/zowe-rest-api-sample-spring.zip
 unzip zowe-rest-api-sample-spring.zip
 cd zowe-rest-api-sample-spring
 ```
