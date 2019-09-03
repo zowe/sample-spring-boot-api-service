@@ -48,28 +48,18 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
       - run:
           name: Building zowe-api-dev Tool
           command: |
             cd zowe-api-dev
             npm install
             npm pack
-      - save_cache:
-          paths:
-            - ~/zowe-api-dev/node_modules
-          key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
   publish_node:
     docker:
       - image: circleci/node:lts
     working_directory: ~/code
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
@@ -79,10 +69,6 @@ jobs:
             npm pack
             echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
             npm publish --access public
-      - save_cache:
-          paths:
-            - ~/zowe-api-dev/node_modules
-          key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
 workflows:
   version: 2
   untagged_build:
