@@ -22,6 +22,26 @@ jobs:
           key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test
+  publish_java:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/code
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Upload Java Libraries to Bintray using Gradle
+          command: ./gradlew build bintrayUpload
+      - codecov/upload
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - ~/code/.gradle
+          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: build/test-results/test
   build_node:
     docker:
       - image: circleci/node:lts
@@ -41,6 +61,27 @@ jobs:
           paths:
             - ~/zowe-api-dev/node_modules
           key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
+  publish_node:
+    docker:
+      - image: circleci/node:lts
+    working_directory: ~/code
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
+      - run:
+          name: Publishing zowe-api-dev Tool to npmjs.com
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm pack
+            echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
+            npm publish --access public
+      - save_cache:
+          paths:
+            - ~/zowe-api-dev/node_modules
+          key: zowe-apiservice-node-{{ checksum "zowe-api-dev/package.json" }}
 workflows:
   version: 2
   untagged_build:
@@ -52,4 +93,18 @@ workflows:
       - build_node:
           filters:
             tags:
+              ignore: /.*/
+  tagged_build:
+    jobs:
+      - publish_java:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - publish_node:
+          filters:
+            tags:
+              only: /.*/
+            branches:
               ignore: /.*/
