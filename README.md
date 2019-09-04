@@ -12,3 +12,9 @@ This project provides:
 ### Developing New REST API Service
 
 Follow the instructions at [Zowe Sample API Service](zowe-rest-api-sample-spring/README.md).
+
+## Demo
+
+### Deploying the sample REST API to z/OS under 5 minutes
+
+[![asciicast](https://asciinema.org/a/266002.svg)](https://asciinema.org/a/266002)
