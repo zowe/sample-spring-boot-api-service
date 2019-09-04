@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.4
 jobs:
-  build:
+  build_java:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/code
@@ -11,7 +11,9 @@ jobs:
       - restore_cache:
           keys:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - run: gradle build
+      - run:
+          name: Building Java Code using Gradle
+          command: ./gradlew build
       - codecov/upload
       - save_cache:
           paths:
@@ -20,3 +22,83 @@ jobs:
           key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test
+  publish_java:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/code
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Upload Java Libraries to Bintray using Gradle
+          command: |
+            scripts/download-commons-so.sh
+            ./gradlew build bintrayUpload
+      - run:
+          name: Upload Sample Source Code to GitHub Release
+          command: |
+            scripts/package-sample.sh
+            scripts/publish-sample.sh
+      - codecov/upload
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - ~/code/.gradle
+          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: build/test-results/test
+  build_node:
+    docker:
+      - image: circleci/node:lts
+    working_directory: ~/code
+    steps:
+      - checkout
+      - run:
+          name: Building zowe-api-dev Tool
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm pack
+  publish_node:
+    docker:
+      - image: circleci/node:lts
+    working_directory: ~/code
+    steps:
+      - checkout
+      - run:
+          name: Publishing zowe-api-dev Tool to npmjs.com
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm version `git describe --tags --abbrev=0 | cut -c2-`
+            npm pack
+            echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
+            npm publish --access public
+workflows:
+  version: 2
+  untagged_build:
+    jobs:
+      - build_java:
+          filters:
+            tags:
+              ignore: /.*/
+      - build_node:
+          filters:
+            tags:
+              ignore: /.*/
+  tagged_build:
+    jobs:
+      - publish_java:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/
+      - publish_node:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/

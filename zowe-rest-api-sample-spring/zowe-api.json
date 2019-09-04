@@ -1,0 +1,48 @@
+{
+    "name": "Zowe Sample REST API Service",
+    "zosSourcesDir": "zossrc",
+    "buildCommand": "make && make install",
+    "buildFiles": {
+        "libwtojni.so": "src/main/resources/lib/libwtojni.so"
+    },
+    "deployment": {
+        "files": {
+            "build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar": {
+                "target": "bin/zowe-rest-api-sample-spring.jar",
+                "postCommands": [
+                    "mkdir -p lib/",
+                    "java -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher lib",
+                    "extattr +p lib/*.so",
+                    "chmod a+x lib/*.so",
+                    "ls -E lib/"
+                ],
+                "binary": true
+            }
+        }
+    },
+    "shellStartCommand": "java -Djava.library.path=\"\\$PWD/lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
+    "jobTemplatePath": "src/main/jcl/template.jcl",
+    "jobPath": "build/api.jcl",
+    "defaultDirName": "zowe-rest-api-sample-spring",
+    "defaultHlqSegment": "ZOWE.SAMPLAPI",
+    "zfsMegabytes": 200,
+    "configurations": {
+        "zos": {
+            "files": {
+                "config/zos/application.yml.hbs": {
+                    "target": "etc/application.yml",
+                    "binary": true,
+                    "template": true
+                },
+                "config/local/keystore.p12": {
+                    "target": "etc/keystore.p12",
+                    "binary": true
+                },
+                "config/local/truststore.p12": {
+                    "target": "etc/truststore.p12",
+                    "binary": true
+                }
+            }
+        }
+    }
+}

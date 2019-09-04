@@ -1,0 +1,26 @@
+# Configuration for running the on z/OS
+# It overrides service defaults provided in src/main/resources/application.yml
+
+spring.profiles.active: https,diag,zos
+
+server:
+    address: 0.0.0.0
+    port: {{port}}
+    ssl:
+        keyAlias: localhost
+        keyPassword: password
+        keyStore: etc/keystore.p12
+        keyStorePassword: password
+        keyStoreType: PKCS12
+        trustStore: etc/truststore.p12
+        trustStorePassword: password
+        trustStoreType: PKCS12
+
+apiml:
+    enabled: false
+    service:
+        serviceId: zowesample
+        hostname: localhost
+        ipAddress: 127.0.0.1
+        discoveryServiceUrls:
+            - https://localhost:10011/eureka

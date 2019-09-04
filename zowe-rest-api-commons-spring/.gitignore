@@ -34,7 +34,3 @@ deploy/scripts/out
 deploy/templates/jcl/out
 deploy/config/local.ts
 node_modules
-*.so
-user-zowe-api.json
-lastJob.json
-zowe-api-dev/zowedev-zowe-api-dev-*.tgz
