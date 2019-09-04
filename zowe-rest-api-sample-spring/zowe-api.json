@@ -1,7 +1,7 @@
 {
     "name": "Zowe Sample REST API Service",
     "zosSourcesDir": "zossrc",
-    "buildCommand": "make; make install",
+    "buildCommand": "make && make install",
     "buildFiles": {
         "libwtojni.so": "src/main/resources/lib/libwtojni.so"
     },

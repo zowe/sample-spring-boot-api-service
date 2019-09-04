@@ -5,7 +5,7 @@ import * as Handlebars from "handlebars";
 import { dirname } from "path";
 import * as tmp from "tmp";
 import { ITransferredFile, IUserConfig } from "./config";
-import { zoweSync } from "./zowe";
+import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync } from "./zowe";
 
 const debug = Debug("files");
 
@@ -20,7 +20,7 @@ export function transferFiles(
         const zosFile = `${zosTargetDir}/${options.target}`;
         const zosDir = dirname(zosFile);
         command.log(`Making directory ${zosDir}`);
-        zoweSync(`zos-uss issue ssh "mkdir -p ${zosDir}"`);
+        execSshCommandWithDefaultEnvCwd(`mkdir -p ${zosDir}`);
         command.log(`Uploading ${file} to ${zosFile}`);
         if (options.template) {
             const tmpPath = tmp.tmpNameSync();
@@ -39,7 +39,7 @@ export function transferFiles(
                 finalCommand = userConfig.javaHome + "/bin/" + postCommand;
             }
             command.log(`Executing post-command: '${finalCommand}'`);
-            zoweSync(`zos-uss issue ssh "${finalCommand}" --cwd "${zosTargetDir}"`);
+            execSshCommandWithDefaultEnv(finalCommand, zosTargetDir);
         }
     }
 }

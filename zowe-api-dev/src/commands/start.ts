@@ -5,7 +5,7 @@ import * as Handlebars from "handlebars";
 import * as logSymbols from "log-symbols";
 import { readConfiguration } from "../config";
 import { IJob } from "../jes";
-import { zoweSync } from "../zowe";
+import { execSshCommandWithDefaultEnv, zoweSync } from "../zowe";
 
 const debug = Debug("start");
 
@@ -51,9 +51,7 @@ export default class Start extends Command {
                 `Starting application in SSH z/OS UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
             );
             this.log(logSymbols.info, "You can stop it using Ctrl+C");
-            zoweSync(`zos-uss issue ssh "${startCommand}" --cwd "${userConfig.zosTargetDir}"`, {
-                direct: true
-            });
+            execSshCommandWithDefaultEnv(startCommand, userConfig.zosTargetDir, {}, { direct: true });
         }
     }
 }

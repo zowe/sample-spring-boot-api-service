@@ -2,7 +2,7 @@ import { Command } from "@oclif/command";
 import { existsSync, lstatSync, readdirSync } from "fs";
 import * as logSymbols from "log-symbols";
 import { readConfiguration } from "../config";
-import { zoweSync } from "../zowe";
+import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync } from "../zowe";
 
 export default class ZosBuild extends Command {
     static description = "build z/OS source on z/OS UNIX";
@@ -10,14 +10,14 @@ export default class ZosBuild extends Command {
     async run() {
         const [userConfig, projectConfig] = readConfiguration(this);
         const zosDir = `${userConfig.zosTargetDir}/${projectConfig.zosSourcesDir}`;
-        zoweSync(`zos-uss issue ssh "mkdir -p ${zosDir}"`);
+        execSshCommandWithDefaultEnvCwd(`mkdir -p ${zosDir}`);
         uploadDir(projectConfig.zosSourcesDir, zosDir, this);
-        let env = "";
+        const env: { [name: string]: string } = {};
         if (userConfig.javaHome) {
-            env = `export JAVA_HOME=${userConfig.javaHome}; `;
+            env.JAVA_HOME = userConfig.javaHome;
         }
-        this.log(`Building z/OS native code at ${zosDir} using command "${env}${projectConfig.buildCommand}"`);
-        zoweSync(`zos-uss issue ssh "${env}${projectConfig.buildCommand}" --cwd "${zosDir}"`);
+        this.log(`Building z/OS native code`);
+        execSshCommandWithDefaultEnv(projectConfig.buildCommand, zosDir, env);
         for (const [zosFile, targetFile] of Object.entries(projectConfig.buildFiles)) {
             this.log(`Downloading ${zosDir}/${zosFile} to ${targetFile}`);
             zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`);

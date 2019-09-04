@@ -98,3 +98,46 @@ export function checkZowe(command: Command) {
         }
     }
 }
+
+export function execSshCommands(
+    commands: [string],
+    cwd: string,
+    env?: { [name: string]: string },
+    options?: IZoweOptions
+) {
+    for (const command of commands) {
+        execSshCommand(command, cwd, env, options);
+    }
+}
+
+export function execSshCommand(
+    command: string,
+    cwd: string | null,
+    env?: { [name: string]: string },
+    options?: IZoweOptions
+) {
+    let environmentCommand = "";
+    if (env) {
+        for (const [name, value] of Object.entries(env)) {
+            environmentCommand += `export ${name}="${value}"; `;
+        }
+    }
+    process.stdout.write(`Executing z/OS UNIX command '${command}'` + (cwd ? ` in directory ${cwd}` : "") + "\n");
+    debug(environmentCommand);
+    return zoweSync(`zos-uss issue ssh "${environmentCommand}${command}"` + (cwd ? ` --cwd "${cwd}"` : ""), options);
+}
+
+export function execSshCommandWithDefaultEnv(
+    command: string,
+    cwd: string,
+    env?: { [name: string]: string },
+    options?: IZoweOptions
+) {
+    return execSshCommand(command, cwd, { ...env, ...defaultUssEnv }, options);
+}
+
+export function execSshCommandWithDefaultEnvCwd(command: string, options?: IZoweOptions) {
+    return execSshCommand(command, null, defaultUssEnv, options);
+}
+
+export const defaultUssEnv = { _EDC_ADD_ERRNO2: "1", _BPXK_JOBLOG: "STDERR" };

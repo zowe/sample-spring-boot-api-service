@@ -77,7 +77,7 @@ zowe profiles create ssh-profile ssh_host --host host.domain --user userid --pas
 And issue the commands:
 
 ```bash
-zowe zos-uss issue ssh "make; make install" --cwd "/u/ibmuser/samplapi/zossrc"
+zowe zos-uss issue ssh "make && make install" --cwd "/u/ibmuser/samplapi/zossrc"
 ```
 
 ### Manual Build Steps
