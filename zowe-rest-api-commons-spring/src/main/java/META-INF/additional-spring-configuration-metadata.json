@@ -1,0 +1,39 @@
+{
+    "properties": [
+        {
+            "name": "apiml",
+            "type": "java.util.Map",
+            "description": "Zowe API Mediation Layer related configuration"
+        },
+        {
+            "name": "apiml.service",
+            "type": "java.util.Map",
+            "description": "Definition of the API service"
+        },
+        {
+            "name": "apiml.service.serviceId",
+            "type": "java.lang.String",
+            "description": "Specifies the service instance identifier that is registered in the API Mediation Layer installation.\nThe service ID is used in the URL for routing to the API service through the gateway.\nThe service ID uniquely identifies the service in the API Mediation Layer.\nThe system administrator at the customer site defines this parameter.\n\n**Important!**  Ensure that the service ID is set properly with the following considerations:\n\n* When two API services use the same service ID, the API gateway considers the services to be clones (two instances for the same service). An incoming API request can be routed to either of them.\n* The same service ID should be set only for multiple API service instances for API scalability.\n* The service ID value must contain only lowercase alphanumeric characters.\n* The service ID cannot contain more than 40 characters.\n* The service ID is linked to security resources. Changes to the service ID require an update of security resources.\n\n**Examples:**\n* If the customer system administrator sets the service ID to `sysviewlpr1`,\nthe API URL in the API Gateway appears as the following URL:\n\n    `https://gateway:port/api/v1/sysviewlpr1/...`\n\n* If customer system administrator sets the service ID to `vantageprod1`,\nthe API URL in the API Gateway appears as the following URL:\n\n    http://gateway:port/api/v1/vantageprod1/..."
+        },
+        {
+            "name": "apiml.service.title",
+            "type": "java.lang.String",
+            "description": "Specifies the human readable name of the API service instance (for example, \"SYSVIEW LPAR1\" or \"Endevor Prod\"). This value is displayed in the API catalog when a specific API service instance is selected. This parameter is externalized and set by the customer system administrator. **Tip:** We recommend that you provide a specific default value of the title. Use a title that describes the service instance so that the end user knows the specific purpose of the service instance."
+        },
+        {
+            "name": "apiml.service.description",
+            "type": "java.lang.String",
+            "description": "Specifies the human readable name of the API service instance (for example, \"SYSVIEW Test\" or \"Endevor Prod\"). This value is displayed in the API catalog when a specific API service instance is selected. This parameter is externalized and set by the customer system administrator. **Tip:** We recommend that you provide a specific default value of the title. Use a title that describes the service instance so that the end user knows the specific purpose of the service instance."
+        },
+        {
+            "name": "server.ssl.verifySslCertificatesOfServices",
+            "type": "java.lang.String",
+            "description": "Validation of the certificates of services that are accessed from this service (e.g. Discovery Service)"
+        },
+        {
+            "name": "springfox.documentation.swagger.v2.path",
+            "type": "java.lang.String",
+            "description": "URL where the Swagger API documentation JSON document will be provided"
+        }
+    ]
+}

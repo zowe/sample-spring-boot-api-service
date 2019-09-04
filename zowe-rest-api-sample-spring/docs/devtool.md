@@ -11,22 +11,11 @@ This file is check in to the version control system and it does not contain user
 
 ## Installation
 
-### From NPM
-
 ```bash
 npm -g install @zowedev/zowe-api-dev
 ```
 
 **Note:** The organization will be changed to `@zowe` when the tool is stable.
-
-### From sources (optional)
-
-```bash
-https://github.com/zowe/sample-spring-boot-api-service
-cd sample-spring-boot-api-service
-cd zowe-api-dev
-npm link
-```
 
 ## Prerequisites
 

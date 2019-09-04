@@ -31,6 +31,6 @@ Running by Gradle:
 
 ## Resources
 
-- Intro to Spring YML configuration - http://www.baeldung.com/spring-yaml
-- Full reference - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
-- For advanced use case of sharing a common YML file - http://roufid.com/load-multiple-configuration-files-different-directories-spring-boot/
+- Intro to Spring YML configuration - <http://www.baeldung.com/spring-yaml>
+- Full reference - <https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html>
+- For advanced use case of sharing a common YML file - <http://roufid.com/load-multiple-configuration-files-different-directories-spring-boot/>

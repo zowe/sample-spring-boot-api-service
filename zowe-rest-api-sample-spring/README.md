@@ -1,6 +1,6 @@
 # [Zowe](https://zowe.org/) Sample API Service
 
-Use this sample Spring Boot REST API as a starting point to create a new z/OS-based microservice that:
+Use this sample Spring Boot REST API as a starting point to create a new z/OS-based service that:
 
 - Supports basic auth via SAF validation (when running on z/OS)
 - Can invoke traditional z/OS services via assembler or metal C interface through JNI
@@ -55,6 +55,9 @@ The default page <https://localhost:10080/> opens Swagger UI with the API Docume
 
 For further reference, please consider the following sections:
 
+- [Building New APIs](docs/building-new-apis.md)
+- [Changing the Service Configuration](docs/changing-service-configuration.md)
+- [Adding New Controller] - TODO
 - [External Configuration](docs/config.md)
 - [Logging](docs/logging.md)
 - [Setup HTTPS and Create TLS/SSL Certificates](docs/https-setup.md)
