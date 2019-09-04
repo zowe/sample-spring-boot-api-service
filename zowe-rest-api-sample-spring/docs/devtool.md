@@ -11,7 +11,7 @@ This file is check in to the version control system and it does not contain user
 
 ## Installation
 
-## From NPM
+### From NPM
 
 ```bash
 npm -g install @zowedev/zowe-api-dev
@@ -19,7 +19,7 @@ npm -g install @zowedev/zowe-api-dev
 
 **Note:** The organization will be changed to `@zowe` when the tool is stable.
 
-### From sources
+### From sources (optional)
 
 ```bash
 https://github.com/zowe/sample-spring-boot-api-service
@@ -28,7 +28,7 @@ cd zowe-api-dev
 npm link
 ```
 
-### Configuration
+## Prerequisites
 
 Install Zowe CLI from NPM [@zowe/cli](https://www.npmjs.com/package/@zowe/cli). Version 6.0.0 or above is required.
 
@@ -64,17 +64,18 @@ It creates a file `user-zowe-api.json` in the current working directory with fol
 
 ```json
 {
+    "javaHome": "/usr/lpp/java/J8.0_64",
     "zosTargetDir": "/a/plape03/sample",
     "zosHlq": "PLAPE03.ZOWE.SAMPLE",
     "jobcard": [
-        "//PLAPE03Z JOB 129300000,'ZOWE API',MSGCLASS=A,CLASS=A,",
+        "//PLAPE03Z JOB 12345,'ZOWE API',MSGCLASS=A,CLASS=A,",
         "//  MSGLEVEL=(1,1),REGION=0M",
         "/*JOBPARM SYSAFF=*"
     ]
 }
 ```
 
-Next step is to allocate a ZFS filesystem with enought space. You can skip this step if your directory has enough space.
+Next step is to allocate a ZFS filesystem with enough space. You can skip this step if your directory has enough space.
 
 ```bash
 zowe-api-dev zfs
