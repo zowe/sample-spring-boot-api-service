@@ -5,8 +5,7 @@ Provides convinence functions to build native code, deploy REST API, and start i
 ## Installation
 
 ```bash
-cd zowe-api-dev
-npm link
+npm -g install @zowedev/zowe-api-dev
 ```
 
 ```txt
