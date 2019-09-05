@@ -84,25 +84,31 @@ After you configure your application, you can add a new controller that implemen
     }
     ```
 
-5. Add license headers automatically:
+5. Allow unauthenticated access to this endpoint. They require authentication by default. This can be configured in `org.zowe.sample.apiservice.config.WebSecurityConfig` class. Add following line to the `configure(HttpSecurity http)` method:
+
+    ```java
+    http.authorizeRequests().antMatchers("/api/v1/hello").permitAll();
+    ```
+
+6. Add license headers automatically:
 
     ```bash
     ./gradlew licenseFormat
     ```
 
-6. Build the application with Gradle. It runs the tests too:
+7. Build the application with Gradle. It runs the tests too:
 
     ```bash
     ./gradlew build
     ```
 
-7. Start the API service:
+8. Start the API service:
 
     ```bash
     ./gradlew bootRun
     ```
 
-8. Verify the new endpoint functionality via a REST API client. For example:
+9.  Verify the new endpoint functionality via a REST API client. For example:
 
     ```bash
     http --verify=False GET "https://localhost:10080/api/v1/hello?name=world"
