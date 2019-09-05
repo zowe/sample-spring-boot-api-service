@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.hello;
+package org.zowe.sample.apiservice.greeting;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,8 +44,7 @@ public class GreetingControllerTests {
 
     @Test
     public void exceptionCausesFailure() throws Exception {
-        mvc.perform(get("/api/v1/failedGreeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+        mvc.perform(get("/api/v1/greeting/failed").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
     }
-
 }

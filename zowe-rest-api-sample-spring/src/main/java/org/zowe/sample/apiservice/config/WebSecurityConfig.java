@@ -31,8 +31,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().httpStrictTransportSecurity().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.httpBasic().realmName("Zowe Sample API Service");
-        http.authorizeRequests().antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
-                "/api/*/apiDocs", "/swagger-resources/**", "/csrf").permitAll().anyRequest().authenticated();
+        http.authorizeRequests()
+                .antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
+                        "/api/v1/hello", "/api/*/apiDocs", "/swagger-resources/**", "/csrf")
+                .permitAll().anyRequest().authenticated();
     }
 
     @Autowired

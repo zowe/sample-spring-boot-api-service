@@ -1,5 +1,5 @@
 messages:
-    - key: org.zowe.sample.hello
+    - key: org.zowe.sample.greeting
       number: ZWEASA001
       type: INFO
       text: "Hello, %s!"

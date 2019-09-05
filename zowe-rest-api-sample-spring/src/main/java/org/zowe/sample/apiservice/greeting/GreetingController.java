@@ -7,15 +7,16 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.hello;
+package org.zowe.sample.apiservice.greeting;
 
 import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.zowe.sample.apiservice.config.RestApiVersion1Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +24,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.Authorization;
 
 @Api(tags = "Greeting", description = "REST API for greetings")
-@RestApiVersion1Controller
+@RestController
+@RequestMapping("/api/v1/greeting")
 public class GreetingController {
 
     private static final String template = "Hello, %s!";
@@ -31,7 +33,7 @@ public class GreetingController {
 
     @ApiOperation(value = "Returns a greeting for the name passed", nickname = "greetingToSomeone", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
-    @GetMapping("/greeting")
+    @GetMapping
     public Greeting greeting(
             @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name) {
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
@@ -39,7 +41,7 @@ public class GreetingController {
 
     @ApiOperation(value = "This greeting always fails and provides example how unhandled exceptions are reported", nickname = "failedGreeting", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
-    @GetMapping("/failedGreeting")
+    @GetMapping("/failed")
     public Greeting failedGreeting() {
         throw new RuntimeException("exception");
     }
