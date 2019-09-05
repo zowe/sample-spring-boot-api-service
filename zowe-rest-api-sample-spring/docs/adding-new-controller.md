@@ -108,7 +108,7 @@ After you configure your application, you can add a new controller that implemen
     ./gradlew bootRun
     ```
 
-9.  Verify the new endpoint functionality via a REST API client. For example:
+9. Verify the new endpoint functionality via a REST API client. For example:
 
     ```bash
     http --verify=False GET "https://localhost:10080/api/v1/hello?name=world"
@@ -125,6 +125,19 @@ After you configure your application, you can add a new controller that implemen
     You can use the Swagger UI available at <https://localhost:10080/>:
 
     ![Swagger UI](images/hello-endpoint-swaggerui.png)
+
+## Swagger Annotations
+
+The contents of the API documentation (Swagger JSON) is customized by adding Swagger annotations. These annotations are added to all Java controllers and the model classes. For example, the controller may contain the following Swagger annotations:
+
+- `@Api` - Marks a class as a Swagger resource
+- `@ApiOperation` - Describes an operation or typically an HTTP method against a specific path.
+- `@ApiResponses` - A wrapper to allow a list of multiple ApiResponse objects.
+- `@ApiResponse` - Describes a possible response of an operation.
+- `@ApiParam` - Adds additional meta-data for operation parameters.
+- `@Authorization` - Declares an authorization scheme to be used on a resource or an operation.
+
+You can find description on them at [Package io.swagger.annotations](http://docs.swagger.io/swagger-core/v1.5.0/apidocs/index.html).
 
 ## Guides
 
