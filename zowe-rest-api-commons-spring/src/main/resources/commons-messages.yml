@@ -27,6 +27,11 @@ messages:
     text: "Unable to connect to Zowe API Mediation Layer. The certificate of API Mediation Layer is not trusted by the service: %s"
 
   # REST API HTTP errors:
+  - key: org.zowe.commons.rest.unauthorized
+    number: ZWEAS401
+    type: ERROR
+    text: "The request has not been applied because it lacks valid authentication credentials for the target resource: %s"
+
   - key: org.zowe.commons.rest.methodNotAllowed
     number: ZWEAS405
     type: ERROR

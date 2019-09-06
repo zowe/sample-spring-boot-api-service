@@ -9,9 +9,6 @@
  */
 package org.zowe.commons.spring;
 
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.rest.response.ApiMessage;
-
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.zowe.commons.error.CommonsErrorService;
+import org.zowe.commons.error.ErrorService;
+import org.zowe.commons.rest.response.ApiMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
