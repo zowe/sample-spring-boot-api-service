@@ -34,7 +34,7 @@ public class GreetingControllerExceptionHandler {
     }
 
     @ExceptionHandler(EmptyNameError.class)
-    public ResponseEntity<ApiMessage> handlePetNotFound(EmptyNameError exception) {
+    public ResponseEntity<ApiMessage> handleEmptyName(EmptyNameError exception) {
         ApiMessage message = errorService.createApiMessage("org.zowe.sample.apiservice.greeting.empty");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);

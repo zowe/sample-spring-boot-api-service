@@ -1,8 +1,17 @@
 # Error Handling in REST Controllers
 
+- [Error Handling in REST Controllers](#error-handling-in-rest-controllers)
+  - [Handling Internal Errors](#handling-internal-errors)
+  - [Handling Expected Errors](#handling-expected-errors)
+  - [REST API Document Format](#rest-api-document-format)
+    - [Document Format](#document-format)
+    - [Rules for Messages](#rules-for-messages)
+    - [Defining New Numbered Message](#defining-new-numbered-message)
+  - [Logging Numbered Message](#logging-numbered-message)
+
 ## Handling Internal Errors
 
-Unexpected errors does not need to be handled or catched by your REST controller. If your controller throws an `Exception` or `RuntimeException` then Spring exception handler (customized by `CustomRestExceptionHandler` in the commons library) will convert the exception into a standardized format. For example request `https://localhost:10080/api/v1/exception` returns:
+Unexpected errors does not need to be handled or caught by your REST controller. If your controller throws an `Exception` or `RuntimeException` then Spring exception handler (customized by `CustomRestExceptionHandler` in the commons library) will convert the exception into a standardized format. For example request `https://localhost:10080/api/v1/exception` returns:
 
 ```json
 {
@@ -19,17 +28,41 @@ Unexpected errors does not need to be handled or catched by your REST controller
 
 ## Handling Expected Errors
 
-One of the recommended ways is to use ControllerAdvice.
+One of the recommended ways is to use [@ControllerAdvice](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html) annotation.
 
 1. Your code is detetion the error and throwing an exception:
 
-  ```java
+    ```java
     if (name.trim().isEmpty()) {
         throw new EmptyNameError();
     }
-  ```
+    ```
 
-2. TODO: Complete
+    This exception can be thrown at any place, not just in the REST controller.
+
+2. Create an exception handler that will catch and convert this exception.
+
+    ```java
+    @ControllerAdvice(assignableTypes = { GreetingController.class })
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public class GreetingControllerExceptionHandler {
+        private final ErrorService errorService;
+
+        @Autowired
+        public GreetingControllerExceptionHandler(ErrorService errorService) {
+            this.errorService = errorService;
+        }
+
+        @ExceptionHandler(EmptyNameError.class)
+        public ResponseEntity<ApiMessage> handleEmptyName(EmptyNameError exception) {
+            ApiMessage message = errorService.createApiMessage("org.zowe.sample.apiservice.greeting.empty");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
+        }
+    }
+    ```
+
+3. Define message with key `org.zowe.sample.apiservice.greeting.empty` as described at [Logging Numbered Message](#logging-numbered-message).
 
 You can find more guidance how to handle errors in [Error Handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring).
 
@@ -43,23 +76,23 @@ Examples:
 
 - plain data objects:
 
-  ```json
-  {
-    "fieldOne": "value",
-    "someNumber": 1
-  }
-  ```
-
-- list of objects:
-
-  ```json
-  [
+    ```json
     {
         "fieldOne": "value",
         "someNumber": 1
     }
-  ]
-  ```
+    ```
+
+- list of objects:
+
+    ```json
+    [
+        {
+            "fieldOne": "value",
+            "someNumber": 1
+        }
+    ]
+    ```
 
 The idea is to keep the JSON simple to make it easy to process by API clients, document in OpenAPI, and make the API easy to use in tools like Swagger UI. When additional metadata are needed then HTTP response headers can be used.
 
@@ -67,13 +100,13 @@ If the request is processed with an error or warning, then the response is to fo
 
 ```json
 {
-  "messages": [
-    {
-      "messageType": "ERROR",
-      "messageNumber": "CSR0001",
-      "messageContent": "Pet with id '404' is not found"
-    }
-  ]
+    "messages": [
+        {
+            "messageType": "ERROR",
+            "messageNumber": "CSR0001",
+            "messageContent": "Pet with id '404' is not found"
+        }
+    ]
 }
 ```
 
@@ -96,19 +129,35 @@ Follow the principle that message key (for example `org.zowe.commons.apiml.servi
   - *messageComponent* - for support and developers - component that generated the error (can be fully qualified Java package or class name)
   - *messageSource* - for support and developers - source service that generated the error (can Open Mainframe service name or host:port).Be sure to include as much useful data as possible and keep in mind different users of the message structure. However, be mindful not to leak data that should be kept private or implementation details to avoid breaches in security.
 
-## Defining New Numbered Message
+### Defining New Numbered Message
 
 1. Open [messages.yml](../src/main/resources/messages.yml)
 
 2. Add a new message with the fields described above. For example:
 
-  ```yml
-      - key: org.zowe.sample.apiservice.greeting.empty
-        number: ZWEASA001
-        type: ERROR
-        text: "The provided name is empty. Provide a name that is not empty."
-  ```
+    ```yml
+    - key: org.zowe.sample.apiservice.greeting.empty
+      number: ZWEASA001
+      type: ERROR
+      text: "The provided name is empty. Provide a name that is not empty."
+    ```
 
 ## Logging Numbered Message
 
-TODO:
+The `ApiMessage` interface has two methods that can be used to get the message text and use it for example in the logs or other messages other than REST API response:
+
+- `toLogMessage()` - Returns the message number followed by the message text and message instance ID. The instance ID is useful because it can be connected to the instance ID that is returned to the user in the REST API response.
+
+- `toReadableText()` - Return the message number followed by the message text.
+
+**Example:**
+
+```java
+ApiMessage message = errorService.createApiMessage("message.key");
+log.error(message.toLogMessage());
+// Prints: "ERROR MSGNUM001E Message text {bf824f40-8031-445f-b4f5-59d7ae0c865d}"
+
+ApiMessage message = errorService.createApiMessage("message.key");
+log.info(message.toReadableText());
+// Prints: "INFO MSGNUM001I Message text"
+```
