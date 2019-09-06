@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Holds information about a {@link Message}. This class is immutable.
@@ -69,14 +70,18 @@ public class BasicMessage implements Message {
     public BasicMessage(@JsonProperty("messageType") MessageType messageType,
             @JsonProperty("messageNumber") String messageNumber,
             @JsonProperty("messageContent") String messageContent) {
-        this(messageType, messageNumber, messageContent, null, null, null, null, null, null, null);
+        this(messageType, messageNumber, messageContent, null, null, null, null, generateMessageInstanceId(), null, null);
     }
 
     @SuppressWarnings("WeakerAccess")
     public BasicMessage(@JsonProperty("messageKey") String messageKey,
             @JsonProperty("messageType") MessageType messageType, @JsonProperty("messageNumber") String messageNumber,
             @JsonProperty("messageContent") String messageContent) {
-        this(messageType, messageNumber, messageContent, null, null, messageKey, null, null, null, null);
+        this(messageType, messageNumber, messageContent, null, null, messageKey, null, generateMessageInstanceId(), null, null);
+    }
+
+    private static String generateMessageInstanceId() {
+        return UUID.randomUUID().toString();
     }
 
     @Override

@@ -34,14 +34,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public interface ApiMessage {
     /**
-     * @return a list of messages that contain error, warning, and informational
-     *         content.
+     * A list of messages that contain error, warning, and informational content.
      */
     List<Message> getMessages();
 
     /**
      * Returns the first message in the format that can be printed to console as a
      * single line or displayed to the user.
-     **/
+     */
     String toReadableText();
+
+    /**
+     * The message that can be used in the server log. Includes the message instance
+     * ID.
+     */
+    String toLogMessage();
 }

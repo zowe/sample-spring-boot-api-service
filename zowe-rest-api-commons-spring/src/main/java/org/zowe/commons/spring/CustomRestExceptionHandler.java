@@ -9,8 +9,6 @@
  */
 package org.zowe.commons.spring;
 
-import java.util.UUID;
-
 import org.zowe.commons.error.ErrorService;
 import org.zowe.commons.rest.response.ApiMessage;
 
@@ -66,10 +64,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        String messageInstanceId = UUID.randomUUID().toString();
-        // TODO: Generate in the BasicMessage
-        ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY, messageInstanceId);
-        log.error(message.toReadableText(), ex);
+        ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY);
+        log.error(message.toLogMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
     }

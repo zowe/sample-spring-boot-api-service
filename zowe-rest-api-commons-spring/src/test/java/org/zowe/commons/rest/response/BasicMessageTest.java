@@ -38,7 +38,7 @@ public class BasicMessageTest {
     @Test
     public void testEquals() {
         Message message = getTestErrorMessage();
-        Message sameMessage = getTestErrorMessage();
+        Message sameMessage = message;
         Message differentMessage = getTestInfoMessage();
         assertTrue(message.equals(sameMessage));
         assertFalse(message.equals(differentMessage));
@@ -46,7 +46,7 @@ public class BasicMessageTest {
 
     @Test
     public void basicJsonFormat() {
-        assertThatJson(getTestErrorMessage()).isEqualTo("{\n" + "  \"messageType\" : \"ERROR\",\n"
+        assertThatJson(getTestErrorMessage()).whenIgnoringPaths("messageInstanceId").isEqualTo("{\n" + "  \"messageType\" : \"ERROR\",\n"
                 + "  \"messageNumber\" : \"MAS0001\",\n" + "  \"messageContent\" : \"Message text.\"\n" + "}");
     }
 }

@@ -36,7 +36,7 @@ public class BasicApiMessageTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        assertThatJson(message).isEqualTo(jsonString);
+        assertThatJson(message).whenIgnoringPaths("messages[0].messageInstanceId").isEqualTo(jsonString);
 
         Object deserialized = mapper.readValue(mapper.writeValueAsString(message),
             BasicApiMessage.class);

@@ -47,6 +47,11 @@ public class BasicApiMessage implements ApiMessage {
     }
 
     @Override
+    public String toLogMessage() {
+        return this.toReadableText() + "{" + this.getMessages().get(0).getMessageInstanceId() + "}";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
