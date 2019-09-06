@@ -43,12 +43,10 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
-    implementation "com.ca.mfaas.sdk:mfaas-common-service-core:$zoweApimlVersion"
-    // implementation 'io.springfox:springfox-swagger2:2.9.2'
-    // implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	annotationProcessor 'org.projectlombok:lombok:1.18.8'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
 }
 
 jar {

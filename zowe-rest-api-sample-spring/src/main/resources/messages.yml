@@ -1,5 +1,5 @@
 messages:
-    - key: org.zowe.sample.greeting
+    - key: org.zowe.sample.apiservice.greeting.empty
       number: ZWEASA001
-      type: INFO
-      text: "Hello, %s!"
+      type: ERROR
+      text: "The provided name is empty. Provide a name that is not empty."

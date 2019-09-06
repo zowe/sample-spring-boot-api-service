@@ -1,4 +1,15 @@
 messages:
+  # Commons Internal Errors:
+  - key: org.zowe.commons.error.invalidMessageKey
+    number: ZWEAS001
+    type: ERROR
+    text: "Internal error: Invalid message key '%s' is provided. Please contact support for further assistance."
+
+  - key: org.zowe.commons.error.invalidMessageTextFormat
+    number: ZWEAS002
+    type: ERROR
+    text: "Internal error: Invalid message text format. Please contact support for further assistance."
+
   # API Mediation Layer integration:
   - key: org.zowe.commons.apiml.serviceCertificateNotTrusted
     number: ZWEAS201

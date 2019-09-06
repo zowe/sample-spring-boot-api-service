@@ -1,6 +1,6 @@
 # Error Handling in REST Controllers
 
-## Handling Errors
+## Handling Internal Errors
 
 Unexpected errors does not need to be handled or catched by your REST controller. If your controller throws an `Exception` or `RuntimeException` then Spring exception handler (customized by `CustomRestExceptionHandler` in the commons library) will convert the exception into a standardized format. For example request `https://localhost:10080/api/v1/exception` returns:
 
@@ -17,7 +17,21 @@ Unexpected errors does not need to be handled or catched by your REST controller
 }
 ```
 
-More examples and explanations how to handle and report expected errors will be added in this user story: <https://github.com/zowe/sample-spring-boot-api-service/issues/22>
+## Handling Expected Errors
+
+One of the recommended ways is to use ControllerAdvice.
+
+1. Your code is detetion the error and throwing an exception:
+
+  ```java
+    if (name.trim().isEmpty()) {
+        throw new EmptyNameError();
+    }
+  ```
+
+2. TODO: Complete
+
+You can find more guidance how to handle errors in [Error Handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring).
 
 ## REST API Document Format
 
@@ -81,3 +95,20 @@ Follow the principle that message key (for example `org.zowe.commons.apiml.servi
   - *messageInstanceId* - unique ID of the message instance. Useful for locating of the message in the logs. The same ID should be printed in the log.
   - *messageComponent* - for support and developers - component that generated the error (can be fully qualified Java package or class name)
   - *messageSource* - for support and developers - source service that generated the error (can Open Mainframe service name or host:port).Be sure to include as much useful data as possible and keep in mind different users of the message structure. However, be mindful not to leak data that should be kept private or implementation details to avoid breaches in security.
+
+## Defining New Numbered Message
+
+1. Open [messages.yml](../src/main/resources/messages.yml)
+
+2. Add a new message with the fields described above. For example:
+
+  ```yml
+      - key: org.zowe.sample.apiservice.greeting.empty
+        number: ZWEASA001
+        type: ERROR
+        text: "The provided name is empty. Provide a name that is not empty."
+  ```
+
+## Logging Numbered Message
+
+TODO:

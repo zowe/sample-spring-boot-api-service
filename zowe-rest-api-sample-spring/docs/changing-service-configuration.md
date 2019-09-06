@@ -21,7 +21,7 @@ The main sections of the properties in `application.yml` are:
 - `logging` - Defines the level of log severity that should be displayed for various parts of the code including third-party dependencies. Use to it to display the messages that makes sense to the system administrator in the default profile. You can use more detailed levels in `debug` profile.
 - `server` - Defines HTTP server settings
   - `port` - Default server HTTP port. It usually overridden during installation but it makes sense to have a default for development and testing.
-  - `ssl` - Default setting for TLS protocol for HTTPS connections. The sample provides defaults that are considered as secure. The values for keystores/keyrings are provided by external configuration during the installation phase.
+  - `ssl` - Default setting for TLS protocol for HTTPS connections. The sample provides defaults that are considered as secure. The values for keystores are provided by external configuration during the installation phase.
 - `springfox.documentation.swagger.v2.path: /apiDocs/v2` - URL where the Swagger API documentation JSON document will be provided. No need to change it.
 - `zowe.sample` - Values defined by the sample application. Delete them if your application does not use them. `zowe.sample.authentication` is an example of a property that defines different value on z/OS and off z/OS.
 - `apiml.service` - Values that define your service for Zowe API Mediation Layer. You will need to change most of them. They are described at Zowe documentation - [Configuration parameters](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-onboard-an-existing-rest-api-service-without-code-changes.html#configuration-parameters).

@@ -11,8 +11,8 @@ package org.zowe.commons.spring;
 
 import java.util.UUID;
 
-import com.ca.mfaas.error.ErrorService;
-import com.ca.mfaas.rest.response.ApiMessage;
+import org.zowe.commons.error.ErrorService;
+import org.zowe.commons.rest.response.ApiMessage;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -67,8 +67,9 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
         String messageInstanceId = UUID.randomUUID().toString();
+        // TODO: Generate in the BasicMessage
         ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY, messageInstanceId);
-        log.error(CommonsErrorService.getReadableMessage(message), ex);
+        log.error(message.toReadableText(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
     }

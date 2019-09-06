@@ -12,7 +12,7 @@ package org.zowe.commons.spring;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.ca.mfaas.rest.response.ApiMessage;
+import org.zowe.commons.rest.response.ApiMessage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

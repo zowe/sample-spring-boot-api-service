@@ -38,6 +38,13 @@ public class GreetingControllerTests {
     }
 
     @Test
+    public void emptyNameFails() throws Exception {
+        mvc.perform(get("/api/v1/greeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .param("name", " ").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages[0].messageKey", is("org.zowe.sample.apiservice.greeting.empty")));
+    }
+
+    @Test
     public void failsWithoutAuthentication() throws Exception {
         mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized());
     }
