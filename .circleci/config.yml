@@ -14,6 +14,7 @@ jobs:
       - run:
           name: Building Java Code using Gradle
           command: |
+            touch zowe-rest-api-sample-spring/src/main/resources/lib/libwtojni.so
             scripts/download-commons-so.sh
             ./gradlew build
       - codecov/upload
@@ -36,6 +37,7 @@ jobs:
       - run:
           name: Upload Java Libraries to Bintray using Gradle
           command: |
+            touch zowe-rest-api-sample-spring/src/main/resources/lib/libwtojni.so
             scripts/download-commons-so.sh
             ./gradlew build bintrayUpload
       - run:
