@@ -26,10 +26,6 @@ import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 @EnableWebSecurity
 @ComponentScan("org.zowe.commons.zos.security")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${apiml.service.title:serice}")
-    private String serviceTitle;
-
     @Autowired
     AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -39,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().httpStrictTransportSecurity().disable();
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.httpBasic().realmName(serviceTitle);
+        http.httpBasic();
         http.authorizeRequests().antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
                 "/api/*/apiDocs", "/swagger-resources/**", "/csrf").permitAll().anyRequest().authenticated();
     }

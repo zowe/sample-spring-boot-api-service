@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -31,6 +33,9 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
     private final ErrorService errorService = CommonsErrorService.get();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("${apiml.service.title:service}")
+    private String serviceTitle;
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
@@ -38,6 +43,7 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
                 authException.getMessage());
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON.toString());
+        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, serviceTitle);
         response.getOutputStream().println(objectMapper.writeValueAsString(message));
     }
 }
