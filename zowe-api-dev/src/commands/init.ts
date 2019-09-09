@@ -100,7 +100,7 @@ function stripTrailingSlash(path: string): string {
 
 function detectJavaHome(command: Command): string | null {
     const candidates = ["/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64", "/usr/lpp/java/J8.0_64"];
-    const type = execSshCommandWithDefaultEnvCwd("type java").stdout.trim();
+    const type = execSshCommandWithDefaultEnvCwd("type java", { throwError: false }).stdout.trim();
     const javaIs = "java is /";
     const javaIsIndex = type.indexOf(javaIs);
     if (javaIsIndex > -1) {
