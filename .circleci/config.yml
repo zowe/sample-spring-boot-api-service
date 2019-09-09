@@ -13,7 +13,9 @@ jobs:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - run:
           name: Building Java Code using Gradle
-          command: ./gradlew build
+          command: |
+            scripts/download-commons-so.sh
+            ./gradlew build
       - codecov/upload
       - save_cache:
           paths:
