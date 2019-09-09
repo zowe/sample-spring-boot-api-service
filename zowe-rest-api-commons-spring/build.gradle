@@ -16,7 +16,7 @@ ext {
 license {
     header rootProject.file('.licence/EPL-2.0-licence-header.txt')
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "*.so"])
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "**/*.so", "**/*.md"])
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
@@ -49,16 +49,18 @@ dependencies {
     testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
 }
 
-task preJar {
+task downloadSharedObject {
     doFirst {
-        def filename = 'src/main/resources/lib/libzowe-commons-secur.so'
-        if (!file(filename).exists()) {
-            throw new GradleException("File $filename with native library is missing. Run `zowe-api-dev zosbuild` in directory $projectDir to build it")
+        def filePath = 'src/main/resources/lib/libzowe-commons-secur.so'
+        def f = new File(projectDir, filePath)
+        if (!f.exists()) {
+            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
+            f.append(new URL(securShareObjectUrl).text.decodeBase64())
         }
     }
 }
 
-jar.dependsOn preJar
+jar.dependsOn downloadSharedObject
 
 jar {
     manifest {

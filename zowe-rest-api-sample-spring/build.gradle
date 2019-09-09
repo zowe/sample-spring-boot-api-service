@@ -80,7 +80,7 @@ check.dependsOn jacocoTestReport
 license {
     header rootProject.file('.licence/EPL-2.0-licence-header.txt')
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "*.so"])
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "**/*.so", "**/*.md"])
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
@@ -90,13 +90,15 @@ bootRun {
 	args '--spring.config.additional-location=file:./config/local/application.yml'
 }
 
-task preJar {
+task downloadSharedObject {
     doFirst {
-        def filename = 'src/main/resources/lib/libwtojni.so'
-        if (!file(filename).exists()) {
-            throw new GradleException("File $filename with native library is missing. Run `zowe-api-dev zosbuild` in directory $projectDir to build it")
+        def filePath = 'src/main/resources/lib/libwtojni.so'
+        def f = new File(projectDir, filePath)
+        if (!f.exists()) {
+            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
+            f.append(new URL(libwtojniSoGistUrl).text.decodeBase64())
         }
     }
 }
 
-jar.dependsOn preJar
+jar.dependsOn downloadSharedObject
