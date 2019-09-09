@@ -89,3 +89,14 @@ license {
 bootRun {
 	args '--spring.config.additional-location=file:./config/local/application.yml'
 }
+
+task preJar {
+    doFirst {
+        def filename = 'src/main/resources/lib/libwtojni.so'
+        if (!file(filename).exists()) {
+            throw new GradleException("File $filename with native library is missing. Run `zowe-api-dev zosbuild` in directory $projectDir to build it")
+        }
+    }
+}
+
+jar.dependsOn preJar

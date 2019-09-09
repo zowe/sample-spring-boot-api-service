@@ -49,6 +49,17 @@ dependencies {
     testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
 }
 
+task preJar {
+    doFirst {
+        def filename = 'src/main/resources/lib/libzowe-commons-secur.so'
+        if (!file(filename).exists()) {
+            throw new GradleException("File $filename with native library is missing. Run `zowe-api-dev zosbuild` in directory $projectDir to build it")
+        }
+    }
+}
+
+jar.dependsOn preJar
+
 jar {
     manifest {
         attributes('Implementation-Title': project.name,
