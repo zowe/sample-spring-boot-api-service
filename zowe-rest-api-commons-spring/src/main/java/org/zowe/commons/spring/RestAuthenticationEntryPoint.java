@@ -43,7 +43,7 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
                 authException.getMessage());
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON.toString());
-        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, serviceTitle);
+        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, String.format("Basic realm=\"%s\", charset=\"UTF-8\"", serviceTitle));
         response.getOutputStream().println(objectMapper.writeValueAsString(message));
     }
 }
