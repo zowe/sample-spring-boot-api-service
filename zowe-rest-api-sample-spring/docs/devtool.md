@@ -102,7 +102,7 @@ You a port number that is available for you.
 zowe-api-dev config --name zos --parameter port=10180
 ```
 
-The last step is to start the applicaiton.
+The last step is to start the application.
 
 ```bash
 zowe-api-dev start
