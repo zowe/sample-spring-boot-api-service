@@ -41,7 +41,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                     message = ExceptionUtils.getRootCauseMessage(t);
                 }
                 if ((message != null) && !message.isEmpty()) {
-                    log.error(CommonsErrorService.getReadableMessage("org.zowe.commons.apiml.unableToRegister", message));
+                    log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.unableToRegister", message));
                     logOriginalError(t);
                 }
             }
@@ -57,7 +57,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
                     if ((s.indexOf(".ApiMediationClient") >= 0)
                             || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
-                        log.error(CommonsErrorService.getReadableMessage("org.zowe.commons.apiml.apimlCertificateNotTrusted",
+                        log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.apimlCertificateNotTrusted",
                                 t.getMessage()));
                         logOriginalError(t);
                         if (SpringContext.getApplicationContext() == null) {
@@ -69,7 +69,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                 for (String s : ExceptionUtils.getStackFrames(t)) {
                     if ((s.indexOf(".ApiMediationClient") >= 0)
                             || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
-                        log.error(CommonsErrorService.getReadableMessage("org.zowe.commons.apiml.serviceCertificateNotTrusted",
+                        log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.serviceCertificateNotTrusted",
                                 t.getMessage()));
                         logOriginalError(t);
                         if (SpringContext.getApplicationContext() == null) {

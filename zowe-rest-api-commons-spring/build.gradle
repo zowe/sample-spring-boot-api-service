@@ -16,7 +16,7 @@ ext {
 license {
     header rootProject.file('.licence/EPL-2.0-licence-header.txt')
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks"])
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "**/*.so", "**/*.md"])
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
@@ -43,13 +43,24 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
-    implementation "com.ca.mfaas.sdk:mfaas-common-service-core:$zoweApimlVersion"
-    // implementation 'io.springfox:springfox-swagger2:2.9.2'
-    // implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	annotationProcessor 'org.projectlombok:lombok:1.18.8'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
 }
+
+task downloadSharedObject {
+    doFirst {
+        def filePath = 'src/main/resources/lib/libzowe-commons-secur.so'
+        def f = new File(projectDir, filePath)
+        if (!f.exists()) {
+            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
+            f.append(new URL(securShareObjectUrl).text.decodeBase64())
+        }
+    }
+}
+
+jar.dependsOn downloadSharedObject
 
 jar {
     manifest {

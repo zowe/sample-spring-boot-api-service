@@ -11,7 +11,7 @@ git tag v0.0.1
 git push origin v0.0.1
 ```
 
-## Publising to Maven Local
+## Publishing to Maven Local
 
 `./gradlew publishToMavenLocal`
 
@@ -21,7 +21,7 @@ You need to provide your credentials to Bintray. You can get it from <https://bi
 
 `BINTRAY_USER=user BINTRAY_API_KEY=apikey ./gradlew uploadBintray`
 
-## Using the library
+## Using the Library
 
 ```gradle
 plugins {

@@ -9,11 +9,6 @@
  */
 package org.zowe.commons.spring;
 
-import java.util.UUID;
-
-import com.ca.mfaas.error.ErrorService;
-import com.ca.mfaas.rest.response.ApiMessage;
-
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +22,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.zowe.commons.error.CommonsErrorService;
+import org.zowe.commons.error.ErrorService;
+import org.zowe.commons.rest.response.ApiMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,9 +63,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        String messageInstanceId = UUID.randomUUID().toString();
-        ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY, messageInstanceId);
-        log.error(CommonsErrorService.getReadableMessage(message), ex);
+        ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY);
+        log.error(message.toLogMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
     }

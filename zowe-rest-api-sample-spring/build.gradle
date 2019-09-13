@@ -42,7 +42,7 @@ def commonsProject = { ->
         try {
             return project(':zowe-rest-api-commons-spring')
         } catch (ignored) {
-            return 'org.zowe:zowe-rest-api-commons-spring:0.0.13'
+            return 'org.zowe:zowe-rest-api-commons-spring:0.1.1'
         }
     }
 
@@ -52,7 +52,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
-    implementation "com.ca.mfaas.sdk:mfaas-common-service-core:$zoweApimlVersion"
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok'
@@ -81,7 +80,7 @@ check.dependsOn jacocoTestReport
 license {
     header rootProject.file('.licence/EPL-2.0-licence-header.txt')
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks"])
+    excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "**/*.so", "**/*.md"])
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
@@ -90,3 +89,16 @@ license {
 bootRun {
 	args '--spring.config.additional-location=file:./config/local/application.yml'
 }
+
+task downloadSharedObject {
+    doFirst {
+        def filePath = 'src/main/resources/lib/libwtojni.so'
+        def f = new File(projectDir, filePath)
+        if (!f.exists()) {
+            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
+            f.append(new URL(libwtojniSoGistUrl).text.decodeBase64())
+        }
+    }
+}
+
+jar.dependsOn downloadSharedObject

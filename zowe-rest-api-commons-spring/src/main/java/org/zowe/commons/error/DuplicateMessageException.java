@@ -9,16 +9,13 @@
  */
 package org.zowe.commons.error;
 
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.error.ErrorServiceImpl;
+/**
+ * Exception thrown when a message is already defined before
+ */
+public class DuplicateMessageException extends RuntimeException {
+    private static final long serialVersionUID = -3407108866724093071L;
 
-public final class CommonsErrorService {
-    private static ErrorService errorService = new ErrorServiceImpl();
-
-    private CommonsErrorService() {
-    }
-
-    public static ErrorService get() {
-        return errorService;
+    public DuplicateMessageException(String message) {
+        super(message);
     }
 }

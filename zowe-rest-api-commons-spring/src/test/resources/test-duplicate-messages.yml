@@ -1,0 +1,10 @@
+messages:
+    - key: org.zowe.commons.test.noArguments
+      number: CSC0001
+      type: ERROR
+      text: "No arguments message"
+
+    - key: org.zowe.commons.test.noArguments
+      number: CSC0001
+      type: ERROR
+      text: "No arguments message"

@@ -4,9 +4,24 @@ Provides convinence functions to build native code, deploy REST API, and start i
 
 ## Installation
 
+### From NPM (for users)
+
 ```bash
 npm -g install @zowedev/zowe-api-dev
 ```
+
+### From sources (for developers)
+
+```bash
+https://github.com/zowe/sample-spring-boot-api-service
+cd sample-spring-boot-api-service
+cd zowe-api-dev
+npm link
+```
+
+## Usage
+
+See [zowe-api-dev - Zowe API Development CLI Tool](/zowe-rest-api-sample-spring/docs/devtool.md).
 
 ```txt
 $ zowe-api-dev
@@ -27,7 +42,3 @@ COMMANDS
   zfs       initialize user configuration file
   zosbuild  build z/OS source on z/OS UNIX
 ```
-
-## Usage
-
-See [zowe-api-dev - Zowe API Development CLI Tool](/zowe-rest-api-sample-spring/docs/devtool.md).

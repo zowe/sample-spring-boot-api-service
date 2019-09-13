@@ -9,16 +9,14 @@
  */
 package org.zowe.commons.error;
 
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.error.ErrorServiceImpl;
+/**
+ * Exception thrown when a message couldn't be loaded or has wrong definition
+ */
+public class MessageLoadException extends RuntimeException {
+    private static final long serialVersionUID = -1890955912059595381L;
 
-public final class CommonsErrorService {
-    private static ErrorService errorService = new ErrorServiceImpl();
-
-    private CommonsErrorService() {
+    public MessageLoadException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public static ErrorService get() {
-        return errorService;
-    }
 }

@@ -9,8 +9,8 @@
  */
 package org.zowe.sample.apiservice.config;
 
-import com.ca.mfaas.error.ErrorService;
-import com.ca.mfaas.error.impl.ErrorServiceImpl;
+import org.zowe.commons.error.ErrorService;
+import org.zowe.commons.error.ErrorServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

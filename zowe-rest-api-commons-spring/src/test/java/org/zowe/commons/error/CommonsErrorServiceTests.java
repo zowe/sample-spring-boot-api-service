@@ -16,8 +16,8 @@ import org.junit.Test;
 public class CommonsErrorServiceTests {
     @Test
     public void returnsReadableMessage() {
-        assertTrue(CommonsErrorService.getReadableMessage("org.zowe.commons.apiml.serviceCertificateNotTrusted", "param")
-                .contains("param"));
+        assertTrue(CommonsErrorService.get()
+                .getReadableMessage("org.zowe.commons.apiml.serviceCertificateNotTrusted", "param").contains("param"));
     }
 
 }

@@ -15,8 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.zowe.sample.apiservice.config.RestApiVersion1Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.zowe.commons.zos.security.thread.PlatformThreadLevelSecurity;
 
 import io.swagger.annotations.Api;
@@ -29,7 +30,8 @@ import io.swagger.annotations.Authorization;
  * implementation of Wto depending on the spring profile settings.
  */
 @Api(tags = "WTO", description = "REST API for z/OS greetings via WTO")
-@RestApiVersion1Controller
+@RestController
+@RequestMapping("/api/v1/wto")
 public class WtoController {
 
     private final Wto wto;
@@ -44,7 +46,7 @@ public class WtoController {
 
     @ApiOperation(value = "Executes WTO on z/OS and returns a greeting for the name passed", nickname = "greetingToSomeone", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
-    @GetMapping("/wto")
+    @GetMapping
     public WtoResponse greeting(
             @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name)
             throws Exception {
