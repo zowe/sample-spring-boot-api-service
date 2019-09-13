@@ -2,15 +2,21 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.4
 jobs:
-  build_java:
+  build_all:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-node
     working_directory: ~/code
     steps:
       - checkout
       - restore_cache:
           keys:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Building zowe-api-dev Tool
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm pack
       - run:
           name: Building Java Code using Gradle
           command: |
@@ -23,15 +29,24 @@ jobs:
           key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test
-  publish_java:
+  publish_all:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-node
     working_directory: ~/code
     steps:
       - checkout
       - restore_cache:
           keys:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Publishing zowe-api-dev Tool to npmjs.com
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm version `git describe --tags --abbrev=0 | cut -c2-`
+            npm pack
+            echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
+            npm publish --access public
       - run:
           name: Upload Java Libraries to Bintray using Gradle
           command: |
@@ -49,54 +64,17 @@ jobs:
           key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test
-  build_node:
-    docker:
-      - image: circleci/node:lts
-    working_directory: ~/code
-    steps:
-      - checkout
-      - run:
-          name: Building zowe-api-dev Tool
-          command: |
-            cd zowe-api-dev
-            npm install
-            npm pack
-  publish_node:
-    docker:
-      - image: circleci/node:lts
-    working_directory: ~/code
-    steps:
-      - checkout
-      - run:
-          name: Publishing zowe-api-dev Tool to npmjs.com
-          command: |
-            cd zowe-api-dev
-            npm install
-            npm version `git describe --tags --abbrev=0 | cut -c2-`
-            npm pack
-            echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
-            npm publish --access public
 workflows:
   version: 2
   untagged_build:
     jobs:
-      - build_java:
-          filters:
-            tags:
-              ignore: /.*/
-      - build_node:
+      - build_all:
           filters:
             tags:
               ignore: /.*/
   tagged_build:
     jobs:
-      - publish_java:
-          filters:
-            tags:
-              only: /v.*/
-            branches:
-              ignore: /.*/
-      - publish_node:
+      - publish_all:
           filters:
             tags:
               only: /v.*/
