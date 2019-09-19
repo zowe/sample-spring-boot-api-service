@@ -42,7 +42,7 @@ def commonsProject = { ->
         try {
             return project(':zowe-rest-api-commons-spring')
         } catch (ignored) {
-            return 'org.zowe:zowe-rest-api-commons-spring:0.2.1'
+            return 'org.zowe:zowe-rest-api-commons-spring:0.2.0-SNAPSHOT'
         }
     }
 

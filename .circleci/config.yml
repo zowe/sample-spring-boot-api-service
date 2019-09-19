@@ -28,6 +28,10 @@ jobs:
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
+      - run:
+          name: Building Standalone Sample
+          command: |
+            scripts/build-sample.sh
       - save_cache:
           paths:
             - ~/.gradle
@@ -60,6 +64,10 @@ jobs:
           command: |
             ./gradlew build
             scripts/so-test.sh
+      - run:
+          name: Building Standalone Sample
+          command: |
+            scripts/build-sample.sh
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |

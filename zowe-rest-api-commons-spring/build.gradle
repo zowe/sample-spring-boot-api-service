@@ -69,4 +69,10 @@ jar {
     }
 }
 
+task saveVersion() {
+    doLast {
+        new File(projectDir, ".version").text = "$project.version"
+    }
+}
+
 apply from: "$projectDir/gradle/publishing.gradle"
