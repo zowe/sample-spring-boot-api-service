@@ -20,7 +20,7 @@
             }
         }
     },
-    "shellStartCommand": "java -Djava.library.path=\"\\$PWD/lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
+    "shellStartCommand": "java -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
     "jobTemplatePath": "src/main/jcl/template.jcl",
     "jobPath": "build/api.jcl",
     "defaultDirName": "zowe-rest-api-sample-spring",
