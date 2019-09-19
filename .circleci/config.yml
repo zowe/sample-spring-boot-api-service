@@ -18,9 +18,15 @@ jobs:
             npm install
             npm pack
       - run:
+          name: Building Native z/OS Code
+          command: |
+            npm install
+            npm run zosbuild
+      - run:
           name: Building Java Code using Gradle
           command: |
             ./gradlew build
+            scripts/so-test.sh
       - codecov/upload
       - save_cache:
           paths:
@@ -39,6 +45,22 @@ jobs:
           keys:
           - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
       - run:
+          name: Building zowe-api-dev Tool
+          command: |
+            cd zowe-api-dev
+            npm install
+            npm pack
+      - run:
+          name: Building Native z/OS Code
+          command: |
+            npm install
+            npm run zosbuild
+      - run:
+          name: Building Java Code using Gradle
+          command: |
+            ./gradlew build
+            scripts/so-test.sh
+      - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
             cd zowe-api-dev
@@ -50,7 +72,7 @@ jobs:
       - run:
           name: Upload Java Libraries to Bintray using Gradle
           command: |
-            ./gradlew build bintrayUpload
+            ./gradlew bintrayUpload
       - run:
           name: Upload Sample Source Code to GitHub Release
           command: |
