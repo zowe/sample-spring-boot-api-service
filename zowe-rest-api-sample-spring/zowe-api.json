@@ -3,7 +3,7 @@
     "zosSourcesDir": "zossrc",
     "buildCommand": "make && make install",
     "buildFiles": {
-        "libwtojni.so": "src/main/resources/lib/libwtojni.so"
+        "libzowe-sample.so": "src/main/resources/lib/libzowe-sample.so"
     },
     "deployment": {
         "files": {

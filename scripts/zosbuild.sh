@@ -1,19 +1,38 @@
 #!/usr/bin/env bash
-eval MY_ZOS_HLQ=$ZOS_HLQ
-eval MY_ZOS_TARGET_DIR=$ZOS_TARGET_DIR
-env
-zowe profiles create zosmf-profile $ZOWE_CLI_PROFILE_NAME --host $ZOS_HOST --port $ZOS_ZOSMF_PORT --user $ZOS_USERID --pass "$ZOS_PASSWORD" --reject-unauthorized false --overwrite
-zowe profiles create ssh-profile $ZOWE_CLI_PROFILE_NAME --host river.zowe.org --port $ZOS_SSH_PORT --user $ZOS_USERID --password "$ZOS_PASSWORD" --overwrite
+
+echo "Checking if build is needed"
+./gradlew :zowe-rest-api-commons-spring:zosbuild :zowe-rest-api-sample-spring:zosbuild
+if [ $? -eq 0 ]; then
+   exit 0
+fi
+
+if [ -z "$ZOS_TARGET_DIR" ]
+then
+    echo "\$ZOS_TARGET_DIR is not set. It needs to be set to the z/OS UNIX target directory where the z/OS native code build will be done"
+    exit 1
+fi
+
+echo "Preparing Zowe CLI profiles"
+zowe profiles create zosmf-profile $ZOWE_CLI_PROFILE_NAME --host $ZOS_HOST --port $ZOS_ZOSMF_PORT --user $ZOS_USERID --pass "$ZOS_PASSWORD" --reject-unauthorized false --overwrite > /dev/null
+zowe profiles create ssh-profile $ZOWE_CLI_PROFILE_NAME --host river.zowe.org --port $ZOS_SSH_PORT --user $ZOS_USERID --password "$ZOS_PASSWORD" --overwrite > /dev/null
 zowe profiles set-default zosmf $ZOWE_CLI_PROFILE_NAME
 zowe profiles set-default ssh $ZOWE_CLI_PROFILE_NAME
+
+echo "Initializing ZFS"
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR --zosHlq $ZOS_HLQ --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --force
+zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
+
+echo "Building native code in zowe-rest-api-commons-spring"
 cd zowe-rest-api-commons-spring
-zowe-api-dev init --zosTargetDir $MY_ZOS_TARGET_DIR/zowe-rest-api-sample-spring --zosHlq $MY_ZOS_HLQ.SAMPLE --account $ZOS_ACCOUNT_NUMBER --force
-zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
-zowe-api-dev zosbuild
-zowe-api-dev zfs --unmount --delete
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-sample-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.SAMPLE --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --force
 cd ..
+./gradlew :zowe-rest-api-commons-spring:zosbuild
+
+echo "Building native code in zowe-rest-api-sample-spring"
 cd zowe-rest-api-sample-spring
-zowe-api-dev init --zosTargetDir $MY_ZOS_TARGET_DIR/zowe-rest-api-commons-spring --zosHlq $MY_ZOS_HLQ.COMMONS --account $ZOS_ACCOUNT_NUMBER --force
-zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
-zowe-api-dev zosbuild
-zowe-api-dev zfs --unmount --delete
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --force
+cd ..
+./gradlew :zowe-rest-api-sample-spring:zosbuild
+
+echo "Removing $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM"
+rm -rf $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM

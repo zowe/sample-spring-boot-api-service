@@ -44,7 +44,7 @@ export default class Init extends Command {
         if (f.force || !existsSync(configPath)) {
             this.log(`Initializing user configuration file for ${projectConfig.name}`);
             this.log("Getting information about your Zowe profile");
-            const profiles = zoweSync("profiles list zosmf-profiles --show-contents").data as [
+            const profiles = zoweSync("profiles list zosmf-profiles --show-contents", { logOutput: false }).data as [
                 { name: string; profile: { user: string } }
             ];
             let defaultProfile = profiles[0];
@@ -57,7 +57,7 @@ export default class Init extends Command {
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
             const data = {
-                javaHome: validateJavaHome(f.javaHome, this) || detectJavaHome(this),
+                javaHome: f.javaHome || detectJavaHome(this),
                 jobcard: [
                     `//${jobname} JOB ${f.account},'ZOWE API',MSGCLASS=A,CLASS=A,`,
                     "//  MSGLEVEL=(1,1),REGION=0M",

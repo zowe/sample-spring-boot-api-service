@@ -8,9 +8,14 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
+      - run:
+          name: "Prepare Important Files for Cache Key"
+          command: |
+              find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
+              tar -xOf key.tar > .key
       - restore_cache:
           keys:
-          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+            - zowe-apiservice-{{ checksum ".key" }}
       - run:
           name: Building zowe-api-dev Tool
           command: |
@@ -36,7 +41,8 @@ jobs:
           paths:
             - ~/.gradle
             - ~/code/.gradle
-          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+            - ~/code/zowe-rest-api-sample-spring/.gradle
+          key: zowe-apiservice-{{ checksum ".key" }}
       - store_test_results:
           path: build/test-results/test
   publish_all:
@@ -45,9 +51,14 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
+      - run:
+          name: "Prepare important files for cache"
+          command: |
+            find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
+            tar -xOf key.tar > .key
       - restore_cache:
           keys:
-          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+          - zowe-apiservice-{{ checksum ".key" }}
       - run:
           name: Building zowe-api-dev Tool
           command: |
@@ -91,7 +102,8 @@ jobs:
           paths:
             - ~/.gradle
             - ~/code/.gradle
-          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
+            - ~/code/zowe-rest-api-sample-spring/.gradle
+          key: zowe-apiservice-{{ checksum ".key" }}
       - store_test_results:
           path: build/test-results/test
 workflows:

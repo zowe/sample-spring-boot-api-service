@@ -15,12 +15,12 @@ import java.util.List;
 import org.zowe.commons.zos.NativeLibraries;
 
 public class AppNativeLibraries implements NativeLibraries {
-    public static final String WTO_LIBRARY_NAME = "wtojni";
+    public static final String SAMPLE_LIBRARY_NAME = "zowe-sample";
 
     @Override
     public List<String> getNativeLibrariesNames() {
         List<String> libraries = new ArrayList<>();
-        libraries.add(WTO_LIBRARY_NAME);
+        libraries.add(SAMPLE_LIBRARY_NAME);
         return libraries;
     }
 }

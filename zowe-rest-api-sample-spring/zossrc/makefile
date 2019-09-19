@@ -56,7 +56,7 @@ SIDEDECK = libjvm
 
 PREFIX := "../lib/"
 
-all: libwtojni.so
+all: libzowe-sample.so
 
 install:
 	mkdir -p $(PREFIX)
@@ -64,7 +64,7 @@ install:
 	extattr +p $(PREFIX)/*.so
 	ls -E $(PREFIX)
 
-libwtojni.so: wtojni.o wtoexec.o
+libzowe-sample.so: wtojni.o wtoexec.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $^ > $*.bind.lst
 	extattr +p $@
 

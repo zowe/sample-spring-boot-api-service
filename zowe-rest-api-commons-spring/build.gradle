@@ -11,6 +11,7 @@ version getVersionFromGitTag()
 ext {
     zoweApimlVersion = '1.1.2'
     springBootVersion = '2.1.7.RELEASE'
+    sharedObjectFilePath = 'src/main/resources/lib/libzowe-commons-secur.so'
 }
 
 license {
@@ -51,10 +52,9 @@ dependencies {
 
 task downloadSharedObject {
     doFirst {
-        def filePath = 'src/main/resources/lib/libzowe-commons-secur.so'
-        def f = new File(projectDir, filePath)
+        def f = new File(projectDir, sharedObjectFilePath)
         if (!f.exists()) {
-            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
+            logger.warn "Shared object $sharedObjectFilePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
             f.append(new URL(securShareObjectUrl).text.decodeBase64())
         }
     }
@@ -74,5 +74,13 @@ task saveVersion() {
         new File(projectDir, ".version").text = "$project.version"
     }
 }
+
+task zosbuild(type: Exec) {
+    inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE);
+    outputs.cacheIf { true };
+    outputs.file(sharedObjectFilePath);
+    commandLine 'zowe-api-dev', 'zosbuild';
+}
+
 
 apply from: "$projectDir/gradle/publishing.gradle"
