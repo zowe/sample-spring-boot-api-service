@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Service for creating {@link ApiMessage} by string key and list of parameters.
- * See default implementation {@link org.zowe.commons.errorcd ...ErrorServiceImpl}.
+ * See default implementation {@link org.zowe.commons.error.ErrorServiceImpl}.
  */
 public interface ErrorService {
     /**
