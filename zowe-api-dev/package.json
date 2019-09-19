@@ -1,7 +1,7 @@
 {
   "name": "@zowedev/zowe-api-dev",
   "description": "Zowe REST API Development CLI",
-  "version": "0.0.2",
+  "version": "0.0.0-dev",
   "author": "zowe",
   "bin": {
     "zowe-api-dev": "./bin/run"
