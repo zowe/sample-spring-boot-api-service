@@ -45,9 +45,15 @@ export default class Init extends Command {
             this.log(`Initializing user configuration file for ${projectConfig.name}`);
             this.log("Getting information about your Zowe profile");
             const profiles = zoweSync("profiles list zosmf-profiles --show-contents").data as [
-                { profile: { user: string } }
+                { name: string; profile: { user: string } }
             ];
-            const userid = profiles[0].profile.user.toUpperCase();
+            let defaultProfile = profiles[0];
+            for (const profile of profiles) {
+                if (profile.name.indexOf('(default)') > -1) {
+                    defaultProfile = profile;
+                }
+            }
+            const userid = defaultProfile.profile.user.toUpperCase();
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
             const data = {
