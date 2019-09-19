@@ -8,77 +8,57 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - run:
+      - run: &key
           name: "Prepare Important Files for Cache Key"
           command: |
               find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
               tar -xOf key.tar > .key
-      - restore_cache:
+      - restore_cache: &keys
           keys:
             - zowe-apiservice-{{ checksum ".key" }}
-      - run:
+      - run: &build_devtool
           name: Building zowe-api-dev Tool
           command: |
             cd zowe-api-dev
             npm install
             npm pack
-      - run:
+      - run: &zosbuild
           name: Building Native z/OS Code
           command: |
             npm install
             npm run zosbuild
-      - run:
+      - run: &build
           name: Building Java Code using Gradle
           command: |
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
-      - run:
+      - run: &sample
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
+      - store_test_results: &test_results
+          path: build/test-results/test
       - save_cache:
           paths:
             - ~/.gradle
             - ~/code/.gradle
             - ~/code/zowe-rest-api-sample-spring/.gradle
           key: zowe-apiservice-{{ checksum ".key" }}
-      - store_test_results:
-          path: build/test-results/test
   publish_all:
     docker:
       - image: circleci/openjdk:8-jdk-node
     working_directory: ~/code
     steps:
       - checkout
-      - run:
-          name: "Prepare important files for cache"
-          command: |
-            find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
-            tar -xOf key.tar > .key
-      - restore_cache:
-          keys:
-          - zowe-apiservice-{{ checksum ".key" }}
-      - run:
-          name: Building zowe-api-dev Tool
-          command: |
-            cd zowe-api-dev
-            npm install
-            npm pack
-      - run:
-          name: Building Native z/OS Code
-          command: |
-            npm install
-            npm run zosbuild
-      - run:
-          name: Building Java Code using Gradle
-          command: |
-            ./gradlew build
-            scripts/so-test.sh
-      - run:
-          name: Building Standalone Sample
-          command: |
-            scripts/build-sample.sh
+      - run: *key
+      - restore_cache: *keys
+      - run: *build_devtool
+      - run: *zosbuild
+      - run: *build
+      - codecov/upload
+      - run: *sample
+      - store_test_results: *test_results
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
@@ -97,15 +77,6 @@ jobs:
           command: |
             scripts/package-sample.sh
             scripts/publish-sample.sh
-      - codecov/upload
-      - save_cache:
-          paths:
-            - ~/.gradle
-            - ~/code/.gradle
-            - ~/code/zowe-rest-api-sample-spring/.gradle
-          key: zowe-apiservice-{{ checksum ".key" }}
-      - store_test_results:
-          path: build/test-results/test
 workflows:
   version: 2
   untagged_build:
