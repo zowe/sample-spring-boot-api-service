@@ -26,6 +26,7 @@ jobs:
           name: Building Native z/OS Code
           command: |
             npm install
+            source .circleci/river.env
             npm run zosbuild
       - run: &build
           name: Building Java Code using Gradle

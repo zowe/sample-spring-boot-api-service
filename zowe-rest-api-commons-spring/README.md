@@ -37,3 +37,7 @@ dependencies {
     implementation 'org.zowe:zowe-rest-api-commons-spring:<replace with desired version>'
 }
 ```
+
+## Other documentation
+
+- [Building z/OS native code](docs/zos-native-code.md)
