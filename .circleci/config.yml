@@ -28,6 +28,12 @@ jobs:
             npm install
             source .circleci/river.env
             npm run zosbuild
+      - run: &zos_cleanup
+          name: Cleanup on z/OS
+          when: always
+          command: |
+            source .circleci/river.env
+            npm run zos-cleanup
       - run: &build
           name: Building Java Code using Gradle
           command: |
@@ -56,6 +62,7 @@ jobs:
       - restore_cache: *keys
       - run: *build_devtool
       - run: *zosbuild
+      - run: *zos_cleanup
       - run: *build
       - codecov/upload
       - run: *sample
