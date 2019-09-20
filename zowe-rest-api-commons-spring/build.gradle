@@ -10,7 +10,7 @@ version getVersionFromGitTag()
 
 ext {
     zoweApimlVersion = '1.1.2'
-    springBootVersion = '2.1.7.RELEASE'
+    springBootVersion = '2.1.8.RELEASE'
     sharedObjectFilePath = 'src/main/resources/lib/libzowe-commons-secur.so'
 }
 
@@ -44,10 +44,10 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     implementation "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
-	compileOnly 'org.projectlombok:lombok:1.18.8'
-	annotationProcessor 'org.projectlombok:lombok:1.18.8'
+	compileOnly 'org.projectlombok:lombok:1.18.10'
+	annotationProcessor 'org.projectlombok:lombok:1.18.10'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
-    testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
+    testImplementation 'net.javacrumbs.json-unit:json-unit-fluent:2.8.0'
 }
 
 task checkSharedObject {

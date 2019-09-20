@@ -9,36 +9,15 @@
  */
 package org.zowe.sample.apiservice.wto;
 
+import lombok.Data;
+
 /**
  * Class to model the data returned from the /wto endpoint
  */
+@Data
 public class WtoResponse {
-
-    private final int rc;
-    private final String message;
     private final int id;
     private final String content;
-
-    public WtoResponse(int id, String content, int rc, String message) {
-        this.id = id;
-        this.content = content;
-        this.rc = rc;
-        this.message = message;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public int getRc() {
-        return rc;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+    private final int rc;
+    private final String message;
 }

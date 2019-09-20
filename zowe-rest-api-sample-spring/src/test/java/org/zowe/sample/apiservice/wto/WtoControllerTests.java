@@ -24,14 +24,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.zowe.sample.apiservice.TestUtils;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(WtoGreetingControllerTests.class)
-public class WtoGreetingControllerTests {
+@WebMvcTest(WtoController.class)
+public class WtoControllerTests {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void returnsGreeting() throws Exception {
+    public void returnsWtoMessage() throws Exception {
         mvc.perform(get("/api/v1/wto").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", is("Hello, world!")))
