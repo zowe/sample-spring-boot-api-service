@@ -91,15 +91,16 @@ bootRun {
 	args '--spring.config.additional-location=file:./config/local/application.yml'
 }
 
-task downloadSharedObject {
+task checkSharedObject {
     doFirst {
         def f = new File(projectDir, sharedObjectFilePath)
         if (!f.exists()) {
-            logger.warn "Shared object $sharedObjectFilePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
-            f.append(new URL(libZoweSampleSoGistUrl).text.decodeBase64())
+            throw new GradleException("Shared object $sharedObjectFilePath is missing. Run `./gradlew zosbuild` in directory $projectDir to build it yourself")
         }
     }
 }
+
+jar.dependsOn checkSharedObject
 
 task zosbuild(type: Exec) {
     inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE);
@@ -107,5 +108,3 @@ task zosbuild(type: Exec) {
     outputs.file(sharedObjectFilePath);
     commandLine 'zowe-api-dev', 'zosbuild';
 }
-
-jar.dependsOn downloadSharedObject
