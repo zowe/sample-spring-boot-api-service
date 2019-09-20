@@ -103,8 +103,8 @@ task checkSharedObject {
 jar.dependsOn checkSharedObject
 
 task zosbuild(type: Exec) {
-    inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE);
-    outputs.cacheIf { true };
-    outputs.file(sharedObjectFilePath);
-    commandLine 'zowe-api-dev', 'zosbuild';
+    inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.cacheIf { true }
+    outputs.file(sharedObjectFilePath)
+    commandLine 'zowe-api-dev', 'zosbuild'
 }
