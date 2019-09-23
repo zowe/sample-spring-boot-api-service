@@ -8,14 +8,10 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - run: &key
-          name: "Prepare Important Files for Cache Key"
-          command: |
-              find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
-              tar -xOf key.tar > .key
       - restore_cache: &keys
           keys:
-            - zowe-apiservice-{{ checksum ".key" }}
+            - v1-zowe-sdk-{{ .Branch }}
+            - v1-zowe-sdk-master
       - run: &build_devtool
           name: Building zowe-api-dev Tool
           command: |
@@ -59,8 +55,11 @@ jobs:
           paths:
             - ~/.gradle
             - ~/code/.gradle
+            - ~/code/node_modules
+            - ~/code/zowe-api-dev/node_modules
             - ~/code/zowe-rest-api-sample-spring/.gradle
-          key: zowe-apiservice-{{ checksum ".key" }}
+            - ~/code/gradle/wrapper/gradle-wrapper.jar
+          key: v1-zowe-sdk-{{ .Branch }}-{{ epoch }}
   publish_all:
     docker:
       - image: circleci/openjdk:8-jdk-node
