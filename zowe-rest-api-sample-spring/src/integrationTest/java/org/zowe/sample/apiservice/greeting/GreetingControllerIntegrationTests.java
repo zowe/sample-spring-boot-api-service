@@ -9,22 +9,16 @@
  */
 package org.zowe.sample.apiservice.greeting;
 
-import static io.restassured.RestAssured.when;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
-import org.zowe.sample.apiservice.test.ServiceUnderTest;
+import org.zowe.sample.apiservice.test.IntegrationTests;
 
-public class GreetingControllerIntegrationTests {
-    @BeforeClass
-    public static void setup() {
-        ServiceUnderTest.getInstance().waitUntilIsReady();
-    }
-
+public class GreetingControllerIntegrationTests extends IntegrationTests {
     @Test
     public void returnsGreeting() throws Exception {
         when().get("/api/v1/greeting").then().statusCode(200).body("content", equalTo("Hello, world!"));

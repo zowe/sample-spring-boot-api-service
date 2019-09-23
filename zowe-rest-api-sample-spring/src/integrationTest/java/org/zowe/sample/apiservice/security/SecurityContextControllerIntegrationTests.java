@@ -13,19 +13,13 @@ import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.hamcrest.Matcher;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.zowe.sample.apiservice.test.ServiceUnderTest;
+import org.zowe.sample.apiservice.test.IntegrationTests;
 
-public class SecurityContextControllerIntegrationTests {
-    @BeforeClass
-    public static void setup() {
-        ServiceUnderTest.getInstance().waitUntilIsReady();
-    }
-
+public class SecurityContextControllerIntegrationTests extends IntegrationTests {
     @Test
     public void switchesContextToAuthenticatedUserId() throws Exception {
-        Matcher<String> equalsToAuthenticatedUserID = equalTo(ServiceUnderTest.getInstance().getUserId());
+        Matcher<String> equalsToAuthenticatedUserID = equalTo(serviceUnderTest.getUserId());
         when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(200)
                 .body("afterSwitchUserName", equalsToAuthenticatedUserID)
                 .body("afterSwitchUserNameSpring", equalsToAuthenticatedUserID)
