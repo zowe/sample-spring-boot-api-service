@@ -9,7 +9,8 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - dynamo-lock/setup
+      - dynamo-lock/setup:
+          branches: .*
       - run: &key
           name: "Prepare Important Files for Cache Key"
           command: |
@@ -46,6 +47,7 @@ jobs:
             scripts/run-integration-tests.sh
       - dynamo-lock/lock:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - run: &integration_tests_sample_zos
           name: Running Integration Tests of the Sample on z/OS
           command: |
@@ -53,8 +55,10 @@ jobs:
             npm run zos-integration-tests
       - dynamo-lock/unlock:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - dynamo-lock/unlock-on-fail:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - run: &zos_cleanup
           name: Cleanup on z/OS
           when: always
@@ -75,7 +79,8 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - dynamo-lock/setup
+      - dynamo-lock/setup:
+          branches: .*
       - run: *key
       - restore_cache: *keys
       - run: *build_devtool
@@ -86,11 +91,14 @@ jobs:
       - run: *integration_tests_sample
       - dynamo-lock/lock:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - run: *integration_tests_sample_zos
       - dynamo-lock/unlock:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - dynamo-lock/unlock-on-fail:
           lock_name: ${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+          branches: .*
       - run: *zos_cleanup
       - store_test_results: *test_results
       - run:
