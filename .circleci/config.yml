@@ -48,6 +48,11 @@ jobs:
           name: Running Integration Tests of the Sample in the Build Container
           command: |
             scripts/run-integration-tests.sh
+      - run: &integration_tests_sample_zos
+          name: Running Integration Tests of the Sample on z/OS
+          command: |
+            source .circleci/river.env
+            npm run zos-integration-tests
       - store_test_results: &test_results
           path: build/test-results/test
       - save_cache:
@@ -71,6 +76,7 @@ jobs:
       - codecov/upload
       - run: *sample
       - run: *integration_tests_sample
+      - run: *integration_tests_sample_zos
       - store_test_results: *test_results
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com

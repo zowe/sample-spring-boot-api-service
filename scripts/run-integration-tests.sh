@@ -4,7 +4,7 @@ java -jar build/libs/zowe-rest-api-sample-spring-*.jar --spring.config.additiona
 PID=$!
 echo $PID > .pid
 
-TEST_USERID=zowe2 TEST_PASSWORD=zowe ./gradlew integrationTest
+TEST_USERID=zowe2 TEST_PASSWORD=zowe TEST_PORT=10080 TEST_WAIT_MINUTES=1 ./gradlew integrationTest
 cd ..
 
 PID=$(cat zowe-rest-api-sample-spring/.pid)

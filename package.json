@@ -12,6 +12,7 @@
     "version": "zowe --version && zowe-api-dev --version",
     "zosbuild": "scripts/zosbuild.sh",
     "zos-cleanup": "scripts/zos-cleanup.sh",
+    "zos-integration-tests": "scripts/run-integration-tests-zos.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
