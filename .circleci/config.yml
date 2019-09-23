@@ -28,12 +28,6 @@ jobs:
             npm install
             source .circleci/river.env
             npm run zosbuild
-      - run: &zos_cleanup
-          name: Cleanup on z/OS
-          when: always
-          command: |
-            source .circleci/river.env
-            npm run zos-cleanup
       - run: &build
           name: Building Java Code using Gradle
           command: |
@@ -53,6 +47,12 @@ jobs:
           command: |
             source .circleci/river.env
             npm run zos-integration-tests
+      - run: &zos_cleanup
+          name: Cleanup on z/OS
+          when: always
+          command: |
+            source .circleci/river.env
+            npm run zos-cleanup
       - store_test_results: &test_results
           path: build/test-results/test
       - save_cache:
@@ -71,12 +71,12 @@ jobs:
       - restore_cache: *keys
       - run: *build_devtool
       - run: *zosbuild
-      - run: *zos_cleanup
       - run: *build
       - codecov/upload
       - run: *sample
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
+      - run: *zos_cleanup
       - store_test_results: *test_results
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
