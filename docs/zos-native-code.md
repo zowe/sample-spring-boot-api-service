@@ -19,6 +19,6 @@ It calls `npm run zosbuild` that invokes [`scripts/zosbuild.sh`](.scripts/zosbui
 
 ### Required Environment Variables
 
-Everything except `ZOS_PASSWORD` is stored in [`.circleci/river.env`](/.circleci/river.env).
+Everything except credentials (`ZOS_USERID`, `ZOS_PASSWORD`, `TEST_USERID`, `TEST_PASSWORD`) is stored in [`.circleci/river.env`](/.circleci/river.env).
 This file is read by `zosbuild` step in [`.circleci/config.yml`](/.circleci/config.yml).
-`ZOS_PASSWORD` is set in <https://circleci.com/gh/zowe/sample-spring-boot-api-service/edit#env-vars>.
+Credentials are set in <https://circleci.com/gh/zowe/sample-spring-boot-api-service/edit#env-vars>.

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+cd zowe-rest-api-sample-spring
+java -jar build/libs/zowe-rest-api-sample-spring-*.jar --spring.config.additional-location=file:./config/local/application.yml &
+PID=$!
+echo $PID > .pid
+
+TEST_USERID=zowe2 TEST_PASSWORD=zowe ./gradlew integrationTest
+cd ..
+
+PID=$(cat zowe-rest-api-sample-spring/.pid)
+rm zowe-rest-api-sample-spring/.pid
+echo "Killing process $PID"
+kill -9 $PID
+

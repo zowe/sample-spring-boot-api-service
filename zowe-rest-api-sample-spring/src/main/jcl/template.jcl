@@ -24,6 +24,9 @@ TRAP(ON,NOSPIE)
 // PEND
 //********************************************************************
 //JAVA EXEC PROC=JVMPRC86,PARM='+T'
+{{#if user.javaLoadlib}}
+//STEPLIB  DD DSN={{{user.javaLoadlib}}},DISP=SHR
+{{/if}}
 //MAINARGS DD *
 -jar bin/zowe-rest-api-sample-spring.jar
 --spring.config.additional-location=file:etc/application.yml
@@ -35,7 +38,7 @@ TRAP(ON,NOSPIE)
 export PWD={{{user.zosTargetDir}}}
 cd $PWD
 
-export JAVA_HOME=/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64
+export JAVA_HOME={{{user.javaHome}}}
 
 CLASSPATH="${JAVA_HOME}/lib/tools.jar"
 CLASSPATH="${CLASSPATH}":/usr/include/java_classes/IRRRacf.jar
@@ -57,7 +60,7 @@ IJO="$IJO -Dfile.encoding=UTF-8"
 IJO="$IJO -Djava.io.tmpdir=/tmp"
 #IJO="$IJO -Xrunjdwp:transport=dt_socket,server=y,address=24621"
 #IJO="$IJO -Xhealthcenter:port=39083,transport=jrmp"
-#IJO="$IJO -Xquickstart"
+IJO="$IJO -Xquickstart"
 
 export IBM_JAVA_OPTIONS="${IJO}"
 export PATH=$JAVA_HOME/bin:$PATH

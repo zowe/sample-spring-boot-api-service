@@ -25,6 +25,12 @@ export default class Init extends Command {
             description: "home of Java 8 on z/OS (JAVA_HOME)",
             helpValue: "<path>"
         }),
+        javaLoadlib: flags.string({
+            char: "l",
+            default: "",
+            description: "dataset with JVMLDM86 (SIEALNKE)",
+            helpValue: "<dsn>"
+        }),
         zosHlq: flags.string({ char: "h", default: "", helpValue: "<HLQ>", description: "target z/OS dataset HLQ" }),
         zosTargetDir: flags.string({
             char: "t",
@@ -58,6 +64,7 @@ export default class Init extends Command {
             const jobname = userid.substring(0, 7) + "Z";
             const data = {
                 javaHome: f.javaHome || detectJavaHome(this),
+                javaLoadlib: f.javaLoadlib,
                 jobcard: [
                     `//${jobname} JOB ${f.account},'ZOWE API',MSGCLASS=A,CLASS=A,`,
                     "//  MSGLEVEL=(1,1),REGION=0M",

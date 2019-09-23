@@ -7,6 +7,7 @@ export interface IUserConfig {
     zosHlq: string;
     jobcard: [string];
     javaHome: string;
+    javaLoadlib: string;
 }
 
 export interface ITransferredFile {
