@@ -28,6 +28,11 @@ echo "Initializing zFS"
 zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR --zosHlq $ZOS_HLQ --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
 zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
 
+cd "Initializing profile for sample"
+cd zowe-rest-api-sample-spring
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
+cd ..
+
 echo "Checking if build is needed"
 ./gradlew :zowe-rest-api-commons-spring:zosbuild :zowe-rest-api-sample-spring:zosbuild
 if [ $? -eq 0 ]; then
@@ -41,7 +46,4 @@ cd ..
 ./gradlew :zowe-rest-api-commons-spring:zosbuild
 
 echo "Building native code in zowe-rest-api-sample-spring"
-cd zowe-rest-api-sample-spring
-zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
-cd ..
 ./gradlew :zowe-rest-api-sample-spring:zosbuild
