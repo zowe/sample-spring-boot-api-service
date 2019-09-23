@@ -2,6 +2,8 @@
 DSN="$ZOS_USERID.ZOWE.SDKLOCKS"
 DSN_MEMBER="$DSN(P${TEST_PORT})"
 
+echo "Locking test environment for port $TEST_PORT"
+
 if ! zowe files ls am $DSN; then
     zowe files cre classic $DSN
 fi
