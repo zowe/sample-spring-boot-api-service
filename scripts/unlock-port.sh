@@ -2,6 +2,8 @@
 DSN="$ZOS_USERID.ZOWE.SDKLOCKS"
 DSN_MEMBER="$DSN(P${TEST_PORT})"
 
+echo "Unlocking test environment for port $TEST_PORT"
+
 if [ ! -f ".lock-session" ]; then
     echo "WARN: .lock-session file does not exist"
     exit 0
