@@ -43,3 +43,5 @@ zowe-rest-api-commons-spring/.version
 /package-lock.json
 key.tar
 .key
+.lock-session
+unlock.out
