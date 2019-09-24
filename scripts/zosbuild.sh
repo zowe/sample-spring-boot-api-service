@@ -28,7 +28,7 @@ echo "Initializing zFS"
 zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR --zosHlq $ZOS_HLQ --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
 zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
 
-cd "Initializing profile for sample"
+echo "Initializing profile for sample"
 cd zowe-rest-api-sample-spring
 zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
 cd ..
