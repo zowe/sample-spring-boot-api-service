@@ -1,6 +1,6 @@
 # Zowe REST API SDK Command Line Tool
 
-Provides convinence functions to build native code, deploy REST API, and start it in a form of a CLI tool `zowe-api`.
+Provides convenience functions to build native code, deploy REST API, and start it in a form of a CLI tool `zowe-api`.
 
 ## Installation
 
@@ -13,7 +13,7 @@ npm -g install @zowedev/zowe-api-dev
 ### From sources (for developers)
 
 ```bash
-https://github.com/zowe/sample-spring-boot-api-service
+git clone https://github.com/zowe/sample-spring-boot-api-service
 cd sample-spring-boot-api-service
 cd zowe-api-dev
 npm link

@@ -21,5 +21,6 @@ Follow the instructions at [Zowe Sample API Service](zowe-rest-api-sample-spring
 
 ## Documentation for SDK Developers
 
+- [Building SDK](docs/building.md)
 - [Building z/OS native code](docs/zos-native-code.md)
 - [Releasing](docs/releasing.md)
