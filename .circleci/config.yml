@@ -44,6 +44,8 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
+      - store_artifacts:
+          path: ~/code/build/zowe-rest-api-sample-spring.zip
       - store_test_results: &test_results
           path: build/test-results/test
       - save_cache:
