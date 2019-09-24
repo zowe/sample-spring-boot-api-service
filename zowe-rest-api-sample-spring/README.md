@@ -58,6 +58,7 @@ For further reference, please consider the following sections:
 - [Building New APIs](docs/building-new-apis.md)
 - [Changing the Service Configuration](docs/changing-service-configuration.md)
 - [Adding New REST Controller](docs/adding-new-controller.md)
+- [Testing REST APIs](docs/testing.md)
 - [External Configuration](docs/config.md)
 - [Logging](docs/logging.md)
 - [Setup HTTPS and Create TLS/SSL Certificates](docs/https-setup.md)
