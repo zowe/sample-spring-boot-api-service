@@ -82,4 +82,5 @@ clean:
 	rm *.lst
 	rm *.x
 	rm *.so
+	rm *.dbg
 	rm *.s
