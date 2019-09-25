@@ -1,0 +1,27 @@
+{
+  "name": "@zowedev/sample-spring-boot-api-service",
+  "version": "0.0.0-dev",
+  "description": "Internal scripts for building of the Zowe REST API sample service and SDK",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@zowe/cli": "6.0.0",
+    "@zowedev/zowe-api-dev": "file:zowe-api-dev/zowedev-zowe-api-dev-0.0.0-dev.tgz"
+  },
+  "scripts": {
+    "version": "zowe --version && zowe-api-dev --version",
+    "zosbuild": "scripts/zosbuild.sh",
+    "zos-cleanup": "scripts/zos-cleanup.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zowe/sample-spring-boot-api-service.git"
+  },
+  "author": "Zowe Contributors",
+  "license": "EPL-2.0",
+  "bugs": {
+    "url": "https://github.com/zowe/sample-spring-boot-api-service/issues"
+  },
+  "homepage": "https://github.com/zowe/sample-spring-boot-api-service#readme"
+}

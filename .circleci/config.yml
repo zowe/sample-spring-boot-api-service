@@ -2,71 +2,75 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.4
 jobs:
-  build_java:
+  build_all:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-node
     working_directory: ~/code
     steps:
       - checkout
-      - restore_cache:
+      - run: &key
+          name: "Prepare Important Files for Cache Key"
+          command: |
+              find build.gradle zowe-api-dev/ zowe-rest-api-commons-spring/build.gradle zowe-rest-api-commons-spring/zowe-api.json zowe-rest-api-commons-spring/zossrc/ zowe-rest-api-sample-spring/build.gradle zowe-rest-api-sample-spring/zossrc/ zowe-rest-api-sample-spring/zowe-api.json -print0 | sort -z | tar cf key.tar --no-recursion --null -T -
+              tar -xOf key.tar > .key
+      - restore_cache: &keys
           keys:
-          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Building Java Code using Gradle
-          command: |
-            ./gradlew build
-      - codecov/upload
-      - save_cache:
-          paths:
-            - ~/.gradle
-            - ~/code/.gradle
-          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: build/test-results/test
-  publish_java:
-    docker:
-      - image: circleci/openjdk:8-jdk
-    working_directory: ~/code
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Upload Java Libraries to Bintray using Gradle
-          command: |
-            ./gradlew build bintrayUpload
-      - run:
-          name: Upload Sample Source Code to GitHub Release
-          command: |
-            scripts/package-sample.sh
-            scripts/publish-sample.sh
-      - codecov/upload
-      - save_cache:
-          paths:
-            - ~/.gradle
-            - ~/code/.gradle
-          key: zowe-apiservice-gradle-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: build/test-results/test
-  build_node:
-    docker:
-      - image: circleci/node:lts
-    working_directory: ~/code
-    steps:
-      - checkout
-      - run:
+            - zowe-apiservice-{{ checksum ".key" }}
+      - run: &build_devtool
           name: Building zowe-api-dev Tool
           command: |
             cd zowe-api-dev
             npm install
             npm pack
-  publish_node:
+      - run: &zosbuild
+          name: Building Native z/OS Code
+          command: |
+            npm install
+            source .circleci/river.env
+            npm run zosbuild
+      - run: &zos_cleanup
+          name: Cleanup on z/OS
+          when: always
+          command: |
+            source .circleci/river.env
+            npm run zos-cleanup
+      - run: &build
+          name: Building Java Code using Gradle
+          command: |
+            ./gradlew build
+            scripts/so-test.sh
+      - codecov/upload
+      - run: &sample
+          name: Building Standalone Sample
+          command: |
+            scripts/build-sample.sh
+            scripts/package-sample.sh
+      - store_artifacts:
+          path: ~/code/build/zowe-rest-api-sample-spring.zip
+          destination: zowe-rest-api-sample-spring.zip
+      - store_test_results: &test_results
+          path: build/test-results/test
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - ~/code/.gradle
+            - ~/code/zowe-rest-api-sample-spring/.gradle
+          key: zowe-apiservice-{{ checksum ".key" }}
+  publish_all:
     docker:
-      - image: circleci/node:lts
+      - image: circleci/openjdk:8-jdk-node
     working_directory: ~/code
     steps:
       - checkout
+      - run: *key
+      - restore_cache: *keys
+      - run: *build_devtool
+      - run: *zosbuild
+      - run: *zos_cleanup
+      - run: *build
+      - codecov/upload
+      - run: *sample
+      - store_test_results: *test_results
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
@@ -76,27 +80,26 @@ jobs:
             npm pack
             echo "//registry.npmjs.org/:_authToken=$NPMJS_TOKEN" > ~/.npmrc
             npm publish --access public
+      - run:
+          name: Upload Java Libraries to Bintray using Gradle
+          command: |
+            ./gradlew bintrayUpload
+      - run:
+          name: Upload Sample Source Code to GitHub Release
+          command: |
+            scripts/package-sample.sh
+            scripts/publish-sample.sh
 workflows:
   version: 2
   untagged_build:
     jobs:
-      - build_java:
-          filters:
-            tags:
-              ignore: /.*/
-      - build_node:
+      - build_all:
           filters:
             tags:
               ignore: /.*/
   tagged_build:
     jobs:
-      - publish_java:
-          filters:
-            tags:
-              only: /v.*/
-            branches:
-              ignore: /.*/
-      - publish_node:
+      - publish_all:
           filters:
             tags:
               only: /v.*/

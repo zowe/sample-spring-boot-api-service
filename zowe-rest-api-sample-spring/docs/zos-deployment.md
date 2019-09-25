@@ -134,7 +134,7 @@ java -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apise
 extattr +p lib/*.so
 chmod a+x lib/*.so
 
-Extracting lib/libwtojni.so to libwtojni.so
+Extracting lib/libzowe-sample.so to libzowe-sample.so
 Extracting lib/libzowe-commons-secur.so to libzowe-commons-secur.so
 ```
 

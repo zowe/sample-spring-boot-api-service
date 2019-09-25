@@ -11,6 +11,7 @@ version getVersionFromGitTag()
 ext {
     zoweApimlVersion = '1.1.2'
     springBootVersion = '2.1.7.RELEASE'
+    sharedObjectFilePath = 'src/main/resources/lib/libzowe-commons-secur.so'
 }
 
 license {
@@ -49,24 +50,35 @@ dependencies {
     testImplementation "net.javacrumbs.json-unit:json-unit-fluent:2.8.0"
 }
 
-task downloadSharedObject {
+task checkSharedObject {
     doFirst {
-        def filePath = 'src/main/resources/lib/libzowe-commons-secur.so'
-        def f = new File(projectDir, filePath)
+        def f = new File(projectDir, sharedObjectFilePath)
         if (!f.exists()) {
-            logger.warn "Shared object $filePath is missing. Dowloading it from GitHub Gist. Run `zowe-api-dev zosbuild` in directory $projectDir to build it yourself"
-            f.append(new URL(securShareObjectUrl).text.decodeBase64())
+            throw new GradleException("Shared object $sharedObjectFilePath is missing. Run `./gradlew zosbuild` in directory $projectDir to build it yourself")
         }
     }
 }
 
-jar.dependsOn downloadSharedObject
+jar.dependsOn checkSharedObject
 
 jar {
     manifest {
         attributes('Implementation-Title': project.name,
                    'Implementation-Version': project.version)
     }
+}
+
+task saveVersion() {
+    doLast {
+        new File(projectDir, ".version").text = "$project.version"
+    }
+}
+
+task zosbuild(type: Exec) {
+    inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.cacheIf { true }
+    outputs.file(sharedObjectFilePath)
+    commandLine 'zowe-api-dev', 'zosbuild'
 }
 
 apply from: "$projectDir/gradle/publishing.gradle"

@@ -32,7 +32,8 @@ allprojects {
             return lastTag.substring(1)
         }
         else {
-            return lastTag.substring(1) + "-SNAPSHOT"
+            // See docs/releasing.md
+            return "0.0.0-SNAPSHOT"
         }
     }
 }

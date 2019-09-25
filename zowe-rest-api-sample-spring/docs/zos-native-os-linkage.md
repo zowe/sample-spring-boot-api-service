@@ -23,7 +23,7 @@ Here is the example `javah` command for this project:
 
 After you implement the function(s) from the header file, you must build the native code on z/OS into a "shared object" which is analogous to a Window's DLL.
 
-The "shared object" is located within the project and loaded at run time.  The file name for the "shared object" must be prefixed with `lib` and end in `.so`, e.g. `libwtojni.so` even though the name to be loaded is simply `wtojni`.
+The "shared object" is located within the project and loaded at run time.  The file name for the "shared object" must be prefixed with `lib` and end in `.so`, e.g. `libzowe-sample.so` even though the name to be loaded is simply `wtojni`.
 
 ## Uploading Source Code to z/OS
 
@@ -64,7 +64,7 @@ You use the uploaded [makefile](../zossrc/makefile) to build via `make` on z/OS 
 
 - `cd /u/ibmuser/samplapi/zossrc`
 - `make`
-- `make install` to copy `libwtojni.so` to the directory `../lib` so the Java can load it (`-p` preserves the extended attribute that is set by `makefile`)
+- `make install` to copy `libzowe-sample.so` to the directory `../lib` so the Java can load it (`-p` preserves the extended attribute that is set by `makefile`)
 
 You can issue these commands from your workstation using Zowe CLI.
 
@@ -94,15 +94,15 @@ Assemble an assembly source file:
 
 Generate object code from C++ file:
 
-`xlc++ -o libwtojni.so -W "l,xplink,dll" -W "c,lp64,langlvl(extended),xplink,dll,exportall" -I/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64/include wtojni.cpp`
+`xlc++ -o libzowe-sample.so -W "l,xplink,dll" -W "c,lp64,langlvl(extended),xplink,dll,exportall" -I/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64/include wtojni.cpp`
 
-Create the `libwtojni.so`:
+Create the `libzowe-sample.so`:
 
-`xlc++ -W "l,lp64,dll,dynam=dll,xplink,map,list"  -qsource -o libwtojni.so wtojni.o wtoexec.o`
+`xlc++ -W "l,lp64,dll,dynam=dll,xplink,map,list" -qsource -o libzowe-sample.so wtojni.o wtoexec.o`
 
 Be sure to add the [program control](https://github.com/zowe/sample-spring-boot-api-service/issues/14) attribute to avoid `java.lang.UnsatisfiedLinkError` errors:
 
-`extattr +p libwtojni.so`
+`extattr +p libzowe-sample.so`
 
 ## Testing
 
@@ -150,7 +150,7 @@ The benefit of packaging `.so` into jars is that we do not need care about addit
 After successful build you need to download the `.so` file from z/OSMF in your `zowe-rest-api-sample-spring` directory:
 
 ```bash
-zowe files download uss-file "/u/ibmuser/samplapi/zossrc/libwtojni.so" -f "src/main/resources/lib/libwtojni.so" --binary
+zowe files download uss-file "/u/ibmuser/samplapi/zossrc/libzowe-sample.so" -f "src/main/resources/lib/libzowe-sample.so" --binary
 ```
 
 The Gradle build includes the `.so` file into the application jar automatically.

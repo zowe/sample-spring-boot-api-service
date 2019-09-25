@@ -1,0 +1,6 @@
+{
+    "name": "Zowe REST API SDK",
+    "defaultDirName": "zowe-rest-api-sdk",
+    "defaultHlqSegment": "ZOWE.APISDK",
+    "zfsMegabytes": 500
+}

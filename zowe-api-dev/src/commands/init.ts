@@ -25,6 +25,12 @@ export default class Init extends Command {
             description: "home of Java 8 on z/OS (JAVA_HOME)",
             helpValue: "<path>"
         }),
+        javaLoadlib: flags.string({
+            char: "l",
+            default: "",
+            description: "dataset with JVMLDM86 (SIEALNKE)",
+            helpValue: "<dsn>"
+        }),
         zosHlq: flags.string({ char: "h", default: "", helpValue: "<HLQ>", description: "target z/OS dataset HLQ" }),
         zosTargetDir: flags.string({
             char: "t",
@@ -44,14 +50,21 @@ export default class Init extends Command {
         if (f.force || !existsSync(configPath)) {
             this.log(`Initializing user configuration file for ${projectConfig.name}`);
             this.log("Getting information about your Zowe profile");
-            const profiles = zoweSync("profiles list zosmf-profiles --show-contents").data as [
-                { profile: { user: string } }
+            const profiles = zoweSync("profiles list zosmf-profiles --show-contents", { logOutput: false }).data as [
+                { name: string; profile: { user: string } }
             ];
-            const userid = profiles[0].profile.user.toUpperCase();
+            let defaultProfile = profiles[0];
+            for (const profile of profiles) {
+                if (profile.name.indexOf('(default)') > -1) {
+                    defaultProfile = profile;
+                }
+            }
+            const userid = defaultProfile.profile.user.toUpperCase();
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
             const data = {
-                javaHome: validateJavaHome(f.javaHome, this) || detectJavaHome(this),
+                javaHome: f.javaHome || detectJavaHome(this),
+                javaLoadlib: f.javaLoadlib,
                 jobcard: [
                     `//${jobname} JOB ${f.account},'ZOWE API',MSGCLASS=A,CLASS=A,`,
                     "//  MSGLEVEL=(1,1),REGION=0M",

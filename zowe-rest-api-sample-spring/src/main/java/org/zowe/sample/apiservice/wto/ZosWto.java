@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.zowe.commons.zos.LibLoader;
 
-import static org.zowe.sample.apiservice.AppNativeLibraries.WTO_LIBRARY_NAME;
+import static org.zowe.sample.apiservice.AppNativeLibraries.SAMPLE_LIBRARY_NAME;
 
 /**
  * z/OS implementation calling the native, OS-linkage service WTO via a "shared
@@ -23,7 +23,7 @@ import static org.zowe.sample.apiservice.AppNativeLibraries.WTO_LIBRARY_NAME;
 @Service
 public class ZosWto implements Wto {
     static {
-        new LibLoader().loadLibrary(WTO_LIBRARY_NAME);
+        new LibLoader().loadLibrary(SAMPLE_LIBRARY_NAME);
     }
 
     private native int wto(int id, String content);

@@ -38,3 +38,8 @@ node_modules
 user-zowe-api.json
 lastJob.json
 zowe-api-dev/zowedev-zowe-api-dev-*.tgz
+zowe-rest-api-sample-spring/build.gradle-orig
+zowe-rest-api-commons-spring/.version
+/package-lock.json
+key.tar
+.key

@@ -3,7 +3,7 @@
     "zosSourcesDir": "zossrc",
     "buildCommand": "make && make install",
     "buildFiles": {
-        "libwtojni.so": "src/main/resources/lib/libwtojni.so"
+        "libzowe-sample.so": "src/main/resources/lib/libzowe-sample.so"
     },
     "deployment": {
         "files": {
@@ -20,7 +20,7 @@
             }
         }
     },
-    "shellStartCommand": "java -Djava.library.path=\"\\$PWD/lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
+    "shellStartCommand": "java -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
     "jobTemplatePath": "src/main/jcl/template.jcl",
     "jobPath": "build/api.jcl",
     "defaultDirName": "zowe-rest-api-sample-spring",
