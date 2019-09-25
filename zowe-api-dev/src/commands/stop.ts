@@ -21,11 +21,11 @@ export default class Stop extends Command {
                 debug(job);
                 saveLastJob(job);
                 if (job.status === "ACTIVE") {
-                    this.log(`Cancelling job ${job.jobname} (${job.jobid})`);
-                    const updatedJob = zoweSync(`jobs cancel job ${job.jobid}`).data as IJob;
+                    this.log(`Stopping job ${job.jobname} (${job.jobid})`);
+                    const updatedJob = zoweSync(`zos-console issue command "P ${job.jobname}"`).data as IJob;
                     saveLastJob(updatedJob);
                 } else {
-                    this.warn(`Cancelling job ${job.jobname} (${job.jobid}) is not active but in ${job.status} status`);
+                    this.warn(`Stopping job ${job.jobname} (${job.jobid}) is not active but in ${job.status} status`);
                 }
             }
         }

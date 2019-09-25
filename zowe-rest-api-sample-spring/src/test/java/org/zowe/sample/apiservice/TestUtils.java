@@ -9,6 +9,10 @@
  */
 package org.zowe.sample.apiservice;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.zowe.commons.zos.security.platform.MockPlatformUser;
+
 public class TestUtils {
     public static final String ZOWE_BASIC_AUTHENTICATION = "Basic em93ZTp6b3dl";
+    public static final UsernamePasswordAuthenticationToken ZOWE_AUTHENTICATION_TOKEN = new UsernamePasswordAuthenticationToken(MockPlatformUser.VALID_USERID, null);
 }

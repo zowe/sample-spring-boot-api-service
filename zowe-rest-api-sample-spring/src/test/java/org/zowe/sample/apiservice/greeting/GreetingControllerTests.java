@@ -9,11 +9,13 @@
  */
 package org.zowe.sample.apiservice.greeting;
 
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,10 +35,16 @@ public class GreetingControllerTests {
     private MockMvc mvc;
 
     @Test
-    public void returnsGreeting() throws Exception {
+    public void returnsGreetingSpring() throws Exception {
         mvc.perform(get("/api/v1/greeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", is("Hello, world!")));
+    }
+
+    @Test
+    public void returnsGreetingRestAssured() throws Exception {
+        given().standaloneSetup(new GreetingController()).auth().principal(TestUtils.ZOWE_AUTHENTICATION_TOKEN).when()
+                .get("/api/v1/greeting").then().body("$.content", equalTo("Hello, world!"));
     }
 
     @Test
@@ -48,7 +56,8 @@ public class GreetingControllerTests {
 
     @Test
     public void failsWithoutAuthentication() throws Exception {
-        mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized()).andExpect(header().exists(HttpHeaders.WWW_AUTHENTICATE));
+        mvc.perform(get("/api/v1/greeting")).andExpect(status().isUnauthorized())
+                .andExpect(header().exists(HttpHeaders.WWW_AUTHENTICATE));
     }
 
     @Test

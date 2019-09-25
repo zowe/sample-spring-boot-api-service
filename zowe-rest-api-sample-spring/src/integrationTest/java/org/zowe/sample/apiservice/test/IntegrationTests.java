@@ -7,17 +7,15 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.wto;
+package org.zowe.sample.apiservice.test;
 
-import lombok.Data;
+import org.junit.Before;
 
-/**
- * Class to model the data returned from the /wto endpoint
- */
-@Data
-public class WtoResponse {
-    private final int id;
-    private final String content;
-    private final int rc;
-    private final String message;
+public class IntegrationTests {
+    protected ServiceUnderTest serviceUnderTest = ServiceUnderTest.getInstance();
+
+    @Before
+    public void setup() {
+        serviceUnderTest.waitUntilIsReady();
+    }
 }

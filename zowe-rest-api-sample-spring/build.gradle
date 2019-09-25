@@ -1,8 +1,10 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.4.RELEASE'
-	id 'java'
-	id 'jacoco'
+    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'java'
+    id 'jacoco'
     id 'com.github.hierynomus.license' version '0.15.0'
+    id 'org.unbroken-dome.test-sets' version '2.1.1'
+    id 'com.adarshr.test-logger' version '1.7.0'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -17,9 +19,9 @@ ext {
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
@@ -32,11 +34,21 @@ repositories {
         }
     }
     // TODO: Remove when the library is on JCenter
-	maven {
-		url  "https://dl.bintray.com/plavjanik/zowe"
-	}
+    maven {
+        url  "https://dl.bintray.com/plavjanik/zowe"
+    }
     jcenter()
     mavenCentral()
+}
+
+testSets {
+    integrationTest {
+        createArtifact = true
+    }
+}
+
+integrationTest {
+    outputs.upToDateWhen { false }
 }
 
 def commonsProject = { ->
@@ -50,19 +62,25 @@ def commonsProject = { ->
 
 dependencies {
     implementation commonsProject()
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.rest-assured:rest-assured:4.1.1'
+    testImplementation 'io.rest-assured:json-path:4.1.1'
+    testImplementation 'io.rest-assured:xml-path:4.1.1'
+    testImplementation 'io.rest-assured:spring-mock-mvc:4.1.1'
+    testImplementation 'org.awaitility:awaitility:4.0.1'
+    integrationTestAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 jacoco {
-    toolVersion = '0.8.3'
+    toolVersion = '0.8.4'
 }
 
 jacocoTestReport {
@@ -89,7 +107,7 @@ license {
 }
 
 bootRun {
-	args '--spring.config.additional-location=file:./config/local/application.yml'
+    args '--spring.config.additional-location=file:./config/local/application.yml'
 }
 
 task checkSharedObject {
@@ -108,4 +126,8 @@ task zosbuild(type: Exec) {
     outputs.cacheIf { true }
     outputs.file(sharedObjectFilePath)
     commandLine 'zowe-api-dev', 'zosbuild'
+}
+
+testlogger {
+    theme 'mocha'
 }
