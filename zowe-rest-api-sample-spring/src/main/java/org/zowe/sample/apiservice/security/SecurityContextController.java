@@ -42,7 +42,7 @@ public class SecurityContextController {
         this.platformThreadLevelSecurity = platformThreadLevelSecurity;
     }
 
-    @ApiOperation(value = "Changes security context on the platform during the call and returns infromation about user IDs", authorizations = {
+    @ApiOperation(value = "Changes security context on the platform during the call and returns information about user IDs", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/authenticatedUser")
     public Map<String, String> authenticated(@ApiIgnore Authentication authentication) {
