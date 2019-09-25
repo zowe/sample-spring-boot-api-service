@@ -8,7 +8,7 @@ if ! zowe files ls am $DSN; then
     zowe files cre classic $DSN
 fi
 
-URL="https://river.zowe.org:10443/zosmf/restfiles/ds/$DSN_MEMBER"
+URL="https://${ZOS_HOST}:${ZOS_ZOSMF_PORT}/zosmf/restfiles/ds/$DSN_MEMBER"
 echo URL=$URL
 
 DATA="$CIRCLE_PROJECT_USERNAME:$CIRCLE_PROJECT_REPONAME:$CIRCLE_BUILD_NUM"

@@ -9,7 +9,7 @@ if [ ! -f ".lock-session" ]; then
     exit 0
 fi
 
-URL="https://river.zowe.org:10443/zosmf/restfiles/ds/$DSN_MEMBER"
+URL="https://${ZOS_HOST}:${ZOS_ZOSMF_PORT}/zosmf/restfiles/ds/$DSN_MEMBER"
 echo URL=$URL
 
 SESSION_REF=$(cat .lock-session)
