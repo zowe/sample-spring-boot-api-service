@@ -6,7 +6,7 @@ The terminology around testing is often vague and different terms can have sligh
 
 ## Types of Test
 
-- **Unit tests** - The majority of the code should be tested by unit tests. A unit test test a unit of the code. The unit should should be reasonably small - a function, a method, or a class, and should be tested in isolation without other units. The sample uses [JUnit 4](https://junit.org/junit4/) testing framework which is a standard for Java development. While you can use it to drive tests of multiple units together (integration tests), it is recommended to keep the unit tests small so your tests are fast and reliable. If your class uses other classes, you should use [dependency injection in Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring) to provide a mock implementation of other classs for your unit test. You can use a mocking framework [Mockito](https://site.mockito.org/) to mock classes. The sample has these tests in `src/test/java` directory.
+- **Unit tests** - The majority of the code should be tested by unit tests. A unit test tests a unit of the code. The unit should should be reasonably small - a function, a method, or a class, and should be tested in isolation without other units. The sample uses [JUnit 4](https://junit.org/junit4/) testing framework which is a standard for Java development. While you can use it to drive tests of multiple units together (integration tests), it is recommended to keep the unit tests small so your tests are fast and reliable. If your class uses other classes, you should use [dependency injection in Spring](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring) to provide a mock implementation of other classs for your unit test. You can use a mocking framework [Mockito](https://site.mockito.org/) to mock classes. The sample has these tests in `src/test/java` directory.
 
 - **REST controller tests** - The REST endpoints are developed using Spring MVC controllers. It makes sense to the logic of the controllers using Spring's [MockMvc](https://spring.io/guides/gs/testing-web/) or [RestAssuredMockMvc](https://www.baeldung.com/spring-mock-mvc-rest-assured). These tests the controller without starting the web service and you should provide mocks for classes that used by your controller so your tests can run fast and outside of z/OS as a part of the test suite that is executed by `./gradlew test` or `./gradlew build`. The sample has these tests in `src/test/java` directory in the same packages as the tested controllers. For example: [GreetingControllerTests.java](../src/test/java/org/zowe/sample/apiservice/greeting/GreetingControllerTests.java). You should test every functionality of the controller using these tests.
 
@@ -31,6 +31,10 @@ The terminology around testing is often vague and different terms can have sligh
   - [REST-assured](http://rest-assured.io/)
   - [REST-assured Support for Spring MockMvc](https://www.baeldung.com/spring-mock-mvc-rest-assured)
   - [Mockito](https://static.javadoc.io/org.mockito/mockito-core/3.0.0/org/mockito/Mockito.html)
+
+- Testing resources:
+  - <https://martinfowler.com/bliki/UnitTest.html>
+  - <https://martinfowler.com/bliki/IntegrationTest.html>
 
 - Scaled Agile Framework (SAFe) resources:
   - [Built-In Quality](https://www.scaledagileframework.com/built-in-quality/)
