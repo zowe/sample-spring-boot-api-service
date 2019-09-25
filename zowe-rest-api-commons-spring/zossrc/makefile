@@ -44,9 +44,11 @@ JAVA_HOME := /usr/lpp/java/J8.0_64
 DLL_CPP_FLAGS=-W "c,lp64,langlvl(extended),dll,xplink,exportall" \
  -qsearch=$(JAVA_HOME)/include \
  -qsource \
+ -g \
  -c
 
 DLL_BND_FLAGS=-W "l,lp64,dll,dynam=dll,xplink,map,list" \
+ -g \
  -qsource
 
 ASM_FLAGS=-mrent
@@ -80,4 +82,5 @@ clean:
 	rm *.lst
 	rm *.x
 	rm *.so
+	rm *.dbg
 	rm *.s
