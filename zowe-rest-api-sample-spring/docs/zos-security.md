@@ -33,6 +33,73 @@ When you run it outside of z/OS without `zos` profile, a mock implementation `Mo
 
 Applications should support stateless token-based authentication provided by [Zowe Authentication and Authorization Service](https://github.com/zowe/api-layer/wiki/Zowe-Authentication-and-Authorization-Service). This is not implemented yet.
 
+### REST API Responses
+
+There three possible responses when authentication fails.
+
+1. Credentials (user ID or password) were invalid. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: Incorrect credentials",
+                "messageInstanceId": "6c921b84-1f4a-460c-9432-ecf0f1ea86e7",
+                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageNumber": "ZWEAS401",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+    **Note:** Internally, the `SafPlatformUser` code returns more details with all possible `errno` values. But `RestAuthenticationEntryPoint` class does not provide all details to the client for security reasons (e.g. it does not want to help attacker by saying that the user ID is valid but the password is not).
+
+2. Credentials are expired. User has enterred correct credentials but they are expired. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`. Client can look for key `org.zowe.commons.zos.security.authentication.error.expired` to recognize that the password is expired:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: The password for the specified identity has expired",
+                "messageInstanceId": "93868ee2-b684-4e75-852e-8db5ee932a0f",
+                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageNumber": "ZWEAS401",
+                "messageType": "ERROR"
+            },
+            {
+                "messageContent": "The password for the specified identity has expired.",
+                "messageInstanceId": "945f5a22-441f-4462-a87b-6ed6ce739e57",
+                "messageKey": "org.zowe.commons.zos.security.authentication.error.expired",
+                "messageNumber": "ZWEAS491",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+3. The authentication failed because of an internal error. It can be misconfiguration of the API service (usually a missing authority) or internal SAF error. Standard HTTP status code `500` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "Internal authentication error: The calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space. Please contact support for further assistance.",
+                "messageInstanceId": "6de38356-887d-4385-9fb1-dfdd9a8c56d9",
+                "messageKey": "org.zowe.commons.zos.security.authentication.error.internal",
+                "messageNumber": "ZWEAS003",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+In all cases, `WWW-Authenticate` header is returned with the service name as the realm, for example:
+
+```http
+WWW-Authenticate: Basic realm="Zowe Sample API Service", charset="UTF-8"
+```
+
 ## Security Context
 
 HTTP requests in the API services are processed by thread that are started under the security context of the server. If your code needs to access mainframe resources under the security context of the user that is issuing the REST API request in need to do following:

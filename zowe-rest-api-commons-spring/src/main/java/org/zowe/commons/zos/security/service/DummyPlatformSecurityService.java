@@ -20,8 +20,7 @@ import org.springframework.stereotype.Service;
 public class DummyPlatformSecurityService implements PlatformSecurityService {
     static String INVALID_VALUE = "INVALID";
 
-    private static final SecurityRequestFailed SECURITY_REQUEST_FAILED = new SecurityRequestFailed(null, 0, 1, 0, 0,
-            null);
+    private static final SecurityRequestFailed SECURITY_REQUEST_FAILED = new SecurityRequestFailed(null, 0, 1);
 
     private static final String SERVER_USERID = System.getProperty("user.name");
 

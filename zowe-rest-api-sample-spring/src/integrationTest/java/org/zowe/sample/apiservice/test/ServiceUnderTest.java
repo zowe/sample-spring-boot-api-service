@@ -29,11 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @ToString
 public class ServiceUnderTest {
+    public static final String LOCAL_PROFILE = "local";
+    public static final String ZOS_PROFILE = "zos";
+
     enum Status {
         UNKNOWN, UP, DOWN
     }
 
     private static ServiceUnderTest instance;
+
+    private final String profile;
 
     private final String baseUri;
 
@@ -58,6 +63,7 @@ public class ServiceUnderTest {
     }
 
     public ServiceUnderTest() {
+        this.profile = env("TEST_PROFILE", LOCAL_PROFILE);
         this.baseUri = env("TEST_BASE_URI", "https://localhost");
         this.port = Integer.parseInt(env("TEST_PORT", "10080"));
         this.userId = env("TEST_USERID", VALID_USERID);
@@ -107,6 +113,7 @@ public class ServiceUnderTest {
             }
             break;
         case UP:
+            defaultRestAssuredSetup();
             break;
         case DOWN:
             throw new RuntimeException("The service is down");

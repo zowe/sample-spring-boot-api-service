@@ -13,16 +13,20 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.zowe.commons.zos.security.jni.Secur;
 import org.zowe.commons.zos.security.platform.PlatformThread;
+import org.zowe.commons.zos.security.platform.PlatformTlsErrno;
 import org.zowe.commons.zos.security.platform.SafPlatformThread;
+
+import lombok.extern.slf4j.Slf4j;
 
 import static org.zowe.commons.zos.CommonsNativeLibraries.SECUR_LIBRARY_NAME;
 
-@Profile("zos")
-@Service("platformSecurityService")
 /**
  * Implements low-level security functions using pthread_security_np() that is
  * called via JNI in module libsecur.so.
  */
+@Profile("zos")
+@Service("platformSecurityService")
+@Slf4j
 public class ZosJniPlatformSecurityService implements PlatformSecurityService {
     private static final int CREATE_THREAD_SECURITY_CONTEXT = 0;
     private static final int REMOVE_THREAD_SECURITY_CONTEXT = 1;
@@ -32,18 +36,28 @@ public class ZosJniPlatformSecurityService implements PlatformSecurityService {
 
     @Override
     public void createThreadSecurityContext(String userId, String password, String applId) {
-        checkRc(secur.createSecurityEnvironment(userId, password, applId), CREATE_THREAD_SECURITY_CONTEXT);
+        checkErrno("create thread-level security environment",
+                secur.createSecurityEnvironment(userId, password, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
-    private void checkRc(int rc, int function) {
-        if (rc != 0) {
-            throw new SecurityRequestFailed(SECUR_LIBRARY_NAME, function, rc, 0, 0, null);
+    private void checkErrno(String action, int errno, int function) {
+        if (errno != 0) {
+            PlatformTlsErrno tlsErrno = PlatformTlsErrno.valueOfErrno(errno);
+            String explanation;
+            if (tlsErrno != null) {
+                explanation = tlsErrno.name + " " + tlsErrno.explanation;
+            } else {
+                explanation = "unknown reason";
+            }
+            log.error("Platform security action to {} has failed: {}; errno={}", action, explanation, errno);
+            throw new SecurityRequestFailed(SECUR_LIBRARY_NAME, function, errno);
         }
     }
 
     @Override
     public void createThreadSecurityContextByDaemon(String userId, String applId) {
-        checkRc(secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
+        checkErrno("create thread-level security environment without password",
+                secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
     @Override
@@ -53,6 +67,7 @@ public class ZosJniPlatformSecurityService implements PlatformSecurityService {
 
     @Override
     public void removeThreadSecurityContext() {
-        checkRc(secur.removeSecurityEnvironment(), REMOVE_THREAD_SECURITY_CONTEXT);
+        checkErrno("remove thread-level security environment", secur.removeSecurityEnvironment(),
+                REMOVE_THREAD_SECURITY_CONTEXT);
     }
 }

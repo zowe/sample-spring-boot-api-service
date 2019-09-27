@@ -10,6 +10,11 @@ messages:
     type: ERROR
     text: "Internal error: Invalid message text format. Please contact support for further assistance."
 
+  - key: org.zowe.commons.zos.security.authentication.error.internal
+    number: ZWEAS003
+    type: ERROR
+    text: "Internal authentication error: %s. Please contact support for further assistance."
+
   # API Mediation Layer integration:
   - key: org.zowe.commons.apiml.serviceCertificateNotTrusted
     number: ZWEAS201
@@ -25,6 +30,7 @@ messages:
     number: ZWEAS203
     type: ERROR
     text: "Unable to connect to Zowe API Mediation Layer. The certificate of API Mediation Layer is not trusted by the service: %s"
+
 
   # REST API HTTP errors:
   - key: org.zowe.commons.rest.unauthorized
@@ -46,6 +52,11 @@ messages:
     number: ZWEAS415
     type: ERROR
     text: "The media format of the requested data is not supported by the service, so the service is rejecting the request."
+
+  - key: org.zowe.commons.zos.security.authentication.error.expired
+    number: ZWEAS491
+    type: ERROR
+    text: "The password for the specified identity has expired."
 
   - key: org.zowe.commons.rest.internalServerError
     number: ZWEAS500

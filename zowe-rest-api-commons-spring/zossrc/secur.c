@@ -19,7 +19,12 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
     if (platformUser != NULL)
     {
         int userLength = strlen(platformUser);
-        rc = pthread_security_applid_np(__DAEMON_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, NULL, 0, platformApplId);
+        if (pthread_security_applid_np(__DAEMON_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, NULL, 0, platformApplId) != 0) {
+            rc = errno;
+        }
+        else {
+            rc = 0;
+        }
     }
     free_if_not_null(platformUser);
     free_if_not_null(platformApplId);
@@ -35,7 +40,12 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
     if (platformUser != NULL)
     {
         int userLength = strlen(platformUser);
-        rc = pthread_security_applid_np(__CREATE_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, platformPassword, 0, platformApplId);
+        if (pthread_security_applid_np(__CREATE_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, platformPassword, 0, platformApplId) != 0) {
+            rc = errno;
+        }
+        else {
+            rc = 0;
+        }
     }
     free_if_not_null(platformUser);
     free_if_not_null(platformApplId);

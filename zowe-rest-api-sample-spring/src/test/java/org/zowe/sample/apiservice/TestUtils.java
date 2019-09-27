@@ -9,10 +9,26 @@
  */
 package org.zowe.sample.apiservice;
 
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.EXPIRED_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.FAILING_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.INVALID_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_USERID;
+
+import java.util.Base64;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.zowe.commons.zos.security.platform.MockPlatformUser;
 
 public class TestUtils {
-    public static final String ZOWE_BASIC_AUTHENTICATION = "Basic em93ZTp6b3dl";
-    public static final UsernamePasswordAuthenticationToken ZOWE_AUTHENTICATION_TOKEN = new UsernamePasswordAuthenticationToken(MockPlatformUser.VALID_USERID, null);
+    public static final String ZOWE_BASIC_AUTHENTICATION = "Basic "
+            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + VALID_PASSWORD).getBytes());
+    public static final String ZOWE_BASIC_AUTHENTICATION_INVALID = "Basic "
+            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + INVALID_PASSWORD).getBytes());
+    public static final String ZOWE_BASIC_AUTHENTICATION_FAILING = "Basic "
+            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + FAILING_PASSWORD).getBytes());
+    public static final String ZOWE_BASIC_AUTHENTICATION_EXPIRED = "Basic "
+            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + EXPIRED_PASSWORD).getBytes());
+    public static final UsernamePasswordAuthenticationToken ZOWE_AUTHENTICATION_TOKEN = new UsernamePasswordAuthenticationToken(
+            MockPlatformUser.VALID_USERID, null);
 }

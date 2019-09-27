@@ -10,12 +10,12 @@
 package org.zowe.commons.zos.security.platform;
 
 /**
- * Interface to query z/OS user information.
+ * Interface to do z/OS user authentication.
  *
  * It is inspired by
  * https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformUser.html
  * class. But it provides interface instead of class with static methods so
- * non-z/OS implementation of this inteface can be created.
+ * non-z/OS implementation of this interface can be created.
  */
 public interface PlatformUser {
     /**
