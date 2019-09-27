@@ -28,7 +28,7 @@ public class MockPlatformUser implements PlatformUser {
             if (EXPIRED_PASSWORD.equalsIgnoreCase(password)) {
                 builder.errno(PlatformPwdErrno.EMVSEXPIRE.errno);
             } else if (FAILING_PASSWORD.equalsIgnoreCase(password)) {
-                builder.errno(PlatformPwdErrno.EPERM.errno);
+                builder.errno(PlatformPwdErrno.EMVSERR.errno).errno2(PlatformErrno2.JREnvDirty.errno2);
             }
             return builder.build();
         }

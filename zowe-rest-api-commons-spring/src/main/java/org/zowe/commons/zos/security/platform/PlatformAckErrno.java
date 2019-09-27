@@ -14,24 +14,21 @@ import java.util.Map;
 
 /**
  * Provides explanation for error codes for authentication as described at
- * documentation for BPX4TLS:
- * https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxb100/tls.htm
+ * documentation for BPX4ACK:
+ * https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxb100/ack.htm
  */
-public enum PlatformTlsErrno {
+public enum PlatformAckErrno {
     EACCES("EACCES", 111, "Permission is denied; the specified password is incorrect", PlatformErrorType.DEFAULT),
     EINVAL("EINVAL", 121, "Invalid input parameters", PlatformErrorType.DEFAULT),
-    EMVSERR("EMVSERR", 157, "An MVS environmental error has been detected", PlatformErrorType.INTERNAL),
-    EMVSEXPIRE("EMVSEXPIRE", 168, "The password for the specified identity has expired", PlatformErrorType.USER_EXPLAINED),
     EMVSSAF2ERR("EMVSSAF2ERR", 164, "An error occurred in the security product", PlatformErrorType.INTERNAL),
-    EMVSSAFEXTRERR("EMVSSAFEXTRERR", 163, "The user's access was revoked", PlatformErrorType.DEFAULT),
     ENOSYS("ENOSYS", 134, "The function is not supported on this system", PlatformErrorType.INTERNAL),
-    EPERM("EPERM", 139, "The calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space", PlatformErrorType.INTERNAL),
-    ESRCH("ESRCH", 143, "The identity that was specified is not defined to the security product", PlatformErrorType.DEFAULT);
+    EPERM("EPERM", 139, "The user does not have the access specified to the resource or the calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space", PlatformErrorType.ERRNO2_REQUIRED),
+    ESRCH("ESRCH", 143, "The user ID or resource is not defined to the security product", PlatformErrorType.ERRNO2_REQUIRED);
 
-    private static Map<Integer, PlatformTlsErrno> BY_ERRNO = new HashMap<>();
+    private static Map<Integer, PlatformAckErrno> BY_ERRNO = new HashMap<>();
 
     static {
-        for (PlatformTlsErrno e : values()) {
+        for (PlatformAckErrno e : values()) {
             BY_ERRNO.put(e.errno, e);
         }
     }
@@ -41,14 +38,14 @@ public enum PlatformTlsErrno {
     public final String explanation;
     public final PlatformErrorType errorType;
 
-    private PlatformTlsErrno(String name, int errno, String explanation, PlatformErrorType errorType) {
+    private PlatformAckErrno(String name, int errno, String explanation, PlatformErrorType errorType) {
         this.name = name;
         this.errno = errno;
         this.explanation = explanation;
         this.errorType = errorType;
     }
 
-    public static PlatformTlsErrno valueOfErrno(int errno) {
+    public static PlatformAckErrno valueOfErrno(int errno) {
         return BY_ERRNO.get(errno);
     }
 }

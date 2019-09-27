@@ -4,6 +4,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.8.4'
     id 'jacoco'
     id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.adarshr.test-logger' version '1.7.0'
 }
 
 version getVersionFromGitTag()
@@ -82,3 +83,25 @@ task zosbuild(type: Exec) {
 }
 
 apply from: "$projectDir/gradle/publishing.gradle"
+
+testlogger {
+    theme 'mocha'
+}
+
+jacoco {
+    toolVersion = '0.8.4'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+    doLast {
+        println "JaCoCo Test report from Commons Spring written to: ${jacocoTestReport.reports.html.destination}/index.html"
+    }
+}
+
+jacocoTestReport.dependsOn test
+
+check.dependsOn jacocoTestReport

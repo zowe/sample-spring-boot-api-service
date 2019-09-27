@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.service.PlatformSecurityService;
 import org.zowe.commons.zos.security.thread.PlatformThreadLevelSecurity;
 
@@ -48,15 +49,26 @@ public class SecurityContextController {
     public Map<String, String> authenticated(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
         String beforeSwitchUserName = platformSecurityService.getCurrentThreadUserId();
+        boolean accessToBpxServerServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
+        boolean accessToBpxServerUserid = platformSecurityService.checkPermission( authentication.getName(), "FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
         result.put("authenticatedUserName", authentication.getName());
         result.put("beforeSwitchUserName", beforeSwitchUserName);
+        result.put("accessToBpxServerServer", Boolean.toString(accessToBpxServerServer));
+        result.put("accessToBpxServerUserid", Boolean.toString(accessToBpxServerUserid));
+
         platformThreadLevelSecurity.wrapRunnableInEnvironmentForAuthenticatedUser(new Runnable() {
             @Override
             public void run() {
                 String afterSwitchUserName = platformSecurityService.getCurrentThreadUserId();
                 String afterSwitchUserNameSpring = SecurityContextHolder.getContext().getAuthentication().getName();
+                boolean accessToBpxServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
+                boolean accessToUndefinedResource = platformSecurityService.checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ);
+                boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService.checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ, false);
                 result.put("afterSwitchUserName", afterSwitchUserName);
                 result.put("afterSwitchUserNameSpring", afterSwitchUserNameSpring);
+                result.put("accessToBpxServer", Boolean.toString(accessToBpxServer));
+                result.put("accessToUndefinedResource", Boolean.toString(accessToUndefinedResource));
+                result.put("accessToUndefinedResourceAllowMissingResource", Boolean.toString(accessToUndefinedResourceAllowMissingResource));
             }
         }).run();
 

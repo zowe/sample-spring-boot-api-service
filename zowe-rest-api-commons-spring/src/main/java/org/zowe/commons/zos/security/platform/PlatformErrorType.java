@@ -26,5 +26,9 @@ public enum PlatformErrorType {
      * Internal failure during the security processing which means that security
      * product or the service are not configured properly
      */
-    INTERNAL
+    INTERNAL,
+    /**
+     * errno2 value is required to understand the cause of the failure
+     */
+    ERRNO2_REQUIRED
 }

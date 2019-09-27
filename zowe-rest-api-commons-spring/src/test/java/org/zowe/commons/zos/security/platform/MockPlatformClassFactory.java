@@ -25,4 +25,20 @@ public class MockPlatformClassFactory implements PlatformClassFactory {
     public Object getPlatformUser() {
         return new MockPlatformUser();
     }
+
+    @Override
+    public Class<?> getPlatformAccessControlClass() throws ClassNotFoundException {
+        return Class.forName("org.zowe.commons.zos.security.platform.MockPlatformAccessControl");
+    }
+
+    @Override
+    public Object getPlatformAccessControl() throws ClassNotFoundException {
+        return new MockPlatformAccessControl();
+    }
+
+    @Override
+    public PlatformReturned convertPlatformReturned(Object safReturned) throws ClassNotFoundException,
+            IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        return (PlatformReturned) safReturned;
+    }
 }

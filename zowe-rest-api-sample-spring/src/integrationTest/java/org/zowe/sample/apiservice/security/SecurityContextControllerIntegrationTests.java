@@ -36,7 +36,10 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
         when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(200)
                 .body("afterSwitchUserName", equalsToAuthenticatedUserID)
                 .body("afterSwitchUserNameSpring", equalsToAuthenticatedUserID)
-                .body("authenticatedUserName", equalsToAuthenticatedUserID);
+                .body("authenticatedUserName", equalsToAuthenticatedUserID)
+                .body("accessToBpxServerServer", equalTo("true"))
+                .body("accessToUndefinedResource", equalTo("false"))
+                .body("accessToUndefinedResourceAllowMissingResource", equalTo("true"));
     }
 
     @Test

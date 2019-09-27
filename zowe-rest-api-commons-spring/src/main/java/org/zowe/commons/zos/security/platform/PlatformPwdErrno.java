@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public enum PlatformPwdErrno {
     EACCES("EACCES", 111, "Permission is denied; the specified password is incorrect", PlatformErrorType.DEFAULT),
-    EINVAL("EINVAL", 121, "Invalid input parameters.", PlatformErrorType.DEFAULT),
+    EINVAL("EINVAL", 121, "Invalid input parameters", PlatformErrorType.DEFAULT),
     EMVSERR("EMVSERR", 157, "An MVS environmental error has been detected", PlatformErrorType.INTERNAL),
     EMVSEXPIRE("EMVSEXPIRE", 168, "The password for the specified identity has expired", PlatformErrorType.USER_EXPLAINED),
     EMVSPASSWORD("EMVSPASSWORD", 169, "The new password is not valid", PlatformErrorType.USER_EXPLAINED),
