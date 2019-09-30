@@ -12,10 +12,13 @@ package org.zowe.commons.zos.security.platform;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Generated;
+
 /**
  * Provides explanation for secondary error codes for as described at:
  * https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxa800/errnojrs.htm
  */
+@Generated
 public enum PlatformErrno2 {
     JROK("JROK", 0x0000, "The return code value describes the error"),
     JRNotKey8("JRNotKey8", 0x0011, "The task is not in PSW key 8"),
