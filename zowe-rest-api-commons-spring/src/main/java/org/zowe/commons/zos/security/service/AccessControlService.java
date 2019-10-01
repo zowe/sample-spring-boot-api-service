@@ -29,7 +29,7 @@ public abstract class AccessControlService implements PlatformSecurityService {
     public boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel,
             boolean resourceHasToExist) {
         PlatformReturned returned = getPlatformAccessControl().checkPermission(userid, resourceClass, resourceName,
-                accessLevel);
+                accessLevel.getValue());
         return evaluatePlatformReturned(returned, resourceHasToExist);
     }
 
@@ -68,7 +68,7 @@ public abstract class AccessControlService implements PlatformSecurityService {
     public boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel,
             boolean resourceHasToExist) {
         PlatformReturned returned = getPlatformAccessControl().checkPermission(resourceClass, resourceName,
-                accessLevel);
+                accessLevel.getValue());
         return evaluatePlatformReturned(returned, resourceHasToExist);
     }
 

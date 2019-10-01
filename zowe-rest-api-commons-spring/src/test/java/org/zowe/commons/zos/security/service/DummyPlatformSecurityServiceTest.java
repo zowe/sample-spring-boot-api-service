@@ -15,6 +15,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.zowe.commons.zos.security.platform.MockPlatformAccessControl;
+import org.zowe.commons.zos.security.platform.MockPlatformUser;
 import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 
 public class DummyPlatformSecurityServiceTest {
@@ -73,6 +74,20 @@ public class DummyPlatformSecurityServiceTest {
         securityService.afterPropertiesSet();
         assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ));
         assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ));
+    }
+
+    @Test(expected = AccessControlError.class)
+    public void testInvalidUseridResourceAccessCheck() throws Exception {
+        DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
+        securityService.afterPropertiesSet();
+        securityService.checkPermission(MockPlatformUser.INVALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ);
+    }
+
+    @Test(expected = AccessControlError.class)
+    public void testFailingResourceAccessCheck() throws Exception {
+        DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
+        securityService.afterPropertiesSet();
+        securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.FAILING_RESOURCE, AccessLevel.READ);
     }
 
     @Test

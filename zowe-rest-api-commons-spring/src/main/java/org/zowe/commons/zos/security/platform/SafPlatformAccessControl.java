@@ -20,12 +20,12 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
 
     @Override
     public PlatformReturned checkPermission(String userid, String resourceClass, String resourceName,
-            AccessLevel accessLevel) {
+            int accessLevel) {
         try {
             Object safReturned = platformClassFactory.getPlatformAccessControlClass()
                     .getMethod("checkPermission", String.class, String.class, String.class, int.class)
                     .invoke(platformClassFactory.getPlatformAccessControl(), userid, resourceClass, resourceName,
-                            accessLevel.getValue());
+                            accessLevel);
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
@@ -34,12 +34,12 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
     }
 
     @Override
-    public PlatformReturned checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel) {
+    public PlatformReturned checkPermission(String resourceClass, String resourceName, int accessLevel) {
         try {
             Object safReturned = platformClassFactory.getPlatformAccessControlClass()
                     .getMethod("checkPermission", String.class, String.class, int.class)
                     .invoke(platformClassFactory.getPlatformAccessControl(), resourceClass, resourceName,
-                            accessLevel.getValue());
+                            accessLevel);
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException | NoSuchFieldException e) {

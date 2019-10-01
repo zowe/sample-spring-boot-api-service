@@ -21,7 +21,7 @@ public class MockPlatformAccessControl implements PlatformAccessControl {
 
     @Override
     public PlatformReturned checkPermission(String userid, String resourceClass, String resourceName,
-            AccessLevel accessLevel) {
+            int accessLevel) {
         boolean validUserid = userid.equalsIgnoreCase(VALID_USERID) || userid.equalsIgnoreCase(VALID_USERID2);
         if (validUserid && (resourceName.equalsIgnoreCase(PERMITTED_RESOURCE)
                 || (resourceClass.equalsIgnoreCase("FACILITY") && resourceName.equalsIgnoreCase("BPX.SERVER")))) {
@@ -42,7 +42,7 @@ public class MockPlatformAccessControl implements PlatformAccessControl {
     }
 
     @Override
-    public PlatformReturned checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel) {
+    public PlatformReturned checkPermission(String resourceClass, String resourceName, int accessLevel) {
         return checkPermission(VALID_USERID, resourceClass, resourceName, accessLevel);
     }
 }

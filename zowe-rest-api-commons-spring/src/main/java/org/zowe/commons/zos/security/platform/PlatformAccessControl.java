@@ -52,11 +52,11 @@ public interface PlatformAccessControl {
      * Check if a specific user has permission to a resource. See
      * https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformAccessControl.html?view=embed#checkPermission-java.lang.String-java.lang.String-java.lang.String-int-
      */
-    PlatformReturned checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel);
+    PlatformReturned checkPermission(String userid, String resourceClass, String resourceName, int accessLevel);
 
     /**
      * Check current ID permission to a resource. See
      * https://www.ibm.com/support/knowledgecenter/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformAccessControl.html?view=embed#checkPermission-java.lang.String-java.lang.String-int-
      */
-    PlatformReturned checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel);
+    PlatformReturned checkPermission(String resourceClass, String resourceName, int accessLevel);
 }
