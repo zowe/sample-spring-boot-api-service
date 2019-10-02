@@ -1,5 +1,17 @@
 # z/OS Security
 
+- [z/OS Security](#zos-security)
+  - [Types of API Services](#types-of-api-services)
+  - [Authentication](#authentication)
+    - [REST API Responses](#rest-api-responses)
+  - [Security Context](#security-context)
+    - [Security Context Switch Requirements](#security-context-switch-requirements)
+      - [Implementation](#implementation)
+      - [Building](#building)
+      - [Packaging](#packaging)
+      - [Links](#links)
+  - [Authorization Checks](#authorization-checks)
+
 ## Types of API Services
 
 The are two possible types of API services for z/OS:
@@ -193,7 +205,7 @@ import com.ibm.jzos.ZUtil;
 
 - It makes sense to create a "thread pool" by using <https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool-int-> and submit/invoke the Runnables/Callables that are not meant to be done as a part of the REST API request in it. The size of the thread pools (in Tomcat, or for background tasks) will vary for each REST API service and expected number of users. In some cases, it will make sense to make it configurable by the user.
 
-### Security Context Requirements
+### Security Context Switch Requirements
 
 The change of the security environment/context of a Java thread can be done in multiple ways:
 
@@ -266,3 +278,24 @@ The shared library `libsecur.so` is expected to be in zFS filesystem in the a di
 #### Links
 
 - <https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb100/tls.htm>
+
+## Authorization Checks
+
+The REST API service that is running on z/OS typically needs to check if the user that is authenticated has access to specific SAF resources to protect access to the functionality of the REST API or validate that the user can do the action before the action is started.
+
+The API to check access to SAF resource is a part of `PlatformSecurityService` interface.
+
+It provides following methods:
+
+- `boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist)`
+- `boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel)`
+- `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist)`
+- `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel)`
+
+All of them return `true` if user has access to the resource and `false` if the user has not access to the resource or the resource does not exist. They throw `AccessControlError` in other cases of failures (invalid user ID, invalid resource name, internal SAF error, misconfiguration of the service). The optional parameter `resourceHasToExist` is by default `true` and it causes that non-existing resource means that that no user has access to it. Some applications may want the opposite, protect access only when the security administator has created the resouces, then they can use `false` as the value of `resourceHasToExist` parameter.
+
+If the Spring profile `zos` is active, then this provider uses `SafPlatformAccessControl` class that uses Java Reflection to
+call `com.ibm.os390.security.PlatformUser` class. This class is available in IBM® SDK for z/OS®, Java™ Technology Edition in `racf.jar`.
+This JAR is not available in public repositories and cannot be added to this repository. These APIs are documented in <https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.80.doc/zsecurity-component/saf.html>.
+
+When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformAccessControl` is used. This has predefined values that are accepted.
