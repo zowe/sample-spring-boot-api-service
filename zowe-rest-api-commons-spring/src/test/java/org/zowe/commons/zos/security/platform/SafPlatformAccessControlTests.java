@@ -12,9 +12,6 @@ package org.zowe.commons.zos.security.platform;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.zowe.commons.zos.security.platform.MockPlatformAccessControl.DENIED_RESOURCE;
-import static org.zowe.commons.zos.security.platform.MockPlatformAccessControl.PERMITTED_RESOURCE;
-import static org.zowe.commons.zos.security.platform.MockPlatformAccessControl.VALID_CLASS;
 import static org.zowe.commons.zos.security.platform.MockPlatformAccessControl.VALID_USERID;
 
 import org.junit.Test;
@@ -26,12 +23,19 @@ public class SafPlatformAccessControlTests {
 
     @Test
     public void returnsTrueForPermittedCheck() {
-        assertNull(safPlatformAccessControl.checkPermission(VALID_CLASS, PERMITTED_RESOURCE, AccessLevel.READ.getValue()));
+        assertNull(safPlatformAccessControl.checkPermission("ZOWE", "SAMPLE.RESOURCE", AccessLevel.READ.getValue()));
     }
 
     @Test
     public void returnsFalseForDeniedPermittedCheck() {
         assertNotNull(
-                safPlatformAccessControl.checkPermission(VALID_USERID, VALID_CLASS, DENIED_RESOURCE, AccessLevel.READ.getValue()));
+                safPlatformAccessControl.checkPermission(VALID_USERID, "ZOWE", "DENIED", AccessLevel.READ.getValue()));
+        assertNotNull(safPlatformAccessControl.checkPermission(VALID_USERID, "ZOWE", "SAMPLE.RESOURCE",
+                AccessLevel.CONTROL.getValue()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwsExceptionOnInvalidLevel() {
+        new MockPlatformAccessControl("test-saf-invalid.yml");
     }
 }

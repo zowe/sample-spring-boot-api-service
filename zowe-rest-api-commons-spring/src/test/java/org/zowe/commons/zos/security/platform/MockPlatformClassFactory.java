@@ -13,12 +13,12 @@ public class MockPlatformClassFactory implements PlatformClassFactory {
 
     @Override
     public Class<?> getPlatformUserClass() throws ClassNotFoundException {
-        return Class.forName("org.zowe.commons.zos.security.platform.MockPlatformUser");
+        return MockPlatformUser.class;
     }
 
     @Override
     public Class<?> getPlatformReturnedClass() throws ClassNotFoundException {
-        return Class.forName("org.zowe.commons.zos.security.platform.PlatformReturned");
+        return PlatformReturned.class;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class MockPlatformClassFactory implements PlatformClassFactory {
 
     @Override
     public Class<?> getPlatformAccessControlClass() throws ClassNotFoundException {
-        return Class.forName("org.zowe.commons.zos.security.platform.MockPlatformAccessControl");
+        return MockPlatformAccessControl.class;
     }
 
     @Override

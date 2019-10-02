@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -49,6 +50,15 @@ public class CustomRestExceptionHandlerTests {
         ResponseEntity<Object> response = handler
                 .handleHttpMediaTypeNotSupported(new HttpMediaTypeNotSupportedException("message"), null, null, null);
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
+        assertTrue(response.getBody() instanceof ApiMessage);
+    }
+
+    @Test
+    public void handleAccessDeniedException() {
+        CustomRestExceptionHandler handler = new CustomRestExceptionHandler();
+        ResponseEntity<Object> response = handler.handleAccessDeniedException(new AccessDeniedException("message"),
+                null);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertTrue(response.getBody() instanceof ApiMessage);
     }
 

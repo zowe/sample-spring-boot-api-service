@@ -26,11 +26,15 @@ server:
     ssl:
         verifySslCertificatesOfServices: true
         enabled: false
-        protocol: TLS
+        protocol: TLSv1.2
         enabledProtocols: TLSv1.2
         ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
 
 springfox.documentation.swagger.v2.path: /apiDocs/v2
+
+zowe.commons.security.saf:
+    serviceResourceClass: "ZOWE"
+    serviceResourceNamePrefix: "SAMPLE."
 
 zowe.sample.authentication: Press **Authorize** and use `zowe` as the username and `zowe` as the password
 

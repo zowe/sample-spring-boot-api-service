@@ -30,11 +30,7 @@ public class SecurityRequestFailed extends RuntimeException {
     }
 
     public SecurityRequestFailed(String module, int function, int errno) {
-        super(String.format("Platform security request has failed: module=%s, function=%d, errno=%d", module, function,
-                errno));
-        this.module = module;
-        this.function = function;
-        this.errno = errno;
+        this(module, function, errno, null);
     }
 
 }

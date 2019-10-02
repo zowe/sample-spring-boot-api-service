@@ -11,6 +11,7 @@
       - [Packaging](#packaging)
       - [Links](#links)
   - [Authorization Checks](#authorization-checks)
+    - [Protecting access to REST API endpoints](#protecting-access-to-rest-api-endpoints)
 
 ## Types of API Services
 
@@ -299,3 +300,24 @@ call `com.ibm.os390.security.PlatformUser` class. This class is available in IBM
 This JAR is not available in public repositories and cannot be added to this repository. These APIs are documented in <https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.80.doc/zsecurity-component/saf.html>.
 
 When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformAccessControl` is used. This has predefined values that are accepted.
+
+### Protecting access to REST API endpoints
+
+The REST API endpoints can be protected by the `org.springframework.security.access.prepost.PreAuthorize` annotation.
+
+The SDK defined two new securiry expressions:
+
+- `boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel)` - return `true` when user has access to the resource
+- `boolean hasSafServiceResourceAccess(String resourceNameSuffix, String accessLevel)` - similar as the previous one but the resource class and resource name prefix is taken from the service configuration in `application.yml` under key `zowe.commons.security.saf`
+
+So you can do following:
+
+```java
+@GetMapping("/safProtectedResource")
+@PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.SERVER', 'UPDATE')")
+public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
+
+@GetMapping("/anotherSafProtectedResource")
+@PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'READ')")
+public Map<String, String> anotherSafProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
+```

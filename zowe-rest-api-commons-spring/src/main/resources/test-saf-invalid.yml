@@ -1,0 +1,5 @@
+safAccess:
+  ZOWE:
+    RESOURCE:
+      WRONG_LEVEL:
+        - ZOWE

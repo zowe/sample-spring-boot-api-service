@@ -43,6 +43,23 @@
                     "binary": true
                 }
             }
+        },
+        "ca32": {
+            "files": {
+                "config/ca32/application.yml.hbs": {
+                    "target": "etc/application.yml",
+                    "binary": true,
+                    "template": true
+                },
+                "config/ca32/keystore.p12": {
+                    "target": "etc/keystore.p12",
+                    "binary": true
+                },
+                "config/ca32/truststore.p12": {
+                    "target": "etc/truststore.p12",
+                    "binary": true
+                }
+            }
         }
     }
 }

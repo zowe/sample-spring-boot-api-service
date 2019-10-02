@@ -15,11 +15,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.service.PlatformSecurityService;
 import org.zowe.commons.zos.security.thread.PlatformThreadLevelSecurity;
@@ -49,8 +51,10 @@ public class SecurityContextController {
     public Map<String, String> authenticated(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
         String beforeSwitchUserName = platformSecurityService.getCurrentThreadUserId();
-        boolean accessToBpxServerServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
-        boolean accessToBpxServerUserid = platformSecurityService.checkPermission( authentication.getName(), "FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
+        boolean accessToBpxServerServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER",
+                AccessLevel.UPDATE);
+        boolean accessToBpxServerUserid = platformSecurityService.checkPermission(authentication.getName(),
+                "FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
         result.put("authenticatedUserName", authentication.getName());
         result.put("beforeSwitchUserName", beforeSwitchUserName);
         result.put("accessToBpxServerServer", Boolean.toString(accessToBpxServerServer));
@@ -60,15 +64,20 @@ public class SecurityContextController {
             @Override
             public void run() {
                 String afterSwitchUserName = platformSecurityService.getCurrentThreadUserId();
-                String afterSwitchUserNameSpring = SecurityContextHolder.getContext().getAuthentication().getName();
-                boolean accessToBpxServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
-                boolean accessToUndefinedResource = platformSecurityService.checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ);
-                boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService.checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ, false);
+                String afterSwitchUserNameSpring = SecurityContextHolder.getContext()
+                        .getAuthentication().getName();
+                boolean accessToBpxServer = platformSecurityService.checkPermission("FACILITY",
+                        "BPX.SERVER", AccessLevel.UPDATE);
+                boolean accessToUndefinedResource = platformSecurityService.checkPermission("FACILITY",
+                        "UNDEFINED", AccessLevel.READ);
+                boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService
+                        .checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ, false);
                 result.put("afterSwitchUserName", afterSwitchUserName);
                 result.put("afterSwitchUserNameSpring", afterSwitchUserNameSpring);
                 result.put("accessToBpxServer", Boolean.toString(accessToBpxServer));
                 result.put("accessToUndefinedResource", Boolean.toString(accessToUndefinedResource));
-                result.put("accessToUndefinedResourceAllowMissingResource", Boolean.toString(accessToUndefinedResourceAllowMissingResource));
+                result.put("accessToUndefinedResourceAllowMissingResource",
+                        Boolean.toString(accessToUndefinedResourceAllowMissingResource));
             }
         }).run();
 
@@ -76,4 +85,23 @@ public class SecurityContextController {
         result.put("afterRemoveUserName", afterRemoveUserName);
         return result;
     }
+
+    @ApiOperation(value = "This endpoint can be accessed only by users that have READ access to `SUPERUSER.FILESYS.MOUNT` resource in the `UNIXPRIV` class", authorizations = {
+            @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
+    @GetMapping("/safProtectedResource")
+    @PreAuthorize("hasSafResourceAccess('UNIXPRIV', 'SUPERUSER.FILESYS.MOUNT', 'READ')")
+    public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
+        Map<String, String> result = new LinkedHashMap<>();
+        boolean canMount = platformSecurityService.checkPermission(authentication.getName(),
+                "UNIXPRIV", "SUPERUSER.FILESYS.MOUNT", AccessLevel.READ);
+        result.put("authenticatedUserName", authentication.getName());
+        result.put("canMount", Boolean.toString(canMount));
+        return result;
+    }
+
+    @ApiOperation(value = "This endpoint can be accessed only by users that have CONTROL access to `SAMPLE.RESOURCE` resource in the `ZOWE` class", authorizations = {
+            @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
+    @GetMapping("/safDeniedResource")
+    @PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'CONTROL')")
+    public void safDeniedResource(@ApiIgnore Authentication authentication) {}
 }

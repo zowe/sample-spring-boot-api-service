@@ -49,4 +49,17 @@ public class SecurityContextControllerTests {
                 TestUtils.ZOWE_BASIC_AUTHENTICATION_INVALID)).andDo(print()).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    public void allowsRequestToPermittedResource() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/safProtectedResource").header("Authorization",
+                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.canMount", is("true")));
+    }
+
+    @Test
+    public void forbidsRequestToDeniedResource() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/safDeniedResource").header("Authorization",
+                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isForbidden());
+    }
+
 }

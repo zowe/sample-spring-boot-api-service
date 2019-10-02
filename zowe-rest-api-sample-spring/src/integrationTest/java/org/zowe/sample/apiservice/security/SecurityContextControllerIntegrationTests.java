@@ -68,4 +68,15 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
         RestAssured.authentication = basic(VALID_USERID, FAILING_PASSWORD);
         when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(500);
     }
+
+    @Test
+    public void allowsRequestToPermittedResource() throws Exception {
+        when().get("/api/v1/securityTest/safProtectedResource").then().statusCode(200);
+    }
+
+    @Test
+    public void forbidsRequestToDeniedResource() throws Exception {
+        when().get("/api/v1/securityTest/safDeniedResource").then().statusCode(403);
+    }
+
 }

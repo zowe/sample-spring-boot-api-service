@@ -64,40 +64,40 @@ public class DummyPlatformSecurityServiceTest {
     public void testPermittedResourceAccessCheck() throws Exception {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
         securityService.afterPropertiesSet();
-        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.PERMITTED_RESOURCE, AccessLevel.READ));
-        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.PERMITTED_RESOURCE, AccessLevel.READ));
+        assertTrue(securityService.checkPermission("ZOWE", "SAMPLE.RESOURCE", AccessLevel.READ));
+        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, "ZOWE", "SAMPLE.RESOURCE", AccessLevel.READ));
     }
 
     @Test
     public void testDeniedResourceAccessCheck() throws Exception {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
         securityService.afterPropertiesSet();
-        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ));
-        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ));
+        assertFalse(securityService.checkPermission("ZOWE", "DENIED", AccessLevel.READ));
+        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, "ZOWE", "DENIED", AccessLevel.READ));
     }
 
     @Test(expected = AccessControlError.class)
     public void testInvalidUseridResourceAccessCheck() throws Exception {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
         securityService.afterPropertiesSet();
-        securityService.checkPermission(MockPlatformUser.INVALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.DENIED_RESOURCE, AccessLevel.READ);
+        securityService.checkPermission(MockPlatformUser.INVALID_USERID, "ZOWE", "DENIED", AccessLevel.READ);
     }
 
     @Test(expected = AccessControlError.class)
     public void testFailingResourceAccessCheck() throws Exception {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
         securityService.afterPropertiesSet();
-        securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.FAILING_RESOURCE, AccessLevel.READ);
+        securityService.checkPermission("ZOWE", "FAILING", AccessLevel.READ);
     }
 
     @Test
     public void testMissingResourceResourceAccessCheck() throws Exception {
         DummyPlatformSecurityService securityService = new DummyPlatformSecurityService();
         securityService.afterPropertiesSet();
-        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.UNDEFINED_RESOURCE, AccessLevel.READ));
-        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.UNDEFINED_RESOURCE, AccessLevel.READ, false));
-        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.UNDEFINED_RESOURCE, AccessLevel.READ));
-        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, MockPlatformAccessControl.VALID_CLASS, MockPlatformAccessControl.UNDEFINED_RESOURCE, AccessLevel.READ, false));
+        assertFalse(securityService.checkPermission("ZOWE", "UNDEFINED", AccessLevel.READ));
+        assertTrue(securityService.checkPermission("ZOWE", "UNDEFINED", AccessLevel.READ, false));
+        assertFalse(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, "ZOWE", "UNDEFINED", AccessLevel.READ));
+        assertTrue(securityService.checkPermission(MockPlatformAccessControl.VALID_USERID, "ZOWE", "UNDEFINED", AccessLevel.READ, false));
     }
 
 }

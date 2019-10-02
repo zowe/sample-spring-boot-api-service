@@ -38,6 +38,11 @@ messages:
     type: ERROR
     text: "The request has not been applied because it lacks valid authentication credentials for the target resource: %s"
 
+  - key: org.zowe.commons.rest.forbidden
+    number: ZWEAS403
+    type: ERROR
+    text: "The user is not authorized to the target resource: %s"
+
   - key: org.zowe.commons.rest.methodNotAllowed
     number: ZWEAS405
     type: ERROR

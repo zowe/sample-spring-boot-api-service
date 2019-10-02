@@ -13,9 +13,15 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SafPlatformAccessControl implements PlatformAccessControl {
     private final PlatformClassFactory platformClassFactory;
+    private Object platformAccessControl;
 
     public SafPlatformAccessControl(PlatformClassFactory platformClassFactory) {
         this.platformClassFactory = platformClassFactory;
+        try {
+			this.platformAccessControl = platformClassFactory.getPlatformAccessControl();
+		} catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+		}
     }
 
     @Override
@@ -24,7 +30,7 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
         try {
             Object safReturned = platformClassFactory.getPlatformAccessControlClass()
                     .getMethod("checkPermission", String.class, String.class, String.class, int.class)
-                    .invoke(platformClassFactory.getPlatformAccessControl(), userid, resourceClass, resourceName,
+                    .invoke(platformAccessControl, userid, resourceClass, resourceName,
                             accessLevel);
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
@@ -38,7 +44,7 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
         try {
             Object safReturned = platformClassFactory.getPlatformAccessControlClass()
                     .getMethod("checkPermission", String.class, String.class, int.class)
-                    .invoke(platformClassFactory.getPlatformAccessControl(), resourceClass, resourceName,
+                    .invoke(platformAccessControl, resourceClass, resourceName,
                             accessLevel);
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
