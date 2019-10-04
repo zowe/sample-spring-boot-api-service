@@ -68,7 +68,7 @@ There three possible responses when authentication fails.
 
     **Note:** Internally, the `SafPlatformUser` code returns more details with all possible `errno` values. But `RestAuthenticationEntryPoint` class does not provide all details to the client for security reasons (e.g. it does not want to help attacker by saying that the user ID is valid but the password is not).
 
-2. Credentials are expired. User has enterred correct credentials but they are expired. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`. Client can look for key `org.zowe.commons.zos.security.authentication.error.expired` to recognize that the password is expired:
+2. Credentials are expired. User has entered correct credentials but they are expired. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`. Client can look for key `org.zowe.commons.zos.security.authentication.error.expired` to recognize that the password is expired:
 
     ```json
     {
@@ -305,7 +305,7 @@ When you run it outside of z/OS without `zos` profile, a mock implementation `Mo
 
 The REST API endpoints can be protected by the `org.springframework.security.access.prepost.PreAuthorize` annotation.
 
-The SDK defined two new securiry expressions:
+The SDK defined two new security expressions:
 
 - `boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel)` - return `true` when user has access to the resource
 - `boolean hasSafServiceResourceAccess(String resourceNameSuffix, String accessLevel)` - similar as the previous one but the resource class and resource name prefix is taken from the service configuration in `application.yml` under key `zowe.commons.security.saf`
