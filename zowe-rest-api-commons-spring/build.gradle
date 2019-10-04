@@ -79,7 +79,11 @@ task zosbuild(type: Exec) {
     inputs.dir('zossrc').withPathSensitivity(PathSensitivity.RELATIVE)
     outputs.cacheIf { true }
     outputs.file(sharedObjectFilePath)
-    commandLine 'zowe-api-dev', 'zosbuild'
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'zowe-api-dev.cmd', 'zosbuild'
+    } else {
+        commandLine 'zowe-api-dev', 'zosbuild'
+    }
 }
 
 apply from: "$projectDir/gradle/publishing.gradle"
