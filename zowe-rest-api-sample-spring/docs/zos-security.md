@@ -198,7 +198,7 @@ import com.ibm.jzos.ZUtil;
 
 **Notes:**
 
-- If you want to get the result of the `Callable` as a part of the REST API request, then calling the `Callabe` synchronously is going to be the typical option. It means to call the `call()` method as in the example. Tomcat (which is used as the embedded web server) has already a thread pool so there is no need to create a new one for processing of REST responses.
+- If you want to get the result of the `Callable` as a part of the REST API request, then calling the `Callable` synchronously is going to be the typical option. It means to call the `call()` method as in the example. Tomcat (which is used as the embedded web server) has already a thread pool so there is no need to create a new one for processing of REST responses.
 
 - Using a thread pool makes sense when you want to start some activities in parallel or without waiting for the response (e.g. process multiple things in parallel, start a long-running task that can take minutes to complete, background processing...).
 
