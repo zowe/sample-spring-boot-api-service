@@ -52,7 +52,7 @@ public abstract class AccessControlService implements PlatformSecurityService {
                 } else if (errno2 == PlatformErrno2.JRSAFResourceUndefined) {
                     return false;
                 }
-                log.error("Platform access control failed: {} {} {}", errno.name, errno2.name, errno2.explanation,
+                log.error("Platform access control failed: {} {} {} {}", errno.name, errno2.name, errno2.explanation,
                         returned);
             }
             throw new AccessControlError(message + ": " + returned.toString(), returned);

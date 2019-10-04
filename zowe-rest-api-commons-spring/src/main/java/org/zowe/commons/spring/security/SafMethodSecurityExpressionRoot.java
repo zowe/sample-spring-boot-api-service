@@ -35,7 +35,7 @@ public class SafMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel) {
         String userid = authentication.getName();
         AccessLevel level = AccessLevel.valueOf(accessLevel);
-        log.debug("Evaluating access of user {} to resource {} in class {} level {}", userid, resourceName, level);
+        log.debug("Evaluating access of user {} to resource {} in class {} level {}", userid, resourceClass, resourceName, level);
         return platformSecurityService.checkPermission(userid, resourceClass, resourceName, level);
     }
 

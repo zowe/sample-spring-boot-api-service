@@ -293,7 +293,12 @@ It provides following methods:
 - `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist)`
 - `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel)`
 
-All of them return `true` if user has access to the resource and `false` if the user has not access to the resource or the resource does not exist. They throw `AccessControlError` in other cases of failures (invalid user ID, invalid resource name, internal SAF error, misconfiguration of the service). The optional parameter `resourceHasToExist` is by default `true` and it causes that non-existing resource means that that no user has access to it. Some applications may want the opposite, protect access only when the security administator has created the resouces, then they can use `false` as the value of `resourceHasToExist` parameter.
+All of them return `true` if user has access to the resource and `false` if the user has not access to the resource or the resource does not exist.
+They throw `AccessControlError` in cases of failures (invalid user ID, invalid resource name, internal SAF error, misconfiguration of the service).
+
+The optional parameter `resourceHasToExist` is `true` by default. In this case, a non-existing resource means that no user has access to it.
+Some applications may want the opposite, to protect access only when the security administrator has created the resources.
+In this case, they can use `false` as the value of `resourceHasToExist` parameter.
 
 If the Spring profile `zos` is active, then this provider uses `SafPlatformAccessControl` class that uses Java Reflection to
 call `com.ibm.os390.security.PlatformUser` class. This class is available in IBM® SDK for z/OS®, Java™ Technology Edition in `racf.jar`.
