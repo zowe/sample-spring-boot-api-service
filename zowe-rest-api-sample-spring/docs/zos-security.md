@@ -1,5 +1,18 @@
 # z/OS Security
 
+- [z/OS Security](#zos-security)
+  - [Types of API Services](#types-of-api-services)
+  - [Authentication](#authentication)
+    - [REST API Responses](#rest-api-responses)
+  - [Security Context](#security-context)
+    - [Security Context Switch Requirements](#security-context-switch-requirements)
+      - [Implementation](#implementation)
+      - [Building](#building)
+      - [Packaging](#packaging)
+      - [Links](#links)
+  - [Authorization Checks](#authorization-checks)
+    - [Protecting access to REST API endpoints](#protecting-access-to-rest-api-endpoints)
+
 ## Types of API Services
 
 The are two possible types of API services for z/OS:
@@ -32,6 +45,73 @@ This JAR is not available in public repositories and cannot be added to this rep
 When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformUser` is used. This accepts user ID `zowe` and password `zowe`.
 
 Applications should support stateless token-based authentication provided by [Zowe Authentication and Authorization Service](https://github.com/zowe/api-layer/wiki/Zowe-Authentication-and-Authorization-Service). This is not implemented yet.
+
+### REST API Responses
+
+There three possible responses when authentication fails.
+
+1. Credentials (user ID or password) were invalid. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: Incorrect credentials",
+                "messageInstanceId": "6c921b84-1f4a-460c-9432-ecf0f1ea86e7",
+                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageNumber": "ZWEAS401",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+    **Note:** Internally, the `SafPlatformUser` code returns more details with all possible `errno` values. But `RestAuthenticationEntryPoint` class does not provide all details to the client for security reasons (e.g. it does not want to help attacker by saying that the user ID is valid but the password is not).
+
+2. Credentials are expired. User has entered correct credentials but they are expired. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`. Client can look for key `org.zowe.commons.zos.security.authentication.error.expired` to recognize that the password is expired:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: The password for the specified identity has expired",
+                "messageInstanceId": "93868ee2-b684-4e75-852e-8db5ee932a0f",
+                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageNumber": "ZWEAS401",
+                "messageType": "ERROR"
+            },
+            {
+                "messageContent": "The password for the specified identity has expired.",
+                "messageInstanceId": "945f5a22-441f-4462-a87b-6ed6ce739e57",
+                "messageKey": "org.zowe.commons.zos.security.authentication.error.expired",
+                "messageNumber": "ZWEAS491",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+3. The authentication failed because of an internal error. It can be misconfiguration of the API service (usually a missing authority) or internal SAF error. Standard HTTP status code `500` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageContent": "Internal authentication error: The calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space. Please contact support for further assistance.",
+                "messageInstanceId": "6de38356-887d-4385-9fb1-dfdd9a8c56d9",
+                "messageKey": "org.zowe.commons.zos.security.authentication.error.internal",
+                "messageNumber": "ZWEAS003",
+                "messageType": "ERROR"
+            }
+        ]
+    }
+    ```
+
+In all cases, `WWW-Authenticate` header is returned with the service name as the realm, for example:
+
+```http
+WWW-Authenticate: Basic realm="Zowe Sample API Service", charset="UTF-8"
+```
 
 ## Security Context
 
@@ -118,7 +198,7 @@ import com.ibm.jzos.ZUtil;
 
 **Notes:**
 
-- If you want to get the result of the `Callable` as a part of the REST API request, then calling the `Callabe` synchronously is going to be the typical option. It means to call the `call()` method as in the example. Tomcat (which is used as the embedded web server) has already a thread pool so there is no need to create a new one for processing of REST responses.
+- If you want to get the result of the `Callable` as a part of the REST API request, then calling the `Callable` synchronously is going to be the typical option. It means to call the `call()` method as in the example. Tomcat (which is used as the embedded web server) has already a thread pool so there is no need to create a new one for processing of REST responses.
 
 - Using a thread pool makes sense when you want to start some activities in parallel or without waiting for the response (e.g. process multiple things in parallel, start a long-running task that can take minutes to complete, background processing...).
 
@@ -126,7 +206,7 @@ import com.ibm.jzos.ZUtil;
 
 - It makes sense to create a "thread pool" by using <https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool-int-> and submit/invoke the Runnables/Callables that are not meant to be done as a part of the REST API request in it. The size of the thread pools (in Tomcat, or for background tasks) will vary for each REST API service and expected number of users. In some cases, it will make sense to make it configurable by the user.
 
-### Security Context Requirements
+### Security Context Switch Requirements
 
 The change of the security environment/context of a Java thread can be done in multiple ways:
 
@@ -199,3 +279,50 @@ The shared library `libsecur.so` is expected to be in zFS filesystem in the a di
 #### Links
 
 - <https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxb100/tls.htm>
+
+## Authorization Checks
+
+The REST API service that is running on z/OS typically needs to check if the user that is authenticated has access to specific SAF resources to protect access to the functionality of the REST API or validate that the user can do the action before the action is started.
+
+The API to check access to SAF resource is a part of `PlatformSecurityService` interface.
+
+It provides following methods:
+
+- `boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist)`
+- `boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel)`
+- `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist)`
+- `boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel)`
+
+All of them return `true` if user has access to the resource and `false` if the user has not access to the resource or the resource does not exist.
+They throw `AccessControlError` in cases of failures (invalid user ID, invalid resource name, internal SAF error, misconfiguration of the service).
+
+The optional parameter `resourceHasToExist` is `true` by default. In this case, a non-existing resource means that no user has access to it.
+Some applications may want the opposite, to protect access only when the security administrator has created the resources.
+In this case, they can use `false` as the value of `resourceHasToExist` parameter.
+
+If the Spring profile `zos` is active, then this provider uses `SafPlatformAccessControl` class that uses Java Reflection to
+call `com.ibm.os390.security.PlatformUser` class. This class is available in IBM® SDK for z/OS®, Java™ Technology Edition in `racf.jar`.
+This JAR is not available in public repositories and cannot be added to this repository. These APIs are documented in <https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.80.doc/zsecurity-component/saf.html>.
+
+When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformAccessControl` is used. This has predefined values that are accepted.
+
+### Protecting access to REST API endpoints
+
+The REST API endpoints can be protected by the `org.springframework.security.access.prepost.PreAuthorize` annotation.
+
+The SDK defined two new security expressions:
+
+- `boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel)` - return `true` when user has access to the resource
+- `boolean hasSafServiceResourceAccess(String resourceNameSuffix, String accessLevel)` - similar as the previous one but the resource class and resource name prefix is taken from the service configuration in `application.yml` under key `zowe.commons.security.saf`
+
+So you can do following:
+
+```java
+@GetMapping("/safProtectedResource")
+@PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.SERVER', 'UPDATE')")
+public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
+
+@GetMapping("/anotherSafProtectedResource")
+@PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'READ')")
+public Map<String, String> anotherSafProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
+```

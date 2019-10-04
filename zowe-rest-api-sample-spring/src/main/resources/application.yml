@@ -32,6 +32,10 @@ server:
 
 springfox.documentation.swagger.v2.path: /apiDocs/v2
 
+zowe.commons.security.saf:
+    serviceResourceClass: "ZOWE"
+    serviceResourceNamePrefix: "SAMPLE."
+
 zowe.sample.authentication: Press **Authorize** and use `zowe` as the username and `zowe` as the password
 
 apiml:

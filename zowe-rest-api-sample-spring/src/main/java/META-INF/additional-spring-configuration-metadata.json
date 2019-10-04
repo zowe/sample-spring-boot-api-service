@@ -1,9 +1,7 @@
-{
-    "properties": [
-        {
-            "name": "zowe.sample.authentication",
-            "type": "java.lang.String",
-            "description": "Text describing how to authenticate in Swagger UI"
-        }
-    ]
-}
+{"properties": [
+  {
+    "name": "zowe.sample.authentication",
+    "type": "java.lang.String",
+    "description": "Text describing how to authenticate in Swagger UI"
+  }
+]}

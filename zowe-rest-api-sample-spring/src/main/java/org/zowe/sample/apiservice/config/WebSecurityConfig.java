@@ -35,8 +35,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.httpBasic();
-        http.authorizeRequests().antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
-                "/api/*/apiDocs", "/swagger-resources/**", "/csrf", "/actuator/info", "/actuator/health").permitAll().anyRequest().authenticated();
+        http.authorizeRequests()
+                .antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
+                        "/api/*/apiDocs", "/swagger-resources/**", "/csrf", "/actuator/info", "/actuator/health")
+                .permitAll().anyRequest().authenticated();
     }
 
     @Autowired

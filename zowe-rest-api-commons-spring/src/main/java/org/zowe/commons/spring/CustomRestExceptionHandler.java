@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String INTERNAL_SERVER_ERROR_MESSAGE_KEY = "org.zowe.commons.rest.internalServerError";
+    private static final String FORBIDDEN_MESSAGE_KEY = "org.zowe.commons.rest.forbidden";
 
     private final ErrorService errorService = CommonsErrorService.get();
 
@@ -59,6 +61,12 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.unsupportedMediaType");
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
+    }
+
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        ApiMessage message = errorService.createApiMessage(FORBIDDEN_MESSAGE_KEY, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
     }
 
     @ExceptionHandler({ Exception.class })

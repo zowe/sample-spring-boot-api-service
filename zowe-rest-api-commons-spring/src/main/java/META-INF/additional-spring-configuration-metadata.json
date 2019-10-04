@@ -104,6 +104,21 @@
             "name": "springfox.documentation.swagger.v2.path",
             "type": "java.lang.String",
             "description": "URL where the Swagger API documentation JSON document will be provided"
+        },
+        {
+            "name": "zowe.commons.security.saf",
+            "type": "java.util.Map",
+            "description": "Configuration of the resource access checking using SAF'"
+        },
+        {
+            "name": "zowe.commons.security.saf.serviceResourceClass",
+            "type": "java.lang.String",
+            "description": "SAF resource class that is used to check access to resources using `hasSafServiceResourceAccess()` security expression"
+        },
+        {
+            "name": "zowe.commons.security.saf.serviceResourceNamePrefix",
+            "type": "java.lang.String",
+            "description": "The prefix of the SAF resource name that is used to check access to resources using `hasSafServiceResourceAccess()` security expression. The suffix is appended directly to the prefix without any separator so you need to include `.` at the end of prefix if you want to the suffix to start after `.`.\n\nFor example: `ZOWE.`"
         }
     ]
 }

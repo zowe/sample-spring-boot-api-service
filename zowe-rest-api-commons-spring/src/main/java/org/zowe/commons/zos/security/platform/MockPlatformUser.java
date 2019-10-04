@@ -15,15 +15,22 @@ public class MockPlatformUser implements PlatformUser {
     public static final String VALID_PASSWORD = "zowe";
     public static final String INVALID_USERID = "notzowe";
     public static final String INVALID_PASSWORD = "notzowe";
+    public static final String EXPIRED_PASSWORD = "expired";
+    public static final String FAILING_PASSWORD = "failing";
 
     @Override
     public PlatformReturned authenticate(String userid, String password) {
-        if ((userid.equalsIgnoreCase(VALID_USERID) || userid.equalsIgnoreCase(VALID_USERID2)) && password.equalsIgnoreCase(VALID_PASSWORD)) {
+        if ((userid.equalsIgnoreCase(VALID_USERID) || userid.equalsIgnoreCase(VALID_USERID2))
+                && password.equalsIgnoreCase(VALID_PASSWORD)) {
             return null;
-        }
-        else {
-            return PlatformReturned.builder().success(false).build();
+        } else {
+            PlatformReturned.PlatformReturnedBuilder builder = PlatformReturned.builder().success(false);
+            if (EXPIRED_PASSWORD.equalsIgnoreCase(password)) {
+                builder.errno(PlatformPwdErrno.EMVSEXPIRE.errno);
+            } else if (FAILING_PASSWORD.equalsIgnoreCase(password)) {
+                builder.errno(PlatformPwdErrno.EMVSERR.errno).errno2(PlatformErrno2.JREnvDirty.errno2);
+            }
+            return builder.build();
         }
     }
-
 }

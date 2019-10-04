@@ -1,0 +1,7 @@
+# This file is used by the SafPlatformAccessControlTests class for testing how the invalid definition is handled
+# `WRONG_LEVEL` is an invalid access level
+safAccess:
+  ZOWE:
+    RESOURCE:
+      WRONG_LEVEL:
+        - ZOWE

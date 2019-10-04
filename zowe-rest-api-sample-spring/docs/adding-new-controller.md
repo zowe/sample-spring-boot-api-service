@@ -137,7 +137,7 @@ The contents of the API documentation (Swagger JSON) is customized by adding Swa
 - `@ApiParam` - Adds additional meta-data for operation parameters.
 - `@Authorization` - Declares an authorization scheme to be used on a resource or an operation.
 
-You can find description on them at [Package io.swagger.annotations](http://docs.swagger.io/swagger-core/v1.5.0/apidocs/index.html).
+You can find description on them at [Swagger-Core Annotations](https://github.com/swagger-api/swagger-core/wiki/Annotations-1.5.X) and [Package io.swagger.annotations](http://docs.swagger.io/swagger-core/v1.5.0/apidocs/index.html).
 
 ## Guides
 

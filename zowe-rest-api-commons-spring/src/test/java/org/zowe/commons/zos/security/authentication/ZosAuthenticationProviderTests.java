@@ -11,6 +11,8 @@
 package org.zowe.commons.zos.security.authentication;
 
 import static org.junit.Assert.assertEquals;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.EXPIRED_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.FAILING_PASSWORD;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.INVALID_PASSWORD;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.INVALID_USERID;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
@@ -20,7 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 public class ZosAuthenticationProviderTests {
     private static ZosAuthenticationProvider provider = new ZosAuthenticationProvider();
@@ -28,6 +29,10 @@ public class ZosAuthenticationProviderTests {
             VALID_PASSWORD);
     private UsernamePasswordAuthenticationToken INVALID_TOKEN = new UsernamePasswordAuthenticationToken(INVALID_USERID,
             INVALID_PASSWORD);
+    private UsernamePasswordAuthenticationToken EXPIRED_TOKEN = new UsernamePasswordAuthenticationToken(INVALID_USERID,
+            EXPIRED_PASSWORD);
+    private UsernamePasswordAuthenticationToken FAILING_TOKEN = new UsernamePasswordAuthenticationToken(INVALID_USERID,
+            FAILING_PASSWORD);
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -39,8 +44,18 @@ public class ZosAuthenticationProviderTests {
         provider.authenticate(INVALID_TOKEN);
     }
 
+    @Test(expected = ZosAuthenticationException.class)
+    public void exceptionOnExpiredCredentials() {
+        provider.authenticate(EXPIRED_TOKEN);
+    }
+
+    @Test(expected = ZosAuthenticationException.class)
+    public void exceptionOnFailingCredentials() {
+        provider.authenticate(FAILING_TOKEN);
+    }
+
     @Test
-    public void validAuthenticationOnOnValidCredentials() {
+    public void validAuthenticationOnValidCredentials() {
         Authentication authentication = provider.authenticate(VALID_TOKEN);
         assertEquals(authentication.getPrincipal(), VALID_USERID);
     }

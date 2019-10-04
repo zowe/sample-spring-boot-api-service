@@ -9,6 +9,8 @@
  */
 package org.zowe.commons.zos.security.service;
 
+import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
+
 /**
  * Provides low-level security function that are z/OS platform dependent.
  *
@@ -38,4 +40,24 @@ public interface PlatformSecurityService {
      * Remove the current thread-level security context (ACEE).
      */
     void removeThreadSecurityContext();
+
+    /**
+     * Check if a specific user has permission to a resource.
+     */
+    boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist);
+
+    /**
+     * Check if a specific user has permission to an existing resource.
+     */
+    boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel);
+
+    /**
+     * Check current ID permission to a resource.
+     */
+    boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel, boolean resourceHasToExist);
+
+    /**
+     * Check current ID permission to an existing resource.
+     */
+    boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel);
 }

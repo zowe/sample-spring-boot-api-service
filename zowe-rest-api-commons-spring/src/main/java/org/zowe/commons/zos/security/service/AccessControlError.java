@@ -7,16 +7,15 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.zos.security.authentication;
+package org.zowe.commons.zos.security.service;
 
-import org.springframework.security.core.AuthenticationException;
 import org.zowe.commons.zos.security.platform.PlatformReturned;
 
-public class ZosAuthenticationException extends AuthenticationException {
-    private static final long serialVersionUID = 6652673387938170807L;
+public class AccessControlError extends RuntimeException {
+    private static final long serialVersionUID = -101853226410917728L;
     private final PlatformReturned platformReturned;
 
-    public ZosAuthenticationException(String message, PlatformReturned platformReturned) {
+    public AccessControlError(String message, PlatformReturned platformReturned) {
         super(message);
         this.platformReturned = platformReturned;
     }

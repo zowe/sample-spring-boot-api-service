@@ -21,7 +21,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.zowe.commons.zos.security.platform.MockPlatformUser;
+import org.zowe.commons.zos.security.platform.PlatformErrorType;
+import org.zowe.commons.zos.security.platform.PlatformPwdErrno;
 import org.zowe.commons.zos.security.platform.PlatformReturned;
 import org.zowe.commons.zos.security.platform.PlatformUser;
 import org.zowe.commons.zos.security.platform.SafPlatformClassFactory;
@@ -32,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class ZosAuthenticationProvider implements AuthenticationProvider, InitializingBean {
+    public static final String ZOWE_AUTHENTICATE_RETURNED = "zowe.authenticate.returned";
+
     private PlatformUser platformUser = null;
 
     @Autowired
@@ -46,7 +52,28 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
         if ((returned == null) || (returned.isSuccess())) {
             return new UsernamePasswordAuthenticationToken(userid, null, new ArrayList<>());
         } else {
-            throw new ZosAuthenticationException("Authentication failed: " + returned.toString(), returned);
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes != null) {
+                requestAttributes.setAttribute(ZOWE_AUTHENTICATE_RETURNED, returned, RequestAttributes.SCOPE_REQUEST);
+            }
+
+            String message;
+            PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.errno);
+            if (errno == null) {
+                message = "Authentication error";
+                log.debug("Platform authentication failed: {}", returned);
+            } else {
+                log.debug("Platform authentication failed: {} {} {}", errno.name, errno.explanation, returned);
+                if ((errno != null) && (errno.errorType == PlatformErrorType.INTERNAL)) {
+                    message = "Internal authentication error: " + errno.explanation;
+                } else if ((errno != null) && (errno.errorType == PlatformErrorType.USER_EXPLAINED)) {
+                    message = "Authentication error: " + errno.explanation;
+                } else {
+                    message = "Authentication error";
+                }
+            }
+
+            throw new ZosAuthenticationException(message, returned);
         }
     }
 

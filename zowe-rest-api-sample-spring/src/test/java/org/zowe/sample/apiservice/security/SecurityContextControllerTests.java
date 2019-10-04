@@ -11,6 +11,7 @@ package org.zowe.sample.apiservice.security;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,13 +33,33 @@ public class SecurityContextControllerTests {
 
     @Test
     public void returnsDataAboutSwitchedContext() throws Exception {
-        mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.afterSwitchUserName", is("zowe")));
+        mvc.perform(get("/api/v1/securityTest/authenticatedUser")
+                .header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.afterSwitchUserName", is("zowe")));
     }
 
     @Test
     public void failsWithoutAuthentication() throws Exception {
         mvc.perform(get("/api/v1/securityTest/authenticatedUser")).andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void failsWithInvalidAuthentication() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization",
+                TestUtils.ZOWE_BASIC_AUTHENTICATION_INVALID)).andDo(print()).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void allowsRequestToPermittedResource() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/safProtectedResource").header("Authorization",
+                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.canMount", is("true")));
+    }
+
+    @Test
+    public void forbidsRequestToDeniedResource() throws Exception {
+        mvc.perform(get("/api/v1/securityTest/safDeniedResource").header("Authorization",
+                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isForbidden());
+    }
+
 }

@@ -9,10 +9,14 @@
  */
 package org.zowe.sample.apiservice.greeting;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class Greeting {
+    @ApiModelProperty(value = "Generated sequence ID of the message")
     private final long id;
+
+    @ApiModelProperty(value = "The greeting message")
     private final String content;
 }
