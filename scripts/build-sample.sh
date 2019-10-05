@@ -14,6 +14,10 @@ cat build.gradle-orig | sed "s|$RE|org.zowe:zowe-rest-api-commons-spring:$VERSIO
 echo "New version:"
 grep "$RE" build.gradle
 
+echo "" >> gradle.properties
+echo "# Version of the sample that has been used" >> gradle.properties
+echo "zoweSampleVersion=$VERSION" >> gradle.properties
+
 ./gradlew build
 
 rm build.gradle-orig
