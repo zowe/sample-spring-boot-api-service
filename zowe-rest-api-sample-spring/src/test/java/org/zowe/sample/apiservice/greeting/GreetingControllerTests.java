@@ -13,9 +13,12 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,5 +67,14 @@ public class GreetingControllerTests {
     public void exceptionCausesFailure() throws Exception {
         mvc.perform(get("/api/v1/greeting/failed").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void settingsCanBeUpdated() throws Exception {
+        GreetingSettings settings = new GreetingSettings();
+        ObjectMapper mapper = new ObjectMapper();
+        settings.setGreeting("Hi");
+        mvc.perform(put("/api/v1/greeting/settings").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(settings))).andExpect(status().isOk());
     }
 }

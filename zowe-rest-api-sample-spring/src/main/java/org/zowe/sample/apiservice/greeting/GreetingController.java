@@ -52,14 +52,14 @@ public class GreetingController {
         return new Greeting(counter.incrementAndGet(), String.format(template, greeting, name));
     }
 
-    @PutMapping
+    @PutMapping("settings")
     @ApiOperation(value = "Changes the default greeting word", nickname = "updateGreeting", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful settings change", response = Greeting.class),
             @ApiResponse(code = 400, message = "Invalid request parameter", response = ApiMessage.class) })
-    public Greeting updateGreeting(@RequestBody GreetingSettings settings) {
+    public GreetingSettings updateGreeting(@RequestBody GreetingSettings settings) {
         GreetingController.greeting = settings.getGreeting();
-        return getGreeting(DEFAULT_NAME);
+        return settings;
     }
 
     @ApiOperation(value = "This greeting always fails and provides example how unhandled exceptions are reported", nickname = "failedGreeting", authorizations = {
