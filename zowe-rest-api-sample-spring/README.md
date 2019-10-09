@@ -68,6 +68,7 @@ For further reference, please consider the following sections:
 - [z/OS Security](docs/zos-security.md)
 - [z/OS Native OS Linkage](docs/zos-native-os-linkage.md)
 - [Error Handling](docs/error-handling.md)
+- [Java Debugging](docs/java-debugging.md)
 
 ## Learn More about Gradle and Spring Boot
 
