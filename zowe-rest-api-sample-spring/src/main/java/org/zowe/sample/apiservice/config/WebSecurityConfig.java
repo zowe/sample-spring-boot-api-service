@@ -30,13 +30,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**");
         http.headers().httpStrictTransportSecurity().disable();
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.httpBasic();
         http.authorizeRequests()
-                .antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
+                .antMatchers("/", "/error", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
                         "/api/*/apiDocs", "/swagger-resources/**", "/csrf", "/actuator/info", "/actuator/health")
                 .permitAll().anyRequest().authenticated();
     }
