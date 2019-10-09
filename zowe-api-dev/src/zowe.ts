@@ -32,6 +32,9 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
         debug(command);
         if (!direct) {
             const json: string = execSync(`zowe --rfj ${command}`, { encoding: "utf8" });
+            if (!json) {
+                throw { stdout: "" }
+            }
             const result: IZoweResult = JSON.parse(json);
             debug(result);
             if (logOutput) {
@@ -46,7 +49,12 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
         debug(error);
         let result: IZoweResult;
         try {
-            result = JSON.parse(error.stdout);
+            if (error.stdout) {
+                result = JSON.parse(error.stdout);
+            }
+            else {
+                result = { success: false, exitCode: -1, message: "empty JSON response from Zowe CLI", stderr: "", stdout: "", data: {} };
+            }
             debug(result);
         } catch (error2) {
             throw error;
