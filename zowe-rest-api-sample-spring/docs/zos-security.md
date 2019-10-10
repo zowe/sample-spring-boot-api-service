@@ -312,8 +312,14 @@ The REST API endpoints can be protected by the `org.springframework.security.acc
 
 The SDK defined two new security expressions:
 
-- `boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel)` - return `true` when user has access to the resource
-- `boolean hasSafServiceResourceAccess(String resourceNameSuffix, String accessLevel)` - similar as the previous one but the resource class and resource name prefix is taken from the service configuration in `application.yml` under key `zowe.commons.security.saf`
+- `boolean hasSafResourceAccess(String resourceClass, String resourceName, String accessLevel)` - returns `true` when user has access to the resource
+- `boolean hasSafServiceResourceAccess(String resourceNameSuffix, String accessLevel)` - similar as the previous one but the resource class and resource name prefix is taken from the service configuration in `application.yml` under key `zowe.commons.security.saf`:
+
+    ```yaml
+    zowe.commons.security.saf:
+        serviceResourceClass: "ZOWE"
+        serviceResourceNamePrefix: "SAMPLE."    
+    ```    
 
 So you can do following:
 
@@ -326,3 +332,5 @@ public Map<String, String> safProtectedResource(@ApiIgnore Authentication authen
 @PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'READ')")
 public Map<String, String> anotherSafProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
 ```
+
+The second `@PreAuthorize` expression `hasSafServiceResourceAccess('RESOURCE', 'READ')` is effectively translated to `hasSafResourceAccess('${zowe.commons.security.saf.serviceResourceClass}', '${zowe.commons.security.saf.serviceResourceNamePrefix}RESOURCE', 'READ')`. In case of the example above it would be `hasSafResourceAccess('ZOWE', 'SAMPLE.RESOURCE', 'READ')`.
