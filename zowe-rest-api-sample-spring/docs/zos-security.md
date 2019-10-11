@@ -11,7 +11,8 @@
       - [Packaging](#packaging)
       - [Links](#links)
   - [Authorization Checks](#authorization-checks)
-    - [Protecting access to REST API endpoints](#protecting-access-to-rest-api-endpoints)
+    - [Protecting Access to REST API Endpoints](#protecting-access-to-rest-api-endpoints)
+  - [Required Security Access for Development](#required-security-access-for-development)
 
 ## Types of API Services
 
@@ -306,7 +307,7 @@ This JAR is not available in public repositories and cannot be added to this rep
 
 When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformAccessControl` is used. This has predefined values that are accepted.
 
-### Protecting access to REST API endpoints
+### Protecting Access to REST API Endpoints
 
 The REST API endpoints can be protected by the `org.springframework.security.access.prepost.PreAuthorize` annotation.
 
@@ -334,3 +335,31 @@ public Map<String, String> anotherSafProtectedResource(@ApiIgnore Authentication
 ```
 
 The second `@PreAuthorize` expression `hasSafServiceResourceAccess('RESOURCE', 'READ')` is effectively translated to `hasSafResourceAccess('${zowe.commons.security.saf.serviceResourceClass}', '${zowe.commons.security.saf.serviceResourceNamePrefix}RESOURCE', 'READ')`. In case of the example above it would be `hasSafResourceAccess('ZOWE', 'SAMPLE.RESOURCE', 'READ')`.
+
+## Required Security Access for Development
+
+You need following access to be able to develop a REST API service:
+
+- `UPDATE` access to the `SUPERUSER.FILESYS.MOUNT` resource in the UNIXPRIV class
+- `READ` access to `BPX.FILEATTR.PROGCTL` and `BPX.FILEATTR.APF` in the facility class
+- `UPDATE` access to `BPX.SERVER`
+
+Commands for CA Top Secret for z/OS:
+
+```tss
+TSS PERMIT(userid) UNIXPRIV(SUPERUSER.FILESYS.MOUNT) ACCESS(UPDATE)
+TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.PROGCTL) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.APF) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+```
+
+Commands for RACF:
+
+```racf
+PERMIT SUPERUSER.FILESYS.MOUNT CLASS(UNIXPRIV) ID(userid) ACCESS(UPDATE)
+PERMIT BPX.FILEATTR.PROGCTL CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.FILEATTR.APF CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.SERVER CLASS(FACILITY) ID(userid) ACCESS(UPDATE)
+SETROPTS RACLIST(FACILITY) REFRESH
+SETROPTS RACLIST(UNIXPRIV) REFRESH
+```
