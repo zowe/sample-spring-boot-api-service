@@ -12,6 +12,7 @@
       - [Links](#links)
   - [Authorization Checks](#authorization-checks)
     - [Protecting access to REST API endpoints](#protecting-access-to-rest-api-endpoints)
+  - [Required Security Access for Development](#required-security-access-for-development)
 
 ## Types of API Services
 
@@ -325,4 +326,32 @@ public Map<String, String> safProtectedResource(@ApiIgnore Authentication authen
 @GetMapping("/anotherSafProtectedResource")
 @PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'READ')")
 public Map<String, String> anotherSafProtectedResource(@ApiIgnore Authentication authentication) { /*...*/ }
+```
+
+## Required Security Access for Development
+
+You need following access to be able to develop a REST API service:
+
+- `UPDATE` access to the `SUPERUSER.FILESYS.MOUNT` resource in the UNIXPRIV class
+- `READ` access to `BPX.FILEATTR.PROGCTL` and `BPX.FILEATTR.APF` in the facility class
+- `UPDATE` access to `BPX.SERVER`
+
+Commands for CA Top Secret for z/OS:
+
+```tss
+TSS PERMIT(userid) UNIXPRIV(SUPERUSER.FILESYS.MOUNT) ACCESS(UPDATE)
+TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.PROGCTL) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.APF) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+```
+
+Commands for RACF:
+
+```racf
+PERMIT SUPERUSER.FILESYS.MOUNT CLASS(UNIXPRIV) ID(userid) ACCESS(UPDATE)
+PERMIT BPX.FILEATTR.PROGCTL CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.FILEATTR.APF CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.SERVER CLASS(FACILITY) ID(userid) ACCESS(UPDATE)
+SETROPTS RACLIST(FACILITY) REFRESH
+SETROPTS RACLIST(UNIXPRIV) REFRESH
 ```
