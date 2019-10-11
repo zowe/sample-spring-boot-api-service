@@ -113,7 +113,13 @@ function stripTrailingSlash(path: string): string {
 
 function detectJavaHome(command: Command): string | null {
     const candidates = ["/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64", "/usr/lpp/java/J8.0_64"];
-    const type = execSshCommandWithDefaultEnvCwd("type java", { throwError: false }).stdout.trim();
+    const typeResult = execSshCommandWithDefaultEnvCwd("type java", { throwError: false });
+    if (!typeResult.success && !typeResult.stdout) {
+        zoweSync("profiles list ssh-profiles --show-contents");
+        command.log(logSymbols.error, "The Zowe CLI has returned no output for a z/OS UNIX command. Check the port in your Zowe ssh profile. The typical SSH port is 22.");
+        command.exit(1);
+    }
+    const type = typeResult.stdout.trim();
     const javaIs = "java is /";
     const javaIsIndex = type.indexOf(javaIs);
     if (javaIsIndex > -1) {
