@@ -10,7 +10,7 @@ The sample keystore and truststore are provided in the repository.
 
 Following commands generated them:
 
-    $ZOWE_HOME/api-layer/scripts/apiml_cm.sh --action new-service --service-alias localhost --service-ext "SAN=dns:localhost.localdomain,dns:localhost" \
+    $ZOWE_HOME/api-layer/scripts/apiml_cm.sh --action new-service --service-alias localhost --service-ext "SAN=dns:localhost.localdomain,dns:localhost,dns:host.docker.internal" \
     --service-keystore config/local/keystore \
     --service-truststore config/local/truststore \
     --service-dname "CN=Zowe Sample API Service, OU=Sample, O=Zowe, L=Prague, S=Prague, C=CZ" \
@@ -19,6 +19,12 @@ Following commands generated them:
     --local-ca-password local_ca_password
 
 **Warning**: Do not use this certificate in production. It is only for development purposes.
+
+**Note:** The public root CA certificates were imported to `config/localhost/truststore.p12` by:
+
+    ```bash
+    keytool -importkeystore -srckeystore $JAVA_HOME/jre/lib/security/cacerts -destkeystore config/local/truststore.p12 -srcstoretype JKS -deststoretype PKCS12 -deststorepass password --srcstorepass changeit
+    ```
 
 ## TLS Configuration
 

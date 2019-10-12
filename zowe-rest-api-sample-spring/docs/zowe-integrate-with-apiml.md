@@ -74,6 +74,59 @@ It has two sections:
 
 The description of the properties are in the Zowe documentation.
 
+## Integration with the Zowe in Docker on Your Computer
+
+This section shows how to integrate with Zowe in Docker that can be installed and started by following instructions at <https://github.com/zowe/zowe-dockerfiles/tree/master/dockerfiles/zowe-1.5.0>.
+
+After you complete the instructions, you will have Zowe running with API Gateway listening on port 60004 and Discovery Service on port 60003.
+The certificates that were set up during this process are stored in `certs` directory. We will refer to this directory as `$CERTS`.
+The `server.p12` contains the server certificate and Zowe APIML truststore.
+
+In the directory with the sample service, we issue the following command to get the local CA certificate trusted by the Zowe in Docker:
+
+```bash
+keytool -exportcert -keystore config/local/truststore.p12 -storepass password -alias localca -rfc > $CERTS/localca.cer
+```
+
+Then the Zowe in Docker can be started. You have to restart it, if it is running.
+
+If the Zowe server certificate at `$CERTS/server.p12` is signed by a public CA such as DigiCert, then you do not need to do anything since the `config/localhost/truststore.p12` already contains them.
+
+If the root CA is not a public one then you need to import to your truststore:
+
+* To list the certificate chain:
+
+    ```bash
+    keytool -list -keystore $CERTS/server.p12 -storepass password --rfc
+    ```
+
+* The last certificate should be the root CA. Save the last certificate to `rootca.pem` and then import it to the truststore:
+
+    ```bash
+    keytool -importcert -keystore config/zowedocker/truststore.p12 -trustcacerts -alias rootca -storepass password -file rootca.pem -storetype PKCS12 --noprompt
+    ```
+
+We need to use `host.docker.internal` as the hostname for the service when registering so the Zowe in Docker can see the service running on the host
+and use the hostname of the Zowe in Docker as the in the `discoveryServiceUrls` property.
+
+Example of setting these values in [`config/local/application.yml`](/config/local/application.yml):
+
+```yaml
+apiml:
+    enabled: true
+    service:
+        serviceId: zowesample
+        hostname: host.docker.internal
+        discoveryServiceUrls:
+            - https://myhost.acme.net:60003/eureka
+```
+
+You can start the sample service as usual using:
+
+```bash
+java -jar build/libs/zowe-rest-api-sample-spring-*.jar --spring.config.additional-location=file:config/local/application.yml
+```
+
 ## Resources
 
 * [Zowe Docs - Developing for API Mediation Layer - Java REST APIs service without Spring Boot](https://zowe.github.io/docs-site/latest/extend/extend-apiml/api-mediation-onboard-an-existing-java-rest-api-service-without-spring-boot-with-zowe-api-mediation-layer.html)
