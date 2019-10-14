@@ -12,6 +12,9 @@ jobs:
           keys:
             - v1-zowe-sdk-{{ .Branch }}
             - v1-zowe-sdk-master
+      - run: &build_jarpatcher
+          name: Building JAR Patcher using Gradle
+          command: ./gradlew :jarpatcher:build
       - run: &build_devtool
           name: Building zowe-api-dev Tool
           command: |
@@ -69,6 +72,7 @@ jobs:
     steps:
       - checkout
       - restore_cache: *keys
+      - run: *build_jarpatcher
       - run: *build_devtool
       - run: *zosbuild
       - run: *build
