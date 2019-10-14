@@ -201,14 +201,27 @@ public class JarPatcher {
         return result.archivesAreSame();
     }
 
+    private static String operatingSystem = System.getProperty("os.name");
+
+    private static boolean isWindows() {
+       return operatingSystem.startsWith("Windows");
+    }
+
+    private URI jarFileUri(String path) {
+        if (isWindows()) {
+            return URI.create("jar:file:/" + path.replace("\\", "/"));
+        }
+        return URI.create("jar:file://" + path);
+    }
+
     public void applyPatch(String targetPath, String patchPath, String ignoredPath) throws IOException {
         FileSystem jarPatch;
         FileSystem jarTarget;
         Map<String, String> env = new HashMap<>();
         env.put("create", "false");
         try {
-            jarPatch = FileSystems.newFileSystem(URI.create("jar:file://" + patchPath), env);
-            jarTarget = FileSystems.newFileSystem(URI.create("jar:file://" + targetPath), env);
+            jarPatch = FileSystems.newFileSystem(jarFileUri(patchPath), env);
+            jarTarget = FileSystems.newFileSystem(jarFileUri(targetPath), env);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
