@@ -58,7 +58,11 @@ IJO="-Xms16m -Xmx128m"
 IJO="$IJO -Dibm.serversocket.recover=true"
 IJO="$IJO -Dfile.encoding=UTF-8"
 IJO="$IJO -Djava.io.tmpdir=/tmp"
-#IJO="$IJO -Xrunjdwp:transport=dt_socket,server=y,address=24621"
+{{#if debugPort}}
+IJO="$IJO -Xdebug"
+_DEBUG_OPTIONS="suspend=n,server=y,address={{debugPort}}"
+IJO="$IJO -Xrunjdwp:transport=dt_socket,$_DEBUG_OPTIONS"
+{{/if}}
 #IJO="$IJO -Xhealthcenter:port=39083,transport=jrmp"
 IJO="$IJO -Xquickstart"
 
