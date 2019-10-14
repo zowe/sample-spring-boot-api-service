@@ -12,9 +12,7 @@
                 "postCommands": [
                     "mkdir -p lib/",
                     "java -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher lib",
-                    "extattr +p lib/*.so",
-                    "chmod a+x lib/*.so",
-                    "ls -E lib/"
+                    "extattr +p lib/*.so && chmod a+x lib/*.so && ls -E lib/"
                 ],
                 "binary": true
             }
@@ -39,6 +37,23 @@
                     "binary": true
                 },
                 "config/local/truststore.p12": {
+                    "target": "etc/truststore.p12",
+                    "binary": true
+                }
+            }
+        },
+        "ca32": {
+            "files": {
+                "config/ca32/application.yml.hbs": {
+                    "target": "etc/application.yml",
+                    "binary": true,
+                    "template": true
+                },
+                "config/ca32/keystore.p12": {
+                    "target": "etc/keystore.p12",
+                    "binary": true
+                },
+                "config/ca32/truststore.p12": {
                     "target": "etc/truststore.p12",
                     "binary": true
                 }

@@ -12,7 +12,7 @@
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
     "debug": "^4.1.1",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.4.3",
     "log-symbols": "^3.0.0",
     "tmp": "^0.1.0",
     "tslib": "^1.10.0"
@@ -65,7 +65,7 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme && cp -v ../jarpatcher/build/libs/jarpatcher.jar lib",
     "prettier": "npx prettier --write \"src/**/*.ts\"",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
