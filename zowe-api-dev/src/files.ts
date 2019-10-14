@@ -46,7 +46,7 @@ export function isFileSame(file: string, zosFile: string, profileName: string): 
     return false;
 }
 
-export async function transferFiles(
+export function transferFiles(
     files: { [filename: string]: ITransferredFile },
     zosTargetDir: string,
     userConfig: IUserConfig,
@@ -78,7 +78,7 @@ export async function transferFiles(
                 return;
             }
             const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
-            if (file.endsWith(".jar") && existsSync(oldFile)) {
+            if (!force && file.endsWith(".jar") && existsSync(oldFile)) {
                 command.log(`Patching ${zosFile} to be same as ${file}`);
                 const patchFile = file + "-patch";
                 const zosPatchFile = zosFile + "-patch";
@@ -86,12 +86,13 @@ export async function transferFiles(
                 const output = execSync(`java -cp ${jarpatcherPath} jarpatcher.JarPatcher diff ${oldFile} ${file} ${patchFile} ${jarpatcherPath}`, { stdio: "pipe" });
                 debug(output);
                 let hasSo = false;
-                await createReadStream(patchFile).pipe(Parse()).on('entry', function (entry: Entry) {
+                const promise = createReadStream(patchFile).pipe(Parse()).on('entry', function (entry: Entry) {
                     if (entry.path.endsWith(".so") || entry.path.endsWith(".jar") || entry.path.endsWith("LibsExtractor.class")) {
                         hasSo = true;
                     }
                     entry.autodrain();
                 }).promise();
+                Promise.all([promise]);
                 debug("hasSo: ", hasSo);
                 if (!hasSo) {
                     soUpdated = false;
