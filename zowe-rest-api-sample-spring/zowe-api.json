@@ -9,16 +9,14 @@
         "files": {
             "build/libs/zowe-rest-api-sample-spring-0.0.1-SNAPSHOT.jar": {
                 "target": "bin/zowe-rest-api-sample-spring.jar",
-                "postCommands": [
-                    "mkdir -p lib/",
-                    "java -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher lib",
-                    "extattr +p lib/*.so && chmod a+x lib/*.so && ls -E lib/"
+                "postSoUpdateCommands": [
+                    "mkdir -p lib/ && $JAVA -cp bin/zowe-rest-api-sample-spring.jar -Dloader.main=org.zowe.sample.apiservice.LibsExtractor org.springframework.boot.loader.PropertiesLauncher lib && extattr +p lib/*.so && chmod a+x lib/*.so && ls -E lib/"
                 ],
                 "binary": true
             }
         }
     },
-    "shellStartCommand": "java -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
+    "shellStartCommand": "$JAVA -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
     "jobTemplatePath": "src/main/jcl/template.jcl",
     "jobPath": "build/api.jcl",
     "defaultDirName": "zowe-rest-api-sample-spring",

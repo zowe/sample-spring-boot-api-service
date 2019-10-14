@@ -1,10 +1,11 @@
 import Command from "@oclif/command";
 import { execSync } from 'child_process';
 import * as Debug from "debug";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { copyFileSync, createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import * as Handlebars from "handlebars";
 import { dirname, resolve } from "path";
 import * as tmp from "tmp";
+import { Entry, Parse } from "unzipper";
 import { checkZoweProfileName, ITransferredFile, IUserConfig } from "./config";
 import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync } from "./zowe";
 
@@ -45,7 +46,7 @@ export function isFileSame(file: string, zosFile: string, profileName: string): 
     return false;
 }
 
-export function transferFiles(
+export async function transferFiles(
     files: { [filename: string]: ITransferredFile },
     zosTargetDir: string,
     userConfig: IUserConfig,
@@ -59,6 +60,7 @@ export function transferFiles(
     for (const [file, options] of Object.entries(files)) {
         const zosFile = `${zosTargetDir}/${options.target}`;
         const zosDir = dirname(zosFile);
+        let soUpdated = true;
         if (options.template) {
             const tmpPath = tmp.tmpNameSync();
             debug(tmpPath);
@@ -75,14 +77,25 @@ export function transferFiles(
                 command.log(`${file} has not changed`)
                 return;
             }
-            if (file.endsWith(".jar")) {
+            const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
+            if (file.endsWith(".jar") && existsSync(oldFile)) {
                 command.log(`Patching ${zosFile} to be same as ${file}`);
                 const patchFile = file + "-patch";
                 const zosPatchFile = zosFile + "-patch";
                 const jarpatcherPath = resolve(__dirname, "..", "lib", "jarpatcher.jar");
-                const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
                 const output = execSync(`java -cp ${jarpatcherPath} jarpatcher.JarPatcher diff ${oldFile} ${file} ${patchFile} ${jarpatcherPath}`, { stdio: "pipe" });
                 debug(output);
+                let hasSo = false;
+                await createReadStream(patchFile).pipe(Parse()).on('entry', function (entry: Entry) {
+                    if (entry.path.endsWith(".so")) {
+                        hasSo = true;
+                    }
+                    entry.autodrain();
+                }).promise();
+                debug("hasSo: ", hasSo);
+                if (!hasSo) {
+                    soUpdated = false;
+                }
                 zoweSync(`files upload ftu ${patchFile} ${zosPatchFile} --binary`);
                 execSshCommandWithDefaultEnv(`${userConfig.javaHome}/bin/java  -cp ${zosPatchFile} jarpatcher.JarPatcher patch ${zosFile} ${zosPatchFile} jarpatcher`, zosTargetDir);
                 saveFileToOld(file, zosFile, userConfig.zoweProfileName);
@@ -91,11 +104,19 @@ export function transferFiles(
                 uploadFullFile(command, zosDir, file, zosFile, options, userConfig.zoweProfileName);
             }
         }
-        for (const postCommand of options.postCommands || []) {
+        const postCommands: string[] = [];
+        if (soUpdated && options.postSoUpdateCommands) {
+            postCommands.push(...options.postSoUpdateCommands);
+        }
+        if (options.postCommands) {
+            postCommands.push(...options.postCommands);
+        }
+        for (const postCommand of postCommands) {
             let finalCommand = postCommand;
             if (postCommand.startsWith("java") && userConfig.javaHome) {
                 finalCommand = userConfig.javaHome + "/bin/" + postCommand;
             }
+            finalCommand = finalCommand.replace("$JAVA", userConfig.javaHome + "/bin/java");
             command.log(`Executing post-command: '${finalCommand}'`);
             execSshCommandWithDefaultEnv(finalCommand, zosTargetDir);
         }

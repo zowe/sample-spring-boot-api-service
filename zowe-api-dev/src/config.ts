@@ -18,7 +18,8 @@ export interface ITransferredFile {
     binary: boolean;
     template: boolean;
     target: string;
-    postCommands: [string];
+    postCommands: string[];
+    postSoUpdateCommands: string[];
 }
 
 export interface IConfiguration {

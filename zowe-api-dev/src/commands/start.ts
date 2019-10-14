@@ -47,6 +47,7 @@ export default class Start extends Command {
             if (startCommand.startsWith("java") && userConfig.javaHome) {
                 startCommand = userConfig.javaHome + "/bin/" + startCommand;
             }
+            startCommand = startCommand.replace("$JAVA", userConfig.javaHome + "/bin/java");
             this.log(
                 `Starting application in SSH z/OS UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
             );
