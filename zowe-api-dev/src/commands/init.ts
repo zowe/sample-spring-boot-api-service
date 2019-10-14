@@ -4,7 +4,7 @@ import { existsSync, writeFileSync } from "fs";
 import * as logSymbols from "log-symbols";
 import { resolve } from "path";
 import { IUserConfig, readProjectConfiguration, userConfigFilename } from "../config";
-import { checkZowe, execSshCommandWithDefaultEnvCwd, getDefaultProfile, trimProfileName } from "../zowe";
+import { checkZowe, execSshCommandWithDefaultEnvCwd, getDefaultProfile, trimProfileName, zoweSync } from "../zowe";
 
 const debug = Debug("init");
 
