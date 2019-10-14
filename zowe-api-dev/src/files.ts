@@ -81,7 +81,7 @@ export function transferFiles(
                 const zosPatchFile = zosFile + "-patch";
                 const jarpatcherPath = resolve(__dirname, "..", "lib", "jarpatcher.jar");
                 const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
-                const output = execSync(`java -cp ${jarpatcherPath} jarpatcher.JarPatcher diff ${oldFile} ${file} ${patchFile} ${jarpatcherPath}`, { encoding: "utf8" })
+                const output = execSync(`java -cp ${jarpatcherPath} jarpatcher.JarPatcher diff ${oldFile} ${file} ${patchFile} ${jarpatcherPath}`, { stdio: "pipe" });
                 debug(output);
                 zoweSync(`files upload ftu ${patchFile} ${zosPatchFile} --binary`);
                 execSshCommandWithDefaultEnv(`${userConfig.javaHome}/bin/java  -cp ${zosPatchFile} jarpatcher.JarPatcher patch ${zosFile} ${zosPatchFile} jarpatcher`, zosTargetDir);
