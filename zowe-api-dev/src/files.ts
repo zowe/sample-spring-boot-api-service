@@ -87,7 +87,7 @@ export async function transferFiles(
                 debug(output);
                 let hasSo = false;
                 await createReadStream(patchFile).pipe(Parse()).on('entry', function (entry: Entry) {
-                    if (entry.path.endsWith(".so")) {
+                    if (entry.path.endsWith(".so") || entry.path.endsWith(".jar") || entry.path.endsWith("LibsExtractor.class")) {
                         hasSo = true;
                     }
                     entry.autodrain();
