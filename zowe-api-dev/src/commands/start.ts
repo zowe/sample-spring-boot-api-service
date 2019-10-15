@@ -13,7 +13,8 @@ export default class Start extends Command {
     static description = "start the API service on z/OS";
 
     static flags = {
-        job: flags.boolean({ char: "j" })
+        job: flags.boolean({ char: "j", description: "Submit the Java application in a job" }),
+        debugPort: flags.integer({ char: "d", description: "Enable remote debugging with the specified port", default: 0 })
     };
 
     async run() {
@@ -29,7 +30,7 @@ export default class Start extends Command {
             const template = Handlebars.compile(readFileSync(projectConfig.jobTemplatePath).toString(), {
                 strict: true
             });
-            const jcl = template({ user: userConfig, project: projectConfig });
+            const jcl = template({ user: userConfig, project: projectConfig, debugPort: f.debugPort });
             debug(jcl);
             writeFileSync(projectConfig.jobPath, jcl);
             this.log(`Submitting job ${projectConfig.jobPath}`);
@@ -48,6 +49,9 @@ export default class Start extends Command {
                 startCommand = userConfig.javaHome + "/bin/" + startCommand;
             }
             startCommand = startCommand.replace("$JAVA", userConfig.javaHome + "/bin/java");
+            if (f.debugPort) {
+                startCommand = startCommand.replace("/java ", `/java -Xdebug -Xrunjdwp:server=y,suspend=n,transport=dt_socket,address=${f.debugPort} `);
+            }
             this.log(
                 `Starting application in SSH z/OS UNIX session using command '${startCommand}' in directory '${userConfig.zosTargetDir}'`
             );
