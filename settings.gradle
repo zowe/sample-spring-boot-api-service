@@ -6,5 +6,6 @@ pluginManagement {
 
 include 'zowe-rest-api-sample-spring'
 include 'zowe-rest-api-commons-spring'
+include 'jarpatcher'
 
 rootProject.name = 'zowe'

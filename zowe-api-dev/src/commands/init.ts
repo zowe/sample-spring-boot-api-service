@@ -3,8 +3,8 @@ import * as Debug from "debug";
 import { existsSync, writeFileSync } from "fs";
 import * as logSymbols from "log-symbols";
 import { resolve } from "path";
-import { readProjectConfiguration } from "../config";
-import { checkZowe, execSshCommandWithDefaultEnvCwd, zoweSync } from "../zowe";
+import { IUserConfig, readProjectConfiguration, userConfigFilename } from "../config";
+import { checkZowe, execSshCommandWithDefaultEnvCwd, getDefaultProfile, trimProfileName, zoweSync } from "../zowe";
 
 const debug = Debug("init");
 
@@ -42,27 +42,18 @@ export default class Init extends Command {
 
     async run() {
         const f = this.parse(Init).flags;
-        const configPath = "user-zowe-api.json";
         const projectConfig = readProjectConfiguration(this);
 
         checkZowe(this);
 
-        if (f.force || !existsSync(configPath)) {
+        if (f.force || !existsSync(userConfigFilename)) {
             this.log(`Initializing user configuration file for ${projectConfig.name}`);
             this.log("Getting information about your Zowe profile");
-            const profiles = zoweSync("profiles list zosmf-profiles --show-contents", { logOutput: false }).data as [
-                { name: string; profile: { user: string } }
-            ];
-            let defaultProfile = profiles[0];
-            for (const profile of profiles) {
-                if (profile.name.indexOf('(default)') > -1) {
-                    defaultProfile = profile;
-                }
-            }
+            const defaultProfile = getDefaultProfile("zosmf");
             const userid = defaultProfile.profile.user.toUpperCase();
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
-            const data = {
+            const data: IUserConfig = {
                 javaHome: f.javaHome || detectJavaHome(this),
                 javaLoadlib: f.javaLoadlib,
                 jobcard: [
@@ -71,14 +62,15 @@ export default class Init extends Command {
                     "/*JOBPARM SYSAFF=*"
                 ],
                 zosHlq: f.zosHlq || `${userid}.${projectConfig.defaultHlqSegment}`,
-                zosTargetDir: f.zosTargetDir || zosUnixHomeDir() + "/" + projectConfig.defaultDirName
+                zosTargetDir: f.zosTargetDir || zosUnixHomeDir() + "/" + projectConfig.defaultDirName,
+                zoweProfileName: trimProfileName(defaultProfile.name)
             };
             const config = JSON.stringify(data, null, 4);
-            writeFileSync(configPath, config);
-            this.log(logSymbols.success, `Configuration initialized in: ${resolve(configPath)}`);
+            writeFileSync(userConfigFilename, config);
+            this.log(logSymbols.success, `Configuration initialized in: ${resolve(userConfigFilename)}`);
             this.log(config);
         } else {
-            this.log(`Configuration already exists in: ${resolve(configPath)}`);
+            this.log(`Configuration already exists in: ${resolve(userConfigFilename)}`);
         }
         this.log(logSymbols.info, "Use 'zowe-api-dev zfs' to allocate your zFS filesystem for development");
     }

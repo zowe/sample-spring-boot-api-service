@@ -46,3 +46,6 @@ key.tar
 .lock-session
 unlock.out
 zowe-rest-api-sample-spring/config/ca*/
+/*.jar
+zowe-rest-api-sample-spring/*.zip
+.zowe-api-dev/

@@ -48,6 +48,7 @@ export default class Start extends Command {
             if (startCommand.startsWith("java") && userConfig.javaHome) {
                 startCommand = userConfig.javaHome + "/bin/" + startCommand;
             }
+            startCommand = startCommand.replace("$JAVA", userConfig.javaHome + "/bin/java");
             if (f.debugPort) {
                 startCommand = startCommand.replace("/java ", `/java -Xdebug -Xrunjdwp:server=y,suspend=n,transport=dt_socket,address=${f.debugPort} `);
             }

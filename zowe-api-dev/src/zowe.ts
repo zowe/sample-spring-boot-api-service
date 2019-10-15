@@ -107,6 +107,23 @@ export function checkZowe(command: Command) {
     }
 }
 
+export function trimProfileName(profileName: string): string {
+    return profileName.replace("(default)", "").trim();
+}
+
+export function getDefaultProfile(profileType: string) {
+    const profiles = zoweSync(`profiles list ${profileType}-profiles --show-contents`, { logOutput: false }).data as [
+        { name: string; profile: { user: string } }
+    ];
+    let defaultProfile = profiles[0];
+    for (const profile of profiles) {
+        if (profile.name.indexOf('(default)') > -1) {
+            defaultProfile = profile;
+        }
+    }
+    return defaultProfile;
+}
+
 export function execSshCommands(
     commands: [string],
     cwd: string,
