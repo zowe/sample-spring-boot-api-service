@@ -16,6 +16,7 @@ npm -g install @zowedev/zowe-api-dev
 git clone https://github.com/zowe/sample-spring-boot-api-service
 cd sample-spring-boot-api-service
 cd zowe-api-dev
+npm pack
 npm link
 ```
 
