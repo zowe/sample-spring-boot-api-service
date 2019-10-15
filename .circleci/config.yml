@@ -84,6 +84,7 @@ jobs:
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
+            ./gradlew :jarpatcher:build
             cd zowe-api-dev
             npm install
             npm version `git describe --tags --abbrev=0 | cut -c2-`
