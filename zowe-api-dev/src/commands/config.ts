@@ -35,7 +35,7 @@ export default class Config extends Command {
             }
             this.debug(context);
             const configuration: IConfiguration = projectConfig.configurations[f.name];
-            transferFiles(configuration.files, userConfig.zosTargetDir, userConfig, this, context);
+            transferFiles(configuration.files, userConfig.zosTargetDir, userConfig, this, false, context);
             this.log(logSymbols.success, "Configuration on z/OS completed");
             this.log(
                 logSymbols.info,
