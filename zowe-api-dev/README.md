@@ -15,10 +15,13 @@ npm -g install @zowedev/zowe-api-dev
 ```bash
 git clone https://github.com/zowe/sample-spring-boot-api-service
 cd sample-spring-boot-api-service
+./gradlew :jarpatcher:build
 cd zowe-api-dev
 npm pack
 npm link
 ```
+
+**Note:** The `npm pack` is required to include the `jarpatcher.jar` that is created by `./gradlew :jarpatcher:build`.
 
 ## Usage
 
