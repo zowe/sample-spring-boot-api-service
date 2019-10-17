@@ -37,7 +37,7 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
-      - store_artifacts: &store_sample_jar
+      - store_artifacts:
           path: ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring-*.jar
           destination: zowe-rest-api-sample-spring.jar
       - run: &integration_tests_sample
@@ -81,7 +81,6 @@ jobs:
       - run: *build
       - codecov/upload
       - run: *sample
-      - run: *store_sample_jar
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
       - run: *zos_cleanup
@@ -104,7 +103,6 @@ jobs:
           command: |
             scripts/package-sample.sh
             scripts/publish-sample.sh
-      - run: *store_sample_zip
 workflows:
   version: 2
   untagged_build:
