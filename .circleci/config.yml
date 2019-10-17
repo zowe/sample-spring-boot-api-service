@@ -21,6 +21,9 @@ jobs:
             cd zowe-api-dev
             npm install
             npm pack
+      - store_artifacts:
+          path: zowe-api-dev/zowedev-zowe-api-dev-0.0.0-dev.tgz
+          destination: zowedev-zowe-api-dev.tgz
       - run: &zosbuild
           name: Building Native z/OS Code
           command: |
