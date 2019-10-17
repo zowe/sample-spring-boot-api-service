@@ -40,8 +40,9 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
+            cp ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring-*.jar ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring.jar
       - store_artifacts:
-          path: ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring-*.jar
+          path: ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring.jar
           destination: zowe-rest-api-sample-spring.jar
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
