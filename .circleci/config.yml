@@ -37,6 +37,9 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
+      - store_artifacts: &store_sample_jar
+          path: ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring-*.jar
+          destination: zowe-rest-api-sample-spring.jar
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
           command: |
@@ -53,7 +56,7 @@ jobs:
             source .circleci/river.env
             npm run zos-cleanup
             scripts/package-sample.sh
-      - store_artifacts:
+      - store_artifacts: &store_sample_zip
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
       - save_cache:
@@ -78,6 +81,7 @@ jobs:
       - run: *build
       - codecov/upload
       - run: *sample
+      - run: *store_sample_jar
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
       - run: *zos_cleanup
@@ -100,6 +104,7 @@ jobs:
           command: |
             scripts/package-sample.sh
             scripts/publish-sample.sh
+      - run: *store_sample_zip
 workflows:
   version: 2
   untagged_build:
