@@ -21,8 +21,9 @@ jobs:
             cd zowe-api-dev
             npm install
             npm pack
+            cp -v zowedev-zowe-api-dev-*.tgz ../build/zowedev-zowe-api-dev.tgz
       - store_artifacts:
-          path: zowe-api-dev/zowedev-zowe-api-dev-0.0.0-dev.tgz
+          path: build/zowedev-zowe-api-dev.tgz
           destination: zowedev-zowe-api-dev.tgz
       - run: &zosbuild
           name: Building Native z/OS Code
@@ -40,9 +41,8 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
-            cp ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring-*.jar ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring.jar
       - store_artifacts:
-          path: ~/code/zowe-rest-api-sample-spring/build/libs/zowe-rest-api-sample-spring.jar
+          path: build/zowe-rest-api-sample-spring.jar
           destination: zowe-rest-api-sample-spring.jar
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
