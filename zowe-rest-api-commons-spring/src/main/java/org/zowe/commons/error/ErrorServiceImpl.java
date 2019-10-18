@@ -38,6 +38,7 @@ public class ErrorServiceImpl implements ErrorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorServiceImpl.class);
 
     private final ErrorMessageStorage messageStorage;
+    private String defaultMessageSource;
 
     /**
      * Constructor that creates only common messages.
@@ -103,6 +104,16 @@ public class ErrorServiceImpl implements ErrorService {
         }
     }
 
+    @Override
+    public String getDefaultMessageSource() {
+        return defaultMessageSource;
+    }
+
+    @Override
+    public void setDefaultMessageSource(String defaultMessageSource) {
+        this.defaultMessageSource = defaultMessageSource;
+    }
+
     /**
      * Internal method that call {@link ErrorMessageStorage} to get message by key.
      *
@@ -125,8 +136,13 @@ public class ErrorServiceImpl implements ErrorService {
             messageParameters = validateParameters(message, key, parameters);
             text = String.format(message.getText(), messageParameters);
         }
-
-        return new BasicMessage(key, message.getType(), message.getNumber(), text);
+        if (message.getComponent() == null) {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            String className = stackTrace[3].getClassName();
+            message.setComponent(className);
+        }
+        return new BasicMessage(message.getType(), message.getNumber(), text, message.getReason(), message.getAction(),
+                key, null, BasicMessage.generateMessageInstanceId(), defaultMessageSource, message.getComponent());
     }
 
     /**
@@ -146,7 +162,7 @@ public class ErrorServiceImpl implements ErrorService {
 
         if (message == null) {
             String text = "Internal error: Invalid message key '%s' provided. No default message found. Please contact support of further assistance.";
-            message = new ErrorMessage(INVALID_KEY_MESSAGE, "ZWEAS001", MessageType.ERROR, text);
+            message = new ErrorMessage(INVALID_KEY_MESSAGE, "ZWEAS001", MessageType.ERROR, text, null, null, null);
         }
 
         return message;

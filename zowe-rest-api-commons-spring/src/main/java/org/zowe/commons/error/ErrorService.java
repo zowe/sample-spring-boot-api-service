@@ -9,9 +9,9 @@
  */
 package org.zowe.commons.error;
 
-import org.zowe.commons.rest.response.ApiMessage;
-
 import java.util.List;
+
+import org.zowe.commons.rest.response.ApiMessage;
 
 /**
  * Service for creating {@link ApiMessage} by string key and list of parameters.
@@ -56,4 +56,19 @@ public interface ErrorService {
      * @return Readable text for the given message key.
      */
     String getReadableMessage(String key, Object... parameters);
+
+    /**
+     * @return Returns the value of the default message source attribute that is
+     *         added to every error message. It is a string that identifies the
+     *         source service. For example: myhost:8080:serviceid
+     */
+    String getDefaultMessageSource();
+
+    /**
+     * @param defaultMessageSource The value of the default message source attribute
+     *                             that is added to every error message. It is a
+     *                             string that identifies the source service. For
+     *                             example: myhost:8080:serviceid
+     */
+    void setDefaultMessageSource(String defaultMessageSource);
 }

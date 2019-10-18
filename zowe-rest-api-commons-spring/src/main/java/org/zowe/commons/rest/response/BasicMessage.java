@@ -9,14 +9,13 @@
  */
 package org.zowe.commons.rest.response;
 
-import org.zowe.commons.rest.response.Message;
-import org.zowe.commons.rest.response.MessageType;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Holds information about a {@link Message}. This class is immutable.
@@ -32,6 +31,7 @@ import java.util.UUID;
  *
  * @author Greg Berres, Petr Plavjanik
  */
+@JsonPropertyOrder({ "messageType", "messageNumber", "messageContent", "messageReason", "messageAction", "messageKey", "messageParameters", "messageInstanceId", "messageComponent", "messageSource"})
 public class BasicMessage implements Message {
     private final MessageType messageType;
     private final String messageNumber;
@@ -80,7 +80,7 @@ public class BasicMessage implements Message {
         this(messageType, messageNumber, messageContent, null, null, messageKey, null, generateMessageInstanceId(), null, null);
     }
 
-    private static String generateMessageInstanceId() {
+    public static String generateMessageInstanceId() {
         return UUID.randomUUID().toString();
     }
 

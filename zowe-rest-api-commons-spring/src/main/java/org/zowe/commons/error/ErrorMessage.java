@@ -11,51 +11,23 @@ package org.zowe.commons.error;
 
 import org.zowe.commons.rest.response.MessageType;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ErrorMessage {
     private String key;
     private String number;
     private MessageType type;
     private String text;
-
-    public ErrorMessage() {
-    }
+    private String reason;
+    private String action;
+    private String component;
 
     public ErrorMessage(String key, String number, MessageType type, String text) {
-        this.key = key;
-        this.number = number;
-        this.type = type;
-        this.text = text;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public MessageType getType() {
-        return type;
-    }
-
-    public void setType(MessageType type) {
-        this.type = type;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+       this(key, number, type, text, null, null, null);
     }
 }

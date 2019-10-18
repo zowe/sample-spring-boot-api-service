@@ -8,3 +8,28 @@ messages:
       number: TST0001
       type: INFO
       text: "Test message - expects decimal number %d"
+
+    - key: org.zowe.commons.test.reason
+      number: CSC0002
+      type: ERROR
+      text: "No arguments message"
+      reason: Reason
+
+    - key: org.zowe.commons.test.action
+      number: CSC0003
+      type: ERROR
+      text: "No arguments message"
+      action: Action
+
+    - key: org.zowe.commons.test.reasonAndAction
+      number: CSC0004
+      type: ERROR
+      text: "No arguments message"
+      reason: Reason
+      action: Action
+
+    - key: org.zowe.commons.test.component
+      number: CSC0005
+      type: ERROR
+      text: "No arguments message"
+      component: zowe.sdk.commons.test

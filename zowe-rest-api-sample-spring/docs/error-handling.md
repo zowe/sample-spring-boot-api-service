@@ -90,6 +90,10 @@ Examples:
         {
             "fieldOne": "value",
             "someNumber": 1
+        },
+        {
+            "fieldOne": "another value",
+            "someNumber": 2
         }
     ]
     ```
@@ -127,7 +131,29 @@ Follow the principle that message key (for example `org.zowe.commons.apiml.servi
   - *messageParameters* - error message parameters. Used for formatting of localized messages.
   - *messageInstanceId* - unique ID of the message instance. Useful for locating of the message in the logs. The same ID should be printed in the log.
   - *messageComponent* - for support and developers - component that generated the error (can be fully qualified Java package or class name)
-  - *messageSource* - for support and developers - source service that generated the error (can Open Mainframe service name or host:port).Be sure to include as much useful data as possible and keep in mind different users of the message structure. However, be mindful not to leak data that should be kept private or implementation details to avoid breaches in security.
+  - *messageSource* - for support and developers - source service that generated the error. The SDK returns `host:port:serviceId` by default.
+
+Be sure to include as much useful data as possible and keep in mind different users of the message structure. However, be mindful not to leak data that should be kept private or implementation details to avoid breaches in security.
+
+**Example:**
+
+```json
+{
+  "messages": [
+    {
+      "messageType": "ERROR",
+      "messageNumber": "ZWEAS401",
+      "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: Full authentication is required to access this resource",
+      "messageReason": "The accessed resource requires authentication. The request is missing valid authentication credentials.",
+      "messageAction": "Review the product documentation for more details about acceptable authentication. Verify that your credentials are valid and contact security administrator to obtain valid credentials.",
+      "messageKey": "org.zowe.commons.rest.unauthorized",
+      "messageInstanceId": "d9ef6577-f66c-4845-988d-89fc3d993d72",
+      "messageComponent": "org.zowe.commons.spring.RestAuthenticationEntryPoint",
+      "messageSource": "usilca32.lvn.broadcom.net:10180:zowesample"
+    }
+  ]
+}
+```
 
 ### Defining New Numbered Message
 
@@ -141,6 +167,12 @@ Follow the principle that message key (for example `org.zowe.commons.apiml.servi
       type: ERROR
       text: "The provided name is empty. Provide a name that is not empty."
     ```
+
+**Notes:**
+
+- You can use optional `reason` and `action` properties to define `messageReason` and `messageActions`.
+- You can use `component` to override override the default compoment name which is the class name of the Java class that has created the message.
+- The `messageSource` is set automatically by the commons library to `hostname:port:serviceId`.
 
 ## Logging Numbered Message
 

@@ -56,8 +56,10 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
         RestAssured.authentication = basic(VALID_USERID, EXPIRED_PASSWORD);
         when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(401)
                 .body("messages[0].messageContent", containsString("expired"))
+                .body("messages[0].messageReason", containsString("missing valid authentication credentials"))
+                .body("messages[0].messageAction", containsString("contact security administrator"))
+                .body("messages[1].messageAction", containsString("change your password"))
                 .body("messages[1].messageKey", equalTo("org.zowe.commons.zos.security.authentication.error.expired"));
-
     }
 
     @Test
