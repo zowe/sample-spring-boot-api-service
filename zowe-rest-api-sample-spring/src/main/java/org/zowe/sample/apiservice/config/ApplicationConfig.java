@@ -40,6 +40,5 @@ public class ApplicationConfig implements ApplicationListener<ApplicationReadyEv
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
         serviceStartupEventHandler.onServiceStartup(serviceTitle, ServiceStartupEventHandler.DEFAULT_DELAY_FACTOR);
-        
     }
 }
