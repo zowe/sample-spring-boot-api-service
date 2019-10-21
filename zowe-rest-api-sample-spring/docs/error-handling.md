@@ -9,6 +9,8 @@
     - [Defining New Numbered Message](#defining-new-numbered-message)
   - [Logging Numbered Message](#logging-numbered-message)
 
+See [Handling errors in a Zowe REST API](https://medium.com/zowe/handling-errors-in-a-zowe-rest-api-1719554ddd6) for explanation of the key concepts and steps how to handle errors in a REST API service.
+
 ## Handling Internal Errors
 
 Unexpected errors does not need to be handled or caught by your REST controller. If your controller throws an `Exception` or `RuntimeException` then Spring exception handler (customized by `CustomRestExceptionHandler` in the commons library) will convert the exception into a standardized format. For example request `https://localhost:10080/api/v1/exception` returns:
