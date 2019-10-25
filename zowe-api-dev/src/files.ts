@@ -58,6 +58,7 @@ export function transferFiles(
     console.time("transferFile");
     checkZoweProfileName(userConfig);
     for (const [file, options] of Object.entries(files)) {
+        debug("options", options);
         const zosFile = `${zosTargetDir}/${options.target}`;
         const zosDir = dirname(zosFile);
         let soUpdated = true;
@@ -112,6 +113,7 @@ export function transferFiles(
         if (options.postCommands) {
             postCommands.push(...options.postCommands);
         }
+        debug("postCommands", postCommands);
         for (const postCommand of postCommands) {
             let finalCommand = postCommand;
             if (postCommand.startsWith("java") && userConfig.javaHome) {

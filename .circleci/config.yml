@@ -24,6 +24,7 @@ jobs:
       - run: &zosbuild
           name: Building Native z/OS Code
           command: |
+            npm uninstall zowe-api-dev
             npm install
             source .circleci/river.env
             npm run zosbuild
