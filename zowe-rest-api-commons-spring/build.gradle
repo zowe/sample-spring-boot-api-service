@@ -82,7 +82,7 @@ task zosbuild(type: Exec) {
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         commandLine 'zowe-api-dev.cmd', 'zosbuild'
     } else {
-        commandLine 'zowe-api-dev', 'zosbuild'
+        commandLine 'npx', 'zowe-api-dev', 'zosbuild'
     }
 }
 

@@ -8,7 +8,7 @@ export default class Deploy extends Command {
     static description = "deploy the API service artifacts to z/OS";
 
     static flags = {
-        force: flags.boolean({ char: "f", description: "forces full deployment even if there is not change" }),
+        force: flags.boolean({ char: "f", description: "forces full deployment even if there is not change", default: true }),
     };
 
     async run() {

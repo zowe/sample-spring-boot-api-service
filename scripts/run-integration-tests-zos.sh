@@ -2,7 +2,7 @@
 scripts/lock-port.sh
 
 cd zowe-rest-api-sample-spring
-zowe-api-dev deploy
+zowe-api-dev deploy --force
 zowe-api-dev config --name zos -p port=$TEST_PORT
 zowe-api-dev start --job
 
