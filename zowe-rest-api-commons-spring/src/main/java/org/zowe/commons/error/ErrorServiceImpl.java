@@ -36,6 +36,7 @@ public class ErrorServiceImpl implements ErrorService {
     private static final String INVALID_KEY_MESSAGE = "org.zowe.commons.error.invalidMessageKey";
     private static final String INVALID_MESSAGE_TEXT_FORMAT = "org.zowe.commons.error.invalidMessageTextFormat";
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorServiceImpl.class);
+    private static final int STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD = 3;
 
     private final ErrorMessageStorage messageStorage;
     private String defaultMessageSource;
@@ -138,7 +139,7 @@ public class ErrorServiceImpl implements ErrorService {
         }
         if (message.getComponent() == null) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String className = stackTrace[3].getClassName();
+            String className = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
             message.setComponent(className);
         }
         return new BasicMessage(message.getType(), message.getNumber(), text, message.getReason(), message.getAction(),
