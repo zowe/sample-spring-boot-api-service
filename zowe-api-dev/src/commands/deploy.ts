@@ -8,12 +8,13 @@ export default class Deploy extends Command {
     static description = "deploy the API service artifacts to z/OS";
 
     static flags = {
-        force: flags.boolean({ char: "f", description: "forces full deployment even if there is not change", default: true }),
+        force: flags.boolean({ char: "f", description: "forces full deployment even if there is not change", default: false }),
     };
 
     async run() {
         const f = this.parse(Deploy).flags;
         const [userConfig, projectConfig] = readConfiguration(this);
+
 
         checkZowe(this);
 
