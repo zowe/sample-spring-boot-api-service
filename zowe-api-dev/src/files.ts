@@ -106,7 +106,7 @@ export function transferFiles(
             }
         }
         const postCommands: string[] = [];
-        if (soUpdated && options.postSoUpdateCommands) {
+        if ((soUpdated || force) && options.postSoUpdateCommands) {
             postCommands.push(...options.postSoUpdateCommands);
         }
         if (options.postCommands) {
