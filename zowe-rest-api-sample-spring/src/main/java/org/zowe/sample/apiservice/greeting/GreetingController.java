@@ -11,16 +11,21 @@ package org.zowe.sample.apiservice.greeting;
 
 import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ca.mfaas.rest.response.ApiMessage;
-
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.zowe.commons.rest.response.ApiMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,15 +33,19 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = "Greeting", description = "REST API for greetings")
 @RestController
 @RequestMapping("/api/v1/greeting")
-public class GreetingController {
-    private static final String DEFAULT_NAME = "world";
-    private static final String template = "%s, %s!";
+public class GreetingController implements MessageSourceAware {
+    private MessageSource messageSource;
 
-    private static String greeting = "Hello";
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    private static Map<String, String> greeting = new HashMap<>();
     private final AtomicLong counter = new AtomicLong();
 
     @GetMapping
@@ -45,11 +54,20 @@ public class GreetingController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful greeting", response = Greeting.class),
             @ApiResponse(code = 400, message = "Invalid request parameter - empty name", response = ApiMessage.class) })
     public Greeting getGreeting(
-            @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = DEFAULT_NAME) String name) {
+            @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", required = false) String name,
+            @ApiIgnore Locale locale) {
+        if (name == null) {
+            name = messageSource.getMessage("GreetingController.world", null, locale);
+        }
         if (name.trim().isEmpty()) {
             throw new EmptyNameError();
         }
-        return new Greeting(counter.incrementAndGet(), String.format(template, greeting, name));
+        String greeting = GreetingController.greeting.get(locale.getLanguage());
+        if (greeting == null) {
+            greeting = messageSource.getMessage("GreetingController.greeting", null, locale);
+        }
+        return new Greeting(counter.incrementAndGet(), String
+                .format(messageSource.getMessage("GreetingController.greetingTemplate", null, locale), greeting, name));
     }
 
     @PutMapping("settings")
@@ -58,7 +76,7 @@ public class GreetingController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful settings change", response = Greeting.class),
             @ApiResponse(code = 400, message = "Invalid request parameter", response = ApiMessage.class) })
     public GreetingSettings updateGreeting(@RequestBody GreetingSettings settings) {
-        GreetingController.greeting = settings.getGreeting();
+        GreetingController.greeting.put(LocaleContextHolder.getLocale().getLanguage(), settings.getGreeting());
         return settings;
     }
 
