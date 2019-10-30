@@ -9,6 +9,7 @@
  */
 package org.zowe.commons.spring;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,10 +41,14 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final ErrorService errorService = CommonsErrorService.get();
 
+    private ApiMessage localizedMessage(String key) {
+        return errorService.createApiMessage(LocaleContextHolder.getLocale(), key);
+    }
+
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.methodNotAllowed");
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.methodNotAllowed");
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
     }
@@ -51,27 +56,28 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.notFound");
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.notFound");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.unsupportedMediaType");
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.unsupportedMediaType");
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-        ApiMessage message = errorService.createApiMessage(FORBIDDEN_MESSAGE_KEY, ex.getMessage());
+        ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(), FORBIDDEN_MESSAGE_KEY,
+                ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
     }
 
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        ApiMessage message = errorService.createApiMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY);
+        ApiMessage message = localizedMessage(INTERNAL_SERVER_ERROR_MESSAGE_KEY);
         log.error(message.toLogMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(message);

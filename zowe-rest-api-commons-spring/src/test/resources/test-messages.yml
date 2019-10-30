@@ -33,3 +33,9 @@ messages:
       type: ERROR
       text: "No arguments message"
       component: zowe.sdk.commons.test
+
+    - key: org.zowe.commons.test.localized
+      number: CSC0006
+      type: INFO
+      text: "Localized message"
+      component: "Component"

@@ -173,7 +173,7 @@ Be sure to include as much useful data as possible and keep in mind different us
 **Notes:**
 
 - You can use optional `reason` and `action` properties to define `messageReason` and `messageActions`.
-- You can use `component` to override override the default compoment name which is the class name of the Java class that has created the message.
+- You can use `component` to override override the default component name which is the class name of the Java class that has created the message.
 - The `messageSource` is set automatically by the commons library to `hostname:port:serviceId`.
 
 ## Logging Numbered Message
