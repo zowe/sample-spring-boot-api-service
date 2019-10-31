@@ -8,6 +8,7 @@
     - [Rules for Messages](#rules-for-messages)
     - [Defining New Numbered Message](#defining-new-numbered-message)
   - [Logging Numbered Message](#logging-numbered-message)
+  - [Formatting Message Text](#formatting-message-text)
 
 See [Handling errors in a Zowe REST API](https://medium.com/zowe/handling-errors-in-a-zowe-rest-api-1719554ddd6) for explanation of the key concepts and steps how to handle errors in a REST API service.
 
@@ -195,3 +196,32 @@ ApiMessage message = errorService.createApiMessage("message.key");
 log.info(message.toReadableText());
 // Prints: "INFO MSGNUM001I Message text"
 ```
+
+## Formatting Message Text
+
+The `ErrorServiceImpl` uses [Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) class and the arguments to format the message text. The formatter is using the provided locale or the default one.
+
+**Example:**
+
+We have a message defined like this:
+
+```yml
+key: formatted.message
+number: ZWEASA001
+type: INFO
+text: "The return code is X'%02X'"
+```
+
+Then this code:
+
+```java
+errorService.createApiMessage("formatted.message", 15).toReadableText();
+```
+
+Returns:
+
+```txt
+The return code is X'0F'
+```
+
+The [Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) uses C-style printf style of formatting. Refer to its documentation for more details.
