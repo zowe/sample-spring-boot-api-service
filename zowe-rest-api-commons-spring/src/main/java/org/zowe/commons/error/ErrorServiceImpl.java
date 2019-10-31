@@ -254,7 +254,7 @@ public class ErrorServiceImpl implements ErrorService {
                     continue;
                 }
                 try {
-                    return bundle.getString(key);
+                    return bundle.getString("messages." + key);
                 } catch (MissingResourceException ignored) {
                 }
             }

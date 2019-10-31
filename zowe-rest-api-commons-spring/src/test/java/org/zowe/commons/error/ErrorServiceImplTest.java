@@ -151,8 +151,4 @@ public class ErrorServiceImplTest {
         assertEquals("CSC0003", message.getMessages().get(0).getMessageNumber());
         assertEquals("Action", message.getMessages().get(0).getMessageAction());
     }
-
-    @Test
-    public void localeTest() {
-    }
 }
