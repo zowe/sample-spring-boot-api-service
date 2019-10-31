@@ -1,5 +1,5 @@
 messages:
-  # Commons Internal Errors:
+  # Commons internal errors:
   - key: org.zowe.commons.error.invalidMessageKey
     number: ZWEAS001
     type: ERROR
@@ -16,6 +16,12 @@ messages:
     number: ZWEAS003
     type: ERROR
     text: "Internal authentication error: %s. Please contact support for further assistance."
+
+  # Service life-cycle:
+  - key: org.zowe.commons.service.started
+    number: ZWEAS101
+    type: INFO
+    text: "'%s' has been started in %.3f seconds"
 
   # API Mediation Layer integration:
   - key: org.zowe.commons.apiml.serviceCertificateNotTrusted

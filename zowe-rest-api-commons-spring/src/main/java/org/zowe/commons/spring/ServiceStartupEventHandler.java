@@ -12,6 +12,7 @@ package org.zowe.commons.spring;
 import java.lang.management.ManagementFactory;
 
 import org.springframework.stereotype.Component;
+import org.zowe.commons.error.CommonsErrorService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +23,7 @@ public class ServiceStartupEventHandler {
 
     public void onServiceStartup(String serviceName, int delayFactor) {
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
-        log.info("{} has been started in {} seconds", serviceName, uptime / 1000.0);
+        log.info(CommonsErrorService.get().createApiMessage("org.zowe.commons.service.started", serviceName, uptime / 1000.0).toReadableText());
 
         new java.util.Timer().schedule(new EnableEurekaLoggingTimerTask(), uptime * DEFAULT_DELAY_FACTOR);
     }

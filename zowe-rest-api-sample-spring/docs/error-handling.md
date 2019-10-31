@@ -9,6 +9,7 @@
     - [Defining New Numbered Message](#defining-new-numbered-message)
   - [Logging Numbered Message](#logging-numbered-message)
   - [Formatting Message Text](#formatting-message-text)
+  - [Overriding SDK Messages](#overriding-sdk-messages)
 
 See [Handling errors in a Zowe REST API](https://medium.com/zowe/handling-errors-in-a-zowe-rest-api-1719554ddd6) for explanation of the key concepts and steps how to handle errors in a REST API service.
 
@@ -225,3 +226,16 @@ The return code is X'0F'
 ```
 
 The [Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) uses C-style printf style of formatting. Refer to its documentation for more details.
+
+## Overriding SDK Messages
+
+Sometimes it can be helpful to override the message from the SDK. For example you would like to use your own message number or modify tbe text slightly.
+
+You are allowed to redefine the message key:
+
+```yaml
+    - key: org.zowe.commons.service.started
+      number: ZWEASA101
+      type: INFO
+      text: "'%s' has been started in %.3f seconds"
+```

@@ -85,6 +85,7 @@ public class ErrorServiceImpl implements ErrorService {
     public static ErrorService getDefault() {
         ErrorServiceImpl errorService = new ErrorServiceImpl("/" + DEFAULT_MESSAGES_BASENAME + YAML_EXTENSION);
         errorService.addResourceBundleBaseName(DEFAULT_MESSAGES_BASENAME);
+        CommonsErrorService.get().addResourceBundleBaseName(DEFAULT_MESSAGES_BASENAME);
         return errorService;
     }
 
@@ -120,7 +121,9 @@ public class ErrorServiceImpl implements ErrorService {
 
     @Override
     public void addResourceBundleBaseName(String baseName) {
-        baseNames.add(baseName);
+        if (!baseNames.contains(baseName)) {
+            baseNames.add(baseName);
+        }
     }
 
     private ResourceBundle getResourceBundle(String baseName, Locale locale) {
@@ -143,8 +146,8 @@ public class ErrorServiceImpl implements ErrorService {
             localeMap.put(locale, bundle);
             return bundle;
         } catch (MissingResourceException ex) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("ResourceBundle '%s' not found: %s", baseName, ex.getMessage()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("ResourceBundle '%s' not found: %s", baseName, ex.getMessage()));
             }
             return null;
         }
@@ -244,7 +247,8 @@ public class ErrorServiceImpl implements ErrorService {
 
     private String localizedText(Locale locale, String key, String defaultText) {
         if (locale != null) {
-            for (String baseName : baseNames) {
+            for (int i = baseNames.size() -1; i >= 0; i--) {
+                String baseName = baseNames.get(i);
                 ResourceBundle bundle = getResourceBundle(baseName, locale);
                 if (bundle == null) {
                     continue;

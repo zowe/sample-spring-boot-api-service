@@ -55,6 +55,7 @@ LIBPATH="$LIBPATH":"${PWD}/lib"
 export LIBPATH=$LIBPATH
 
 IJO="-Xms16m -Xmx128m"
+IJO="$IJO -Duser.language=en -Duser.country=US"
 IJO="$IJO -Dibm.serversocket.recover=true"
 IJO="$IJO -Dfile.encoding=UTF-8"
 IJO="$IJO -Djava.io.tmpdir=/tmp"
