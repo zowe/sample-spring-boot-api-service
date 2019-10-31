@@ -25,8 +25,8 @@ public interface ErrorService {
      * parameters.
      *
      * @param key        Key of message in messages.yml file.
-     * @param parameters A list of parameters that will be used for formatting using
-     *                   {@link String.format}.
+     * @param parameters A list of parameters that will be used for formatting.
+     *
      * @return {@link ApiMessage} for key
      */
     ApiMessage createApiMessage(String key, Object... parameters);
@@ -38,7 +38,7 @@ public interface ErrorService {
      *
      * @param key        Key of message in messages.yml file.
      * @param parameters A list that contains arrays of parameters that will be used
-     *                   for formatting using {@link String.format}.
+     *                   for formatting.
      * @return {@link ApiMessage} for key
      */
     ApiMessage createApiMessage(String key, List<Object[]> parameters);
@@ -52,8 +52,7 @@ public interface ErrorService {
      *                   If it is null or message key is not found then the fallback
      *                   is to use the US English message.
      * @param key        Key of message in messages.yml file.
-     * @param parameters A list of parameters that will be used for formatting using
-     *                   {@link String.format}.
+     * @param parameters A list of parameters that will be used for formatting.
      * @return {@link ApiMessage} for key
      */
     ApiMessage createApiMessage(Locale locale, String key, Object... parameters);
@@ -68,7 +67,7 @@ public interface ErrorService {
      *                   is to use the US English message.
      * @param key        Key of message in messages.yml file.
      * @param parameters A list that contains arrays of parameters that will be used
-     *                   for formatting using {@link String.format}.
+     *                   for formatting.
      * @return {@link ApiMessage} for key
      */
     ApiMessage createApiMessage(Locale locale, String key, List<Object[]> parameters);
