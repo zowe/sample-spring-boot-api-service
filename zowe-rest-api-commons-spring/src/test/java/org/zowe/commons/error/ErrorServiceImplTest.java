@@ -10,6 +10,7 @@
 package org.zowe.commons.error;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +128,18 @@ public class ErrorServiceImplTest {
 
         assertEquals("CSC0002", message.getMessages().get(0).getMessageNumber());
         assertEquals("Reason", message.getMessages().get(0).getMessageReason());
+    }
+
+    @Test
+    public void messageWithReasonParameters() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.parameters", "string", 123);
+
+        assertEquals("Test message - expects decimal number 123 and string",
+                message.getMessages().get(0).getMessageContent());
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains(123));
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains("string"));
     }
 
     @Test

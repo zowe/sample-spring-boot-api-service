@@ -67,7 +67,8 @@ public class GreetingController implements MessageSourceAware {
             greeting = messageSource.getMessage("GreetingController.greeting", null, locale);
         }
         return new Greeting(counter.incrementAndGet(), String
-                .format(messageSource.getMessage("GreetingController.greetingTemplate", null, locale), greeting, name));
+                .format(messageSource.getMessage("GreetingController.greetingTemplate", null, locale), greeting, name),
+                locale.toLanguageTag());
     }
 
     @PutMapping("settings")

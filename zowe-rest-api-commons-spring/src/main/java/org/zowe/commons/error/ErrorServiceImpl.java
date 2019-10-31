@@ -19,7 +19,9 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Locale;
@@ -197,13 +199,19 @@ public class ErrorServiceImpl implements ErrorService {
     }
 
     private Message createMessage(Locale locale, String key, Object... parameters) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
         ErrorMessage message = messageStorage.getErrorMessage(key);
         message = validateMessage(message, key);
         Object[] messageParameters = validateParameters(message, key, parameters);
 
         String text;
-        try {
-            text = String.format(localizedText(locale, key + ".text", message.getText()), messageParameters);
+        StringBuilder sb = new StringBuilder();
+        try (Formatter formatter = new Formatter(sb, locale)) {
+            formatter.format(localizedText(locale, key + ".text", message.getText()), messageParameters);
+            text = sb.toString();
+            formatter.close();
         } catch (IllegalFormatConversionException exception) {
             LOGGER.debug("Internal error: Invalid message format was used", exception);
             message = messageStorage.getErrorMessage(INVALID_MESSAGE_TEXT_FORMAT);
@@ -212,9 +220,13 @@ public class ErrorServiceImpl implements ErrorService {
             text = String.format(message.getText(), messageParameters);
         }
         String component = getLocalizedComponentOrUseDefault(locale, key, message);
+        List<Object> parameterList = null;
+        if (parameters != null) {
+            parameterList = Arrays.asList(parameters);
+        }
         return new BasicMessage(message.getType(), message.getNumber(), text,
                 localizedText(locale, key + ".reason", message.getReason()),
-                localizedText(locale, key + ".action", message.getAction()), key, null,
+                localizedText(locale, key + ".action", message.getAction()), key, parameterList,
                 BasicMessage.generateMessageInstanceId(), defaultMessageSource, component);
     }
 

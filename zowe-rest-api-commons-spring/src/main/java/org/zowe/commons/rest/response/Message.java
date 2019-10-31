@@ -30,9 +30,9 @@ public interface Message {
 
     /**
      * Typical mainframe message number (not including the message level one-letter
-     * code) that can be found in CA documentation. The message number is usually in
-     * this format "pppnnnn" where ppp is a product code and nnnn is a four-digit
-     * number.
+     * code) that can be found in typical mainframe documentation. The message
+     * number is usually in this format "pppnnnn" where ppp is a product code and
+     * nnnn is a four-digit number.
      *
      * Example: "PFI0031"
      */
@@ -81,15 +81,15 @@ public interface Message {
      * For support and developers - component that generated the error (can be fully
      * qualified Java package or class name). This field is optional.
      *
-     * Example: com.ca.product.package
+     * Example: org.zowe.service.package.Class
      */
     String getMessageComponent();
 
     /**
-     * For support and developers - source service that generated the error (can
-     * MFaaS service name or host:port). This field is optional.
+     * For support and developers - source service that generated the error (it can
+     * be a Zowe service name or host:port). This field is optional.
      *
-     * Example: mfaas-discovery-service, ca31:12345
+     * Example: river.zowe.org:1234:myservice
      */
     String getMessageSource();
 
