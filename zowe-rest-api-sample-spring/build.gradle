@@ -27,6 +27,13 @@ configurations {
 repositories {
     mavenLocal()
     maven {
+        url zoweArtifactorySnapShotRepository
+        credentials {
+            username zoweArtifactoryUser
+            password zoweArtifactoryPassword
+        }
+    }
+    maven {
         url zoweArtifactoryRepository
         credentials {
             username zoweArtifactoryUser
