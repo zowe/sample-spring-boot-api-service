@@ -16,7 +16,7 @@
             }
         }
     },
-    "shellStartCommand": "$JAVA -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
+    "shellStartCommand": "$JAVA -Dorg.zowe.commons.logging.stripAccents=true -Duser.language=en -Duser.country=US -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-spring.jar --spring.config.additional-location=file:etc/application.yml",
     "jobTemplatePath": "src/main/jcl/template.jcl",
     "jobPath": "build/api.jcl",
     "defaultDirName": "zowe-rest-api-sample-spring",

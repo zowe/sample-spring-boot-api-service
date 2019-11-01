@@ -9,7 +9,7 @@
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
+        <encoder class="org.zowe.commons.AccentStrippingPatternLayerEncoder">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(&lt;ZWEASA1:%thread:${PID:- }&gt;){magenta} %X{userid:-} %clr(\(%logger:%line\)){cyan} %clr(%level) %msg%n</pattern>
         </encoder>
     </appender>
