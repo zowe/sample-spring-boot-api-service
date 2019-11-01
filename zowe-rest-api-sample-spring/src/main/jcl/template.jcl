@@ -68,6 +68,7 @@ IJO="$IJO -Xrunjdwp:transport=dt_socket,$_DEBUG_OPTIONS"
 IJO="$IJO -Xquickstart"
 
 export IBM_JAVA_OPTIONS="${IJO}"
+#export JZOS_OUTPUT_ENCODING="IBM-870"
 export PATH=$JAVA_HOME/bin:$PATH
 
 # Timezone
