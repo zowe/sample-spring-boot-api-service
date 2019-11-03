@@ -22,3 +22,13 @@ Or with Gradle:
 There is a profile called `diag` that is enabled in [`config/local/application.yml`](/config/local/application.yml).
 
 This profile enables all Spring Actuator endpoints that you can see at: <https://localhost:10080/actuator>
+
+## Service Name
+
+The common Zowe logging format print the Zowe service name at the beginning of each log message.
+
+You can set it up using property `zowe.logging.service`. For example:
+
+```yaml
+zowe.logging.service: ZWEASA1
+```
