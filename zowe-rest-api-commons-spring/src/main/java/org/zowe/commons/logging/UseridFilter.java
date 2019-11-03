@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons;
+package org.zowe.commons.logging;
 
 import org.slf4j.MDC;
 import org.slf4j.Marker;

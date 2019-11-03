@@ -3,7 +3,7 @@
     <property resource="application.yml" />
 
     <turboFilter class="org.zowe.commons.apiml.ApimlIntegrationFailureDetector"/>
-    <turboFilter class="org.zowe.commons.UseridFilter"/>
+    <turboFilter class="org.zowe.commons.logging.UseridFilter"/>
     <turboFilter
       class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
         <AllowedRepetitions>0</AllowedRepetitions>
