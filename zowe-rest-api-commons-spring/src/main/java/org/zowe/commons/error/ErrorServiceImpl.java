@@ -11,10 +11,26 @@ package org.zowe.commons.error;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.IllegalFormatConversionException;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Objects;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -27,26 +43,68 @@ import org.zowe.commons.rest.response.BasicMessage;
 import org.zowe.commons.rest.response.Message;
 import org.zowe.commons.rest.response.MessageType;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * Default implementation of {@link ErrorService} that uses messages.yml as
- * source for messages.
+ * Default implementation of {@link ErrorService} that loads messages from YAML
+ * files.
  */
+@Slf4j
 public class ErrorServiceImpl implements ErrorService {
-    private static final String COMMONS_MESSAGES = "/commons-messages.yml";
+    private static final String COMMONS_MESSAGES_BASENAME = "commons-messages";
+    private static final String DEFAULT_MESSAGES_BASENAME = "messages";
+    private static final String YAML_EXTENSION = ".yml";
     private static final String INVALID_KEY_MESSAGE = "org.zowe.commons.error.invalidMessageKey";
     private static final String INVALID_MESSAGE_TEXT_FORMAT = "org.zowe.commons.error.invalidMessageTextFormat";
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorServiceImpl.class);
-    private static final int STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD = 3;
+    private static final int STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD = 4;
 
     private final ErrorMessageStorage messageStorage;
     private String defaultMessageSource;
+    private volatile ErrorServiceControl control = new ErrorServiceControl();
 
     /**
-     * Constructor that creates only common messages.
+     * Cache to hold loaded ResourceBundles. The key to this map is bundle basename
+     * which holds a Map which has the locale as the key and in turn holds the
+     * ResourceBundle instances.
+     */
+    private final Map<String, Map<Locale, ResourceBundle>> cachedResourceBundles = new ConcurrentHashMap<>();
+
+    /**
+     * List of base names that are used to load resource bundles for localized
+     * texts.
+     */
+    private final List<String> baseNames = new ArrayList<>(2);
+
+    /**
+     * Recommended way how to get an instance of ErrorService for your application.
+     *
+     * @return Error service that uses common messages and messages from default
+     *         resource file (messages.yml).
+     */
+    public static ErrorService getDefault() {
+        ErrorServiceImpl errorService = new ErrorServiceImpl("/" + DEFAULT_MESSAGES_BASENAME + YAML_EXTENSION);
+        errorService.addResourceBundleBaseName(DEFAULT_MESSAGES_BASENAME);
+        CommonsErrorService.get().addResourceBundleBaseName(DEFAULT_MESSAGES_BASENAME);
+        return errorService;
+    }
+
+    /**
+     * @return Returns an instance of error service with messages for the Zowe REST
+     *         API Commons.
+     */
+    public static ErrorService getCommonsDefault() {
+        ErrorServiceImpl errorService = new ErrorServiceImpl();
+        errorService.loadMessages("/" + COMMONS_MESSAGES_BASENAME + YAML_EXTENSION);
+        errorService.addResourceBundleBaseName(COMMONS_MESSAGES_BASENAME);
+        return errorService;
+    }
+
+    /**
+     * Constructor that creates empty message storage.
      */
     public ErrorServiceImpl() {
         messageStorage = new ErrorMessageStorage();
-        loadMessages(COMMONS_MESSAGES);
     }
 
     /**
@@ -56,44 +114,72 @@ public class ErrorServiceImpl implements ErrorService {
      */
     public ErrorServiceImpl(String messagesFilePath) {
         this();
+        loadMessages("/" + COMMONS_MESSAGES_BASENAME + YAML_EXTENSION);
+        addResourceBundleBaseName(COMMONS_MESSAGES_BASENAME);
         loadMessages(messagesFilePath);
     }
 
-    /**
-     * Creates {@link ApiMessage} with key and list of parameters.
-     *
-     * @param key        of message in messages.yml file
-     * @param parameters for message
-     * @return {@link ApiMessage}
-     */
+    @Override
+    public void addResourceBundleBaseName(String baseName) {
+        if (!baseNames.contains(baseName)) {
+            baseNames.add(baseName);
+        }
+    }
+
+    private ResourceBundle getResourceBundle(String baseName, Locale locale) {
+        Map<Locale, ResourceBundle> localeMap = this.cachedResourceBundles.get(baseName);
+        if (localeMap != null) {
+            ResourceBundle bundle = localeMap.get(locale);
+            if (bundle != null) {
+                return bundle;
+            }
+        }
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale, control);
+            if (localeMap == null) {
+                localeMap = new ConcurrentHashMap<>();
+                Map<Locale, ResourceBundle> existing = this.cachedResourceBundles.putIfAbsent(baseName, localeMap);
+                if (existing != null) {
+                    localeMap = existing;
+                }
+            }
+            localeMap.put(locale, bundle);
+            return bundle;
+        } catch (MissingResourceException ex) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("ResourceBundle '%s' not found: %s", baseName, ex.getMessage()));
+            }
+            return null;
+        }
+    }
+
     @Override
     public ApiMessage createApiMessage(String key, Object... parameters) {
-        Message message = createMessage(key, parameters);
+        Message message = createMessage(null, key, parameters);
         return new BasicApiMessage(Collections.singletonList(message));
     }
 
-    /**
-     * Creates {@link ApiMessage} with list of {@link Message}.
-     *
-     * @param key        of message in messages.yml file
-     * @param parameters list that contains arrays of parameters
-     * @return {@link ApiMessage}
-     */
+    @Override
+    public ApiMessage createApiMessage(Locale locale, String key, Object... parameters) {
+        Message message = createMessage(locale, key, parameters);
+        return new BasicApiMessage(Collections.singletonList(message));
+    }
+
     @Override
     public ApiMessage createApiMessage(String key, List<Object[]> parameters) {
-        List<Message> messageList = parameters.stream().filter(Objects::nonNull).map(ob -> createMessage(key, ob))
+        List<Message> messageList = parameters.stream().filter(Objects::nonNull).map(ob -> createMessage(null, key, ob))
                 .collect(Collectors.toList());
         return new BasicApiMessage(messageList);
     }
 
-    /**
-     * Load messages to the context from the provided message file path
-     *
-     * @param messagesFilePath path of the message file
-     * @throws MessageLoadException      when a message couldn't loaded or has wrong
-     *                                   definition
-     * @throws DuplicateMessageException when a message is already defined before
-     */
+    @Override
+    public ApiMessage createApiMessage(Locale locale, String key, List<Object[]> parameters) {
+        List<Message> messageList = parameters.stream().filter(Objects::nonNull)
+                .map(ob -> createMessage(locale, key, ob)).collect(Collectors.toList());
+        return new BasicApiMessage(messageList);
+    }
+
+    @Override
     public void loadMessages(String messagesFilePath) {
         try (InputStream in = ErrorServiceImpl.class.getResourceAsStream(messagesFilePath)) {
             Yaml yaml = new Yaml();
@@ -115,21 +201,20 @@ public class ErrorServiceImpl implements ErrorService {
         this.defaultMessageSource = defaultMessageSource;
     }
 
-    /**
-     * Internal method that call {@link ErrorMessageStorage} to get message by key.
-     *
-     * @param key        of message.
-     * @param parameters array of parameters for message.
-     * @return {@link Message} in mainframe format
-     */
-    private Message createMessage(String key, Object... parameters) {
+    private Message createMessage(Locale locale, String key, Object... parameters) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
         ErrorMessage message = messageStorage.getErrorMessage(key);
         message = validateMessage(message, key);
         Object[] messageParameters = validateParameters(message, key, parameters);
 
         String text;
-        try {
-            text = String.format(message.getText(), messageParameters);
+        StringBuilder sb = new StringBuilder();
+        try (Formatter formatter = new Formatter(sb, locale)) {
+            formatter.format(localizedText(locale, key + ".text", message.getText()), messageParameters);
+            text = sb.toString();
+            formatter.close();
         } catch (IllegalFormatConversionException exception) {
             LOGGER.debug("Internal error: Invalid message format was used", exception);
             message = messageStorage.getErrorMessage(INVALID_MESSAGE_TEXT_FORMAT);
@@ -137,24 +222,46 @@ public class ErrorServiceImpl implements ErrorService {
             messageParameters = validateParameters(message, key, parameters);
             text = String.format(message.getText(), messageParameters);
         }
-        if (message.getComponent() == null) {
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String className = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
-            message.setComponent(className);
+        String component = getLocalizedComponentOrUseDefault(locale, key, message);
+        List<Object> parameterList = null;
+        if (parameters != null) {
+            parameterList = Arrays.asList(parameters);
         }
-        return new BasicMessage(message.getType(), message.getNumber(), text, message.getReason(), message.getAction(),
-                key, null, BasicMessage.generateMessageInstanceId(), defaultMessageSource, message.getComponent());
+        return new BasicMessage(message.getType(), message.getNumber(), text,
+                localizedText(locale, key + ".reason", message.getReason()),
+                localizedText(locale, key + ".action", message.getAction()), key, parameterList,
+                BasicMessage.generateMessageInstanceId(), defaultMessageSource, component);
     }
 
-    /**
-     * Internal method that validates the message. When the message does not exist,
-     * the key {@value INVALID_KEY_MESSAGE} is used. When this message also does not
-     * exist, the new predefined message is created.
-     *
-     * @param message to be checked
-     * @param key     of message
-     * @return {@link ErrorMessage} in mainframe format
-     */
+    private String getLocalizedComponentOrUseDefault(Locale locale, String key, ErrorMessage message) {
+        String component = message.getComponent();
+        if (component == null) {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            String className = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
+            component = className;
+        } else {
+            component = localizedText(locale, key + ".component", component);
+        }
+        return component;
+    }
+
+    private String localizedText(Locale locale, String key, String defaultText) {
+        if (locale != null) {
+            for (int i = baseNames.size() -1; i >= 0; i--) {
+                String baseName = baseNames.get(i);
+                ResourceBundle bundle = getResourceBundle(baseName, locale);
+                if (bundle == null) {
+                    continue;
+                }
+                try {
+                    return bundle.getString("messages." + key);
+                } catch (MissingResourceException ignored) {
+                }
+            }
+        }
+        return defaultText;
+    }
+
     private ErrorMessage validateMessage(ErrorMessage message, String key) {
         if (message == null) {
             LOGGER.debug("Invalid message key '{}' was used. Please resolve this problem.", key);
@@ -174,21 +281,62 @@ public class ErrorServiceImpl implements ErrorService {
         return createApiMessage(key, parameters).toReadableText();
     }
 
-    /**
-     * Internal method that modifies parameters when the original message key does
-     * not exist and the new error message to indicate this issue is being used.
-     *
-     * @param message    to be checked if the original message was invalid
-     * @param key        of the original message
-     * @param parameters of the original message
-     * @return modified parameters if the message was changed, otherwise parameters
-     *         remain unchanged
-     */
     private Object[] validateParameters(ErrorMessage message, String key, Object... parameters) {
         if (message.getKey().equals(INVALID_KEY_MESSAGE)) {
             return new Object[] { key };
         } else {
             return parameters;
+        }
+    }
+
+    /**
+     * Custom implementation of {@code ResourceBundle.Control}, adding support for
+     * UTF-8.
+     */
+    private class ErrorServiceControl extends ResourceBundle.Control {
+        protected ResourceBundle loadBundle(Reader reader) throws IOException {
+            return new PropertyResourceBundle(reader);
+        }
+
+        @Override
+        public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader,
+                boolean reload) throws IllegalAccessException, InstantiationException, IOException {
+            if (format.equals("java.properties")) {
+                String bundleName = toBundleName(baseName, locale);
+                String resourceName = toResourceName(bundleName, "properties");
+                ClassLoader classLoader = loader;
+                boolean reloadFlag = reload;
+                InputStream inputStream;
+                try {
+                    inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
+                        InputStream is = null;
+                        if (reloadFlag) {
+                            URL url = classLoader.getResource(resourceName);
+                            if (url != null) {
+                                URLConnection connection = url.openConnection();
+                                if (connection != null) {
+                                    connection.setUseCaches(false);
+                                    is = connection.getInputStream();
+                                }
+                            }
+                        } else {
+                            is = classLoader.getResourceAsStream(resourceName);
+                        }
+                        return is;
+                    });
+                } catch (PrivilegedActionException ex) {
+                    throw (IOException) ex.getException();
+                }
+                if (inputStream != null) {
+                    try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
+                        return loadBundle(bundleReader);
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return super.newBundle(baseName, locale, format, loader, reload);
+            }
         }
     }
 }

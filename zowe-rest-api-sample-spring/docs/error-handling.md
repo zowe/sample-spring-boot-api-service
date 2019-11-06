@@ -8,6 +8,8 @@
     - [Rules for Messages](#rules-for-messages)
     - [Defining New Numbered Message](#defining-new-numbered-message)
   - [Logging Numbered Message](#logging-numbered-message)
+  - [Formatting Message Text](#formatting-message-text)
+  - [Overriding SDK Messages](#overriding-sdk-messages)
 
 See [Handling errors in a Zowe REST API](https://medium.com/zowe/handling-errors-in-a-zowe-rest-api-1719554ddd6) for explanation of the key concepts and steps how to handle errors in a REST API service.
 
@@ -173,7 +175,7 @@ Be sure to include as much useful data as possible and keep in mind different us
 **Notes:**
 
 - You can use optional `reason` and `action` properties to define `messageReason` and `messageActions`.
-- You can use `component` to override override the default compoment name which is the class name of the Java class that has created the message.
+- You can use `component` to override override the default component name which is the class name of the Java class that has created the message.
 - The `messageSource` is set automatically by the commons library to `hostname:port:serviceId`.
 
 ## Logging Numbered Message
@@ -194,4 +196,46 @@ log.error(message.toLogMessage());
 ApiMessage message = errorService.createApiMessage("message.key");
 log.info(message.toReadableText());
 // Prints: "INFO MSGNUM001I Message text"
+```
+
+## Formatting Message Text
+
+The `ErrorServiceImpl` uses [Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) class and the arguments to format the message text. The formatter is using the provided locale or the default one.
+
+**Example:**
+
+We have a message defined like this:
+
+```yml
+key: formatted.message
+number: ZWEASA001
+type: INFO
+text: "The return code is X'%02X'"
+```
+
+Then this code:
+
+```java
+errorService.createApiMessage("formatted.message", 15).toReadableText();
+```
+
+Returns:
+
+```txt
+The return code is X'0F'
+```
+
+The [Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) uses C-style printf style of formatting. Refer to its documentation for more details.
+
+## Overriding SDK Messages
+
+Sometimes it can be helpful to override the message from the SDK. For example you would like to use your own message number or modify tbe text slightly.
+
+You are allowed to redefine the message key:
+
+```yaml
+    - key: org.zowe.commons.service.started
+      number: ZWEASA101
+      type: INFO
+      text: "'%s' has been started in %.3f seconds"
 ```

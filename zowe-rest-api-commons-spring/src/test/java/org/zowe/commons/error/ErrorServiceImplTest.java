@@ -10,15 +10,17 @@
 package org.zowe.commons.error;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.zowe.commons.rest.response.ApiMessage;
 
 public class ErrorServiceImplTest {
-    private final ErrorService errorService = new ErrorServiceImpl();
+    private final ErrorService errorService = ErrorServiceImpl.getCommonsDefault();
 
     @Test
     public void invalidMessageKey() {
@@ -49,6 +51,18 @@ public class ErrorServiceImplTest {
         ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
         ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.component");
         assertEquals("zowe.sdk.commons.test", message.getMessages().get(0).getMessageComponent());
+    }
+
+    @Test
+    public void validLocalizedTexts() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+        errorServiceFromFile.addResourceBundleBaseName("test-messages");
+        ApiMessage message = errorServiceFromFile.createApiMessage(Locale.forLanguageTag("cs-CZ"),
+                "org.zowe.commons.test.localized");
+        assertEquals("Lokalizovaná zpráva", message.getMessages().get(0).getMessageContent());
+        assertEquals("Akce", message.getMessages().get(0).getMessageAction());
+        assertEquals("Důvod", message.getMessages().get(0).getMessageReason());
+        assertEquals("Komponenta", message.getMessages().get(0).getMessageComponent());
     }
 
     @Test
@@ -114,6 +128,18 @@ public class ErrorServiceImplTest {
 
         assertEquals("CSC0002", message.getMessages().get(0).getMessageNumber());
         assertEquals("Reason", message.getMessages().get(0).getMessageReason());
+    }
+
+    @Test
+    public void messageWithReasonParameters() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.parameters", "string", 123);
+
+        assertEquals("Test message - expects decimal number 123 and string",
+                message.getMessages().get(0).getMessageContent());
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains(123));
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains("string"));
     }
 
     @Test

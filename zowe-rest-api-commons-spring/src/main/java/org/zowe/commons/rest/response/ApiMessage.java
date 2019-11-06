@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * This interface is intended for REST API responses that contain error,
- * warning, or informational messages in the common MFaaS format.
+ * warning, or informational messages in the common Zowe format.
  *
  * It is preferred to return successful responses without messages if possible
  * and use only plain responses without wrapping for them.

@@ -18,12 +18,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,6 +40,9 @@ public class GreetingControllerTests {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Test
     public void returnsGreetingSpring() throws Exception {
         mvc.perform(get("/api/v1/greeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
@@ -45,8 +51,24 @@ public class GreetingControllerTests {
     }
 
     @Test
+    public void returnsGreetingSpringLocaleParam() throws Exception {
+        mvc.perform(get("/api/v1/greeting?lang=cs").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", is("Ahoj, světe!")));
+    }
+
+    @Test
+    public void returnsGreetingSpringLocaleHeader() throws Exception {
+        mvc.perform(get("/api/v1/greeting").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+                .locale(new Locale("cs")).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", is("Ahoj, světe!")));
+    }
+
+    @Test
     public void returnsGreetingRestAssured() throws Exception {
-        given().standaloneSetup(new GreetingController()).auth().principal(TestUtils.ZOWE_AUTHENTICATION_TOKEN).when()
+        GreetingController greetingController = new GreetingController();
+        greetingController.setMessageSource(messageSource);
+        given().standaloneSetup(greetingController).auth().principal(TestUtils.ZOWE_AUTHENTICATION_TOKEN).when()
                 .get("/api/v1/greeting").then().body("$.content", equalTo("Hello, world!"));
     }
 
@@ -75,6 +97,7 @@ public class GreetingControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         settings.setGreeting("Hi");
         mvc.perform(put("/api/v1/greeting/settings").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
-                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(settings))).andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(settings)))
+                .andExpect(status().isOk());
     }
 }

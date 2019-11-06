@@ -30,7 +30,7 @@ public class ApplicationConfig implements ApplicationListener<ApplicationReadyEv
     @Autowired
     private ServiceStartupEventHandler serviceStartupEventHandler;
 
-    private final ErrorService errorService = new ErrorServiceImpl("/messages.yml");
+    private final ErrorService errorService = ErrorServiceImpl.getDefault();
 
     @Bean
     public ErrorService errorService() {

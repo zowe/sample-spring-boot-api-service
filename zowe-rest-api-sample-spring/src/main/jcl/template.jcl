@@ -55,6 +55,7 @@ LIBPATH="$LIBPATH":"${PWD}/lib"
 export LIBPATH=$LIBPATH
 
 IJO="-Xms16m -Xmx128m"
+IJO="$IJO -Duser.language=en -Duser.country=US"
 IJO="$IJO -Dibm.serversocket.recover=true"
 IJO="$IJO -Dfile.encoding=UTF-8"
 IJO="$IJO -Djava.io.tmpdir=/tmp"
@@ -67,6 +68,7 @@ IJO="$IJO -Xrunjdwp:transport=dt_socket,$_DEBUG_OPTIONS"
 IJO="$IJO -Xquickstart"
 
 export IBM_JAVA_OPTIONS="${IJO}"
+#export JZOS_OUTPUT_ENCODING="IBM-870"
 export PATH=$JAVA_HOME/bin:$PATH
 
 # Timezone
