@@ -1785,6 +1785,8 @@ public enum PlatformErrno2 {
 
     private static Map<Integer, PlatformErrno2> BY_ERRNO = new HashMap<>();
 
+    public static int ERRNO2_BASE = 0x090c0000;
+
     static {
         for (PlatformErrno2 e : values()) {
             BY_ERRNO.put(e.errno2, e);
