@@ -49,6 +49,12 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
     }
 
     @Test
+    public void failsWithEmptyPassword() throws Exception {
+        RestAssured.authentication = basic(VALID_USERID, "");
+        when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(401);
+    }
+
+    @Test
     public void failsWithExpiredAuthentication() throws Exception {
         assumeTrue("The service under test is not running on localhost",
                 LOCAL_PROFILE.equalsIgnoreCase(serviceUnderTest.getProfile()));
