@@ -224,6 +224,7 @@ public class JarPatcher {
         FileOutputStream fos = new FileOutputStream(targetPath.toString());
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         Set<String> deletedOrPatchedNames = new HashSet<>();
+        int keeping = 0;
 
         ZipFile zipPatch = new ZipFile(patchPath);
         Enumeration<? extends ZipEntry> entries = zipPatch.entries();
@@ -252,12 +253,14 @@ public class JarPatcher {
             String filename = entry.getName();
 
             if (!deletedOrPatchedNames.contains(filename)) {
-                logger.info("Keeping: " + filename);
+                keeping++;
                 deletedOrPatchedNames.add(filename);
                 writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
             }
         }
         zipIn.close();
+
+        logger.info(String.format("Keeping %d ZIP entries", keeping));
 
         zipOut.close();
         fos.close();
