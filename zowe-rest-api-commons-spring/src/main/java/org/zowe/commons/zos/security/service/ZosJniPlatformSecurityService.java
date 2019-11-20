@@ -60,8 +60,8 @@ public class ZosJniPlatformSecurityService extends AccessControlService
                 explanation += ". " + platformErrno2.format();
             }
             log.error("Platform security action to {} has failed: {}; errno={}; errno2={}", action, explanation, errno,
-                    errno2, String.format("%08x", errno2));
-            if (errno2 == PlatformErrno2.JRNoChangeIdentity.errno2) {
+                    String.format("%08x", errno2));
+            if (PlatformErrno2.JRNoChangeIdentity.equals(platformErrno2)) {
                 log.error(
                         "The server user ID does not have authority to change the thread-level security. UPDATE access to BPX.SERVER in the facility resource class is required, or READ access if the user ID is superuser");
             }
