@@ -9,9 +9,6 @@
  */
 package org.zowe.commons.zos.security.service;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.zowe.commons.zos.security.platform.PlatformAccessControl;
 import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.platform.PlatformAckErrno;
@@ -22,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AccessControlService implements PlatformSecurityService {
-    private Set<String> validatedServerSecurity = new HashSet<>();
-
     protected PlatformAccessControl platformAccessControl = null;
 
     protected PlatformAccessControl getPlatformAccessControl() {
@@ -33,7 +28,6 @@ public abstract class AccessControlService implements PlatformSecurityService {
     @Override
     public boolean checkPermission(String userid, String resourceClass, String resourceName, AccessLevel accessLevel,
             boolean resourceHasToExist) {
-        validateServerSecurity("check permission", "FACILITY", "BPX.SERVER", AccessLevel.READ);
         PlatformReturned returned = getPlatformAccessControl().checkPermission(userid, resourceClass, resourceName,
                 accessLevel.getValue());
         return evaluatePlatformReturned(returned, resourceHasToExist);
@@ -81,21 +75,5 @@ public abstract class AccessControlService implements PlatformSecurityService {
     @Override
     public boolean checkPermission(String resourceClass, String resourceName, AccessLevel accessLevel) {
         return checkPermission(resourceClass, resourceName, accessLevel, true);
-    }
-
-    protected void validateServerSecurity(String action, String resourceClass, String resourceName,
-            AccessLevel accessLevel) {
-
-        String resourceString = String.format("%s.%s.%s", resourceClass, resourceName, accessLevel.toString());
-        if (!validatedServerSecurity.contains(resourceString)) {
-            boolean result = checkPermission(resourceClass, resourceName, accessLevel);
-            if (!result) {
-                String message = String.format("%s access to resource %s in %s class is required for the %s action",
-                        accessLevel.toString(), resourceName, resourceClass, action);
-                log.warn(message);
-            } else {
-                validatedServerSecurity.add(resourceString);
-            }
-        }
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.zowe.commons.zos.security.jni.Secur;
-import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.platform.PlatformErrno2;
 import org.zowe.commons.zos.security.platform.PlatformThread;
 import org.zowe.commons.zos.security.platform.PlatformTlsErrno;
@@ -43,7 +42,6 @@ public class ZosJniPlatformSecurityService extends AccessControlService
     @Override
     public void createThreadSecurityContext(String userId, String password, String applId) {
         String action = "create thread-level security environment";
-        validateServerSecurity(action, "FACILITY", "BPX.SERVER", AccessLevel.READ);
         checkErrno(action, secur.createSecurityEnvironment(userId, password, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
@@ -58,9 +56,15 @@ public class ZosJniPlatformSecurityService extends AccessControlService
             } else {
                 explanation = "unknown reason";
             }
-            log.error("Platform security action to {} has failed: {}; errno={}; errno2={} {} {}", action, explanation,
-                    errno, String.format("%08x", errno2),
-                    (platformErrno2 == null) ? "unknown reason" : platformErrno2.name, platformErrno2.explanation);
+            if (platformErrno2 != null) {
+                explanation += ". " + platformErrno2.format();
+            }
+            log.error("Platform security action to {} has failed: {}; errno={}; errno2={}", action, explanation, errno,
+                    errno2, String.format("%08x", errno2));
+            if (errno2 == PlatformErrno2.JRNoChangeIdentity.errno2) {
+                log.error(
+                        "The server user ID does not have authority to change the thread-level security. UPDATE access to BPX.SERVER in the facility resource class is required, or READ access if the user ID is superuser");
+            }
             throw new SecurityRequestFailed(SECUR_LIBRARY_NAME, function, errno);
         }
     }
@@ -68,7 +72,6 @@ public class ZosJniPlatformSecurityService extends AccessControlService
     @Override
     public void createThreadSecurityContextByDaemon(String userId, String applId) {
         String action = "create thread-level security environment without password";
-        validateServerSecurity(action, "FACILITY", "BPX.DAEMON", AccessLevel.UPDATE);
         checkErrno(action, secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
