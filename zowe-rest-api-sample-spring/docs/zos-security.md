@@ -221,7 +221,7 @@ We recommend to use #1 since it has no dependencies (but #2 has) and the shared 
 
 In case of #1 and #2 there are two methods with different security requirements:
 
-- a) The service user ID has READ access to the  `BPX.DAEMON` resource in the FACILITY class
+- a) The service user ID has UPDATE access to the `BPX.DAEMON` resource in the FACILITY class (or READ access and is superuser)
   - This allows to use `pthread_security_applid_np` without password and with `TLS_DAEMON_THREAD_SEC#` function
   - The service needs to validate the authentication (e.g. Zowe JWT token) so there is no need to obtain the PassTicket or remember the password
 
@@ -362,7 +362,7 @@ TSS PERMIT(userid) UNIXPRIV(SUPERUSER.FILESYS.MOUNT) ACCESS(UPDATE)
 TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.PROGCTL) ACCESS(READ)
 TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.APF) ACCESS(READ)
 TSS PERMIT(userid) IBMFAC(BPX.SERVER) ACCESS(READ)
-TSS PERMIT(userid) IBMFAC(BPX.DAEMON) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
 ```
 
 Commands for RACF:
@@ -372,7 +372,7 @@ PERMIT SUPERUSER.FILESYS.MOUNT CLASS(UNIXPRIV) ID(userid) ACCESS(UPDATE)
 PERMIT BPX.FILEATTR.PROGCTL CLASS(FACILITY) ID(userid) ACCESS(READ)
 PERMIT BPX.FILEATTR.APF CLASS(FACILITY) ID(userid) ACCESS(READ)
 PERMIT BPX.SERVER CLASS(FACILITY) ID(userid) ACCESS(READ)
-PERMIT BPX.DAEMON CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.DAEMON CLASS(FACILITY) ID(userid) ACCESS(UPDATE)
 SETROPTS RACLIST(FACILITY) REFRESH
 SETROPTS RACLIST(UNIXPRIV) REFRESH
 ```

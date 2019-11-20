@@ -92,7 +92,7 @@ public abstract class AccessControlService implements PlatformSecurityService {
             if (!result) {
                 String message = String.format("%s access to resource %s in %s class is required for the %s action",
                         accessLevel.toString(), resourceName, resourceClass, action);
-                log.error(message);
+                log.warn(message);
             } else {
                 validatedServerSecurity.add(resourceString);
             }

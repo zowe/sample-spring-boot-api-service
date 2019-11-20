@@ -12,6 +12,9 @@ safAccess:
     BPX.SERVER: # resource
       READ: # access level
         - ZOWE # users
+    BPX.DAEMON:
+      UPDATE:
+        - ZOWE
   ZOWE:
     SAMPLE.RESOURCE:
       UPDATE:

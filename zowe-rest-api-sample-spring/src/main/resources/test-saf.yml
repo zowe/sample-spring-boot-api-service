@@ -14,7 +14,7 @@ safAccess:
       READ: # access level
         - ZOWE # users
     BPX.DAEMON:
-      READ:
+      UPDATE:
         - ZOWE
   UNIXPRIV:
     SUPERUSER.FILESYS.MOUNT:

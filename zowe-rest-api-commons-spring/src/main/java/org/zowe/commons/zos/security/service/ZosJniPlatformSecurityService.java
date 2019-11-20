@@ -68,7 +68,7 @@ public class ZosJniPlatformSecurityService extends AccessControlService
     @Override
     public void createThreadSecurityContextByDaemon(String userId, String applId) {
         String action = "create thread-level security environment without password";
-        validateServerSecurity(action, "FACILITY", "BPX.DAEMON", AccessLevel.READ);
+        validateServerSecurity(action, "FACILITY", "BPX.DAEMON", AccessLevel.UPDATE);
         checkErrno(action, secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
