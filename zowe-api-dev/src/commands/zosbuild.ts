@@ -9,7 +9,7 @@ export default class ZosBuild extends Command {
     static description = "build z/OS source on z/OS UNIX";
 
     static flags = {
-        force: flags.boolean({ char: "f", description: "forces full upload and build even if there is no change" }),
+        force: flags.boolean({ char: "f", description: "forces full upload and build even if there is no change", default: false }),
     };
 
     async run() {
