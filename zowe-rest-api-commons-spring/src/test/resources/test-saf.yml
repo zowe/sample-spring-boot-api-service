@@ -8,6 +8,10 @@
 # This file is stored in `src/test/resources/test-saf.yml` which means that it will be used by the unit tests only.
 #
 safAccess:
+  FACILITY: # class
+    BPX.SERVER: # resource
+      READ: # access level
+        - ZOWE # users
   ZOWE:
     SAMPLE.RESOURCE:
       UPDATE:

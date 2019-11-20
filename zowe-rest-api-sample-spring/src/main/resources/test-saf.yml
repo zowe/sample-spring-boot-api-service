@@ -11,8 +11,11 @@
 safAccess:
   FACILITY: # class
     BPX.SERVER: # resource
-      UPDATE: # access level
+      READ: # access level
         - ZOWE # users
+    BPX.DAEMON:
+      READ:
+        - ZOWE
   UNIXPRIV:
     SUPERUSER.FILESYS.MOUNT:
       READ:

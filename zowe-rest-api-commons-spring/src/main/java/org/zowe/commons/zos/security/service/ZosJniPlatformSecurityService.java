@@ -9,20 +9,21 @@
  */
 package org.zowe.commons.zos.security.service;
 
+import static org.zowe.commons.zos.CommonsNativeLibraries.SECUR_LIBRARY_NAME;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.zowe.commons.zos.security.jni.Secur;
+import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
+import org.zowe.commons.zos.security.platform.PlatformErrno2;
 import org.zowe.commons.zos.security.platform.PlatformThread;
 import org.zowe.commons.zos.security.platform.PlatformTlsErrno;
 import org.zowe.commons.zos.security.platform.SafPlatformAccessControl;
 import org.zowe.commons.zos.security.platform.SafPlatformClassFactory;
 import org.zowe.commons.zos.security.platform.SafPlatformThread;
-import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.zowe.commons.zos.CommonsNativeLibraries.SECUR_LIBRARY_NAME;
 
 /**
  * Implements low-level security functions using pthread_security_np() that is
@@ -41,28 +42,34 @@ public class ZosJniPlatformSecurityService extends AccessControlService
 
     @Override
     public void createThreadSecurityContext(String userId, String password, String applId) {
-        checkErrno("create thread-level security environment",
-                secur.createSecurityEnvironment(userId, password, applId), CREATE_THREAD_SECURITY_CONTEXT);
+        String action = "create thread-level security environment";
+        validateServerSecurity(action, "FACILITY", "BPX.SERVER", AccessLevel.READ);
+        checkErrno(action, secur.createSecurityEnvironment(userId, password, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
     private void checkErrno(String action, int errno, int function) {
         if (errno != 0) {
             PlatformTlsErrno tlsErrno = PlatformTlsErrno.valueOfErrno(errno);
+            int errno2 = secur.getLastErrno2();
+            PlatformErrno2 platformErrno2 = PlatformErrno2.valueOfErrno(errno2);
             String explanation;
             if (tlsErrno != null) {
                 explanation = tlsErrno.name + " " + tlsErrno.explanation;
             } else {
                 explanation = "unknown reason";
             }
-            log.error("Platform security action to {} has failed: {}; errno={}", action, explanation, errno);
+            log.error("Platform security action to {} has failed: {}; errno={}; errno2={} {} {}", action, explanation,
+                    errno, String.format("%08x", errno2),
+                    (platformErrno2 == null) ? "unknown reason" : platformErrno2.name, platformErrno2.explanation);
             throw new SecurityRequestFailed(SECUR_LIBRARY_NAME, function, errno);
         }
     }
 
     @Override
     public void createThreadSecurityContextByDaemon(String userId, String applId) {
-        checkErrno("create thread-level security environment without password",
-                secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
+        String action = "create thread-level security environment without password";
+        validateServerSecurity(action, "FACILITY", "BPX.DAEMON", AccessLevel.READ);
+        checkErrno(action, secur.createSecurityEnvironmentByDaemon(userId, applId), CREATE_THREAD_SECURITY_CONTEXT);
     }
 
     @Override
@@ -79,14 +86,5 @@ public class ZosJniPlatformSecurityService extends AccessControlService
     @Override
     public void afterPropertiesSet() throws Exception {
         platformAccessControl = new SafPlatformAccessControl(new SafPlatformClassFactory());
-        validateServerSecurity();
-    }
-
-    private void validateServerSecurity() {
-        boolean result = checkPermission("FACILITY", "BPX.SERVER", AccessLevel.UPDATE);
-        if (!result) {
-            throw new AccessControlError(
-                    "UPDATE access to resource BPX.SERVER in FACILITY class is required for the service", null);
-        }
     }
 }
