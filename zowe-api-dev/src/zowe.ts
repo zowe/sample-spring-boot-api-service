@@ -19,6 +19,15 @@ export interface IZoweOptions {
     throwError?: boolean;
 }
 
+export interface IApiResponse {
+    apiResponse: {
+        items: [];
+        totalRows: number;
+        returnedRows: number;
+        JSONversion: number;
+    }
+}
+
 export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
     const defaultOptions: IZoweOptions = { direct: false, logOutput: true, throwError: true };
     if (options === undefined) {

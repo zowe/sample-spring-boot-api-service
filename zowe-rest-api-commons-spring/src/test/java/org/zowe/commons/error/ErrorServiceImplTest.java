@@ -10,17 +10,17 @@
 package org.zowe.commons.error;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.rest.response.ApiMessage;
+import java.util.Locale;
 
 import org.junit.Test;
+import org.zowe.commons.rest.response.ApiMessage;
 
 public class ErrorServiceImplTest {
-    private final ErrorService errorService = new ErrorServiceImpl();
+    private final ErrorService errorService = ErrorServiceImpl.getCommonsDefault();
 
     @Test
     public void invalidMessageKey() {
@@ -37,6 +37,40 @@ public class ErrorServiceImplTest {
         ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.unsupportedMediaType");
 
         assertEquals("ZWEAS415", message.getMessages().get(0).getMessageNumber());
+    }
+
+    @Test
+    public void validDefaultMessageComponent() {
+        ApiMessage message = errorService.createApiMessage("org.zowe.commons.rest.unsupportedMediaType");
+
+        assertEquals("org.zowe.commons.error.ErrorServiceImplTest", message.getMessages().get(0).getMessageComponent());
+    }
+
+    @Test
+    public void validMessageComponent() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.component");
+        assertEquals("zowe.sdk.commons.test", message.getMessages().get(0).getMessageComponent());
+    }
+
+    @Test
+    public void validLocalizedTexts() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+        errorServiceFromFile.addResourceBundleBaseName("test-messages");
+        ApiMessage message = errorServiceFromFile.createApiMessage(Locale.forLanguageTag("cs-CZ"),
+                "org.zowe.commons.test.localized");
+        assertEquals("Lokalizovaná zpráva", message.getMessages().get(0).getMessageContent());
+        assertEquals("Akce", message.getMessages().get(0).getMessageAction());
+        assertEquals("Důvod", message.getMessages().get(0).getMessageReason());
+        assertEquals("Komponenta", message.getMessages().get(0).getMessageComponent());
+    }
+
+    @Test
+    public void validMessageSource() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+        errorServiceFromFile.setDefaultMessageSource("host:port:service");
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.noArguments");
+        assertEquals("host:port:service", message.getMessages().get(0).getMessageSource());
     }
 
     @Test
@@ -84,5 +118,37 @@ public class ErrorServiceImplTest {
     public void constructorWithDuplicatedMessages() {
         errorService.loadMessages("/test-duplicate-messages.yml");
         errorService.createApiMessage("org.zowe.commons.test.noArguments");
+    }
+
+    @Test
+    public void messageWithReason() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.reason");
+
+        assertEquals("CSC0002", message.getMessages().get(0).getMessageNumber());
+        assertEquals("Reason", message.getMessages().get(0).getMessageReason());
+    }
+
+    @Test
+    public void messageWithReasonParameters() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.parameters", "string", 123);
+
+        assertEquals("Test message - expects decimal number 123 and string",
+                message.getMessages().get(0).getMessageContent());
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains(123));
+        assertTrue(message.getMessages().get(0).getMessageParameters().contains("string"));
+    }
+
+    @Test
+    public void messageWithAction() {
+        ErrorService errorServiceFromFile = new ErrorServiceImpl("/test-messages.yml");
+
+        ApiMessage message = errorServiceFromFile.createApiMessage("org.zowe.commons.test.action");
+
+        assertEquals("CSC0003", message.getMessages().get(0).getMessageNumber());
+        assertEquals("Action", message.getMessages().get(0).getMessageAction());
     }
 }

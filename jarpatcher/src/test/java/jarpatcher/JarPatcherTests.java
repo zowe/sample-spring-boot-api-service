@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -84,6 +85,13 @@ public class JarPatcherTests {
     }
 
     @Test
+    public void jarFilesCanBeAddedToDirectoryInArchive() throws ZipException, IOException {
+        testPatchFromArchiveToAnotherArchive(new ArchiveDefinition().addFiles(new TestFile("dir/one.jar", SOME_DATA)),
+                new ArchiveDefinition().addFiles(new TestFile("dir/one.jar", SOME_DATA),
+                        new TestFile("dir/second.jar", SOME_DATA)));
+    }
+
+    @Test
     public void directoriesCanBeAddedToEmptyArchive() throws ZipException, IOException {
         testPatchFromArchiveToAnotherArchive(new ArchiveDefinition(),
                 new ArchiveDefinition().addFiles(new TestFile("dir/")));
@@ -124,6 +132,13 @@ public class JarPatcherTests {
             String filename = f.getFilename();
             createDirectories(filename, zipOut, createdDirectories);
             ZipEntry zipEntry = new ZipEntry(filename);
+            zipEntry.setMethod(filename.endsWith(".jar") ? ZipEntry.STORED : ZipEntry.DEFLATED);
+            if ((zipEntry.getMethod() == ZipEntry.STORED) && (f.getData() != null)) {
+                zipEntry.setCompressedSize(f.getData().getBytes().length);
+                CRC32 crc = new CRC32();
+                crc.update(f.getData().getBytes());
+                zipEntry.setCrc(crc.getValue());
+            }
             zipOut.putNextEntry(zipEntry);
             if (f.getData() != null) {
                 zipOut.write(f.getData().getBytes());
@@ -159,9 +174,9 @@ public class JarPatcherTests {
         logger.info("Old JAR: " + oldDef.toString());
         logger.info("New JAR: " + newDef.toString());
         JarPatcher jarPatcher = new JarPatcher();
-        String oldPath = createTestArchiveFromDefinition("a", oldDef);
-        String oldPath2 = createTestArchiveFromDefinition("a2", oldDef);
-        String newPath = createTestArchiveFromDefinition("b", newDef);
+        String oldPath = createTestArchiveFromDefinition("old", oldDef);
+        String oldPath2 = createTestArchiveFromDefinition("old2", oldDef);
+        String newPath = createTestArchiveFromDefinition("new", newDef);
         String patchPath = tempDir.resolve("patch.jar").toString();
 
         String patcherPath = null;
@@ -183,11 +198,13 @@ public class JarPatcherTests {
         jarPatcher.applyPatch(oldPath, patchPath, ignoredPath);
         CompareResult compareResult = jarPatcher.compare(oldPath, newPath);
         logger.info("Compare result: " + compareResult.toString());
-        assertTrue(compareResult.archivesAreSame());
+        assertTrue("patched file is not same as the target: " + compareResult.toString(),
+                compareResult.archivesAreSame());
 
         new JarPatcher().run(new String[] { "patch", oldPath2, patchPath, ignoredPath });
         CompareResult compareResult2 = jarPatcher.compare(oldPath2, newPath);
         logger.info("Compare result: " + compareResult2.toString());
-        assertTrue(compareResult2.archivesAreSame());
+        assertTrue("patched file is not same as the target (via JarPatcher): " + compareResult2.toString(),
+                compareResult2.archivesAreSame());
     }
 }

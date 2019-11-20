@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,7 +57,7 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
             AuthenticationException authException) throws IOException, ServletException {
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
 
-        ApiMessage message = errorService.createApiMessage(UNAUTHORIZED_MESSAGE_KEY, authException.getMessage());
+        ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(), UNAUTHORIZED_MESSAGE_KEY, authException.getMessage());
 
         PlatformReturned returned = (PlatformReturned) request
                 .getAttribute(ZosAuthenticationProvider.ZOWE_AUTHENTICATE_RETURNED);
@@ -64,18 +65,18 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
             PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.errno);
             if ((errno != null) && (errno.errorType == PlatformErrorType.INTERNAL)) {
                 httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-                message = errorService.createApiMessage(INTERNAL_AUTHENTICATION_ERROR_MESSAGE_KEY, errno.explanation);
+                message = errorService.createApiMessage(LocaleContextHolder.getLocale(), INTERNAL_AUTHENTICATION_ERROR_MESSAGE_KEY, errno.explanation);
                 log.error(message.toLogMessage()
                         + String.format(" Security error details: %s %s %s", errno.name, errno.explanation, returned));
             } else if ((errno != null) && (errno.errorType == PlatformErrorType.USER_EXPLAINED)) {
-                message = errorService.createApiMessage(UNAUTHORIZED_MESSAGE_KEY, errno.explanation);
-                ApiMessage expiredMessage = errorService.createApiMessage(EXPIRED_MESSAGE_KEY);
+                message = errorService.createApiMessage(LocaleContextHolder.getLocale(), UNAUTHORIZED_MESSAGE_KEY, errno.explanation);
+                ApiMessage expiredMessage = errorService.createApiMessage(LocaleContextHolder.getLocale(), EXPIRED_MESSAGE_KEY);
                 List<Message> messages = new ArrayList<>();
                 messages.add(message.getMessages().get(0));
                 messages.add(expiredMessage.getMessages().get(0));
                 message = new BasicApiMessage(messages);
             } else {
-                message = errorService.createApiMessage(UNAUTHORIZED_MESSAGE_KEY, "Incorrect credentials");
+                message = errorService.createApiMessage(LocaleContextHolder.getLocale(), UNAUTHORIZED_MESSAGE_KEY, "Incorrect credentials");
             }
         }
 

@@ -19,4 +19,7 @@ public class Greeting {
 
     @ApiModelProperty(value = "The greeting message")
     private final String content;
+
+    @ApiModelProperty(value = "The locale language tag used for this message")
+    private final String languageTag;
 }

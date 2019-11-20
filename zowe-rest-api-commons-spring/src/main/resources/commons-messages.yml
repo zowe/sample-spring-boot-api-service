@@ -1,9 +1,11 @@
 messages:
-  # Commons Internal Errors:
+  # Commons internal errors:
   - key: org.zowe.commons.error.invalidMessageKey
     number: ZWEAS001
     type: ERROR
     text: "Internal error: Invalid message key '%s' is provided. Please contact support for further assistance."
+    reason: "This is an internal error. The product tried to access message with a key that is not defined."
+    action: "Please contact support for further assistance."
 
   - key: org.zowe.commons.error.invalidMessageTextFormat
     number: ZWEAS002
@@ -14,6 +16,12 @@ messages:
     number: ZWEAS003
     type: ERROR
     text: "Internal authentication error: %s. Please contact support for further assistance."
+
+  # Service life-cycle:
+  - key: org.zowe.commons.service.started
+    number: ZWEAS101
+    type: INFO
+    text: "'%s' has been started in %.3f seconds"
 
   # API Mediation Layer integration:
   - key: org.zowe.commons.apiml.serviceCertificateNotTrusted
@@ -37,11 +45,15 @@ messages:
     number: ZWEAS401
     type: ERROR
     text: "The request has not been applied because it lacks valid authentication credentials for the target resource: %s"
+    reason: "The accessed resource requires authentication. The request is missing valid authentication credentials."
+    action: "Review the product documentation for more details about acceptable authentication. Verify that your credentials are valid and contact security administrator to obtain valid credentials."
 
   - key: org.zowe.commons.rest.forbidden
     number: ZWEAS403
     type: ERROR
     text: "The user is not authorized to the target resource: %s"
+    reason: "The service has accepted the authentication of the user but the user does not have access right to the resource."
+    action: "Contact your security administrator to give you access."
 
   - key: org.zowe.commons.rest.methodNotAllowed
     number: ZWEAS405
@@ -62,6 +74,8 @@ messages:
     number: ZWEAS491
     type: ERROR
     text: "The password for the specified identity has expired."
+    reason: "The provided credentials are not invalid but the password is expired."
+    action: "Refer to the product documentation to see how to change your password."
 
   - key: org.zowe.commons.rest.internalServerError
     number: ZWEAS500

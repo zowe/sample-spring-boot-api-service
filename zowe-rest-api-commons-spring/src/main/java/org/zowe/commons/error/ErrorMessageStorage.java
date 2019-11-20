@@ -35,9 +35,11 @@ public class ErrorMessageStorage {
      * @param messages Error message
      */
     public void addMessages(ErrorMessages messages) {
+        Map<String, ErrorMessage> currentKeyMap = new HashMap<>();
         for (ErrorMessage message : messages.getMessages()) {
-            if (!keyMap.containsKey(message.getKey())) {
+            if (!currentKeyMap.containsKey(message.getKey())) {
                 if (!numberMap.containsKey(message.getNumber())) {
+                    currentKeyMap.put(message.getKey(), message);
                     keyMap.put(message.getKey(), message);
                     numberMap.put(message.getNumber(), message);
                 } else {

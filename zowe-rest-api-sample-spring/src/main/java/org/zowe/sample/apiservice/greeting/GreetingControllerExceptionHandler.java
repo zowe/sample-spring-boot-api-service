@@ -10,6 +10,7 @@
 package org.zowe.sample.apiservice.greeting;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class GreetingControllerExceptionHandler {
 
     @ExceptionHandler(EmptyNameError.class)
     public ResponseEntity<ApiMessage> handleEmptyName(EmptyNameError exception) {
-        ApiMessage message = errorService.createApiMessage("org.zowe.sample.apiservice.greeting.empty");
+        ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(), "org.zowe.sample.apiservice.greeting.empty");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
     }

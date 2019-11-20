@@ -7,7 +7,7 @@ import { dirname, resolve } from "path";
 import * as tmp from "tmp";
 import { Entry, Parse } from "unzipper";
 import { checkZoweProfileName, ITransferredFile, IUserConfig } from "./config";
-import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync } from "./zowe";
+import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, IApiResponse, zoweSync } from "./zowe";
 
 const debug = Debug("files");
 const userDataDir = ".zowe-api-dev";
@@ -46,6 +46,16 @@ export function isFileSame(file: string, zosFile: string, profileName: string): 
     return false;
 }
 
+export function zosExistsSync(zosFile: string): boolean {
+    const data = zoweSync(`files list uss ${zosFile}`, { throwError: false, logOutput: false }).data as IApiResponse;
+    try {
+        return data.apiResponse.totalRows === 1;
+    }
+    catch (e) {
+        return false;
+    }
+}
+
 export function transferFiles(
     files: { [filename: string]: ITransferredFile },
     zosTargetDir: string,
@@ -58,6 +68,7 @@ export function transferFiles(
     console.time("transferFile");
     checkZoweProfileName(userConfig);
     for (const [file, options] of Object.entries(files)) {
+        debug("options", options);
         const zosFile = `${zosTargetDir}/${options.target}`;
         const zosDir = dirname(zosFile);
         let soUpdated = true;
@@ -73,12 +84,13 @@ export function transferFiles(
             command.log(`Uploading template ${file} to ${zosFile}`);
             zoweSync(`files upload ftu ${tmpPath} ${zosFile}${options.binary ? " --binary" : ""}`);
         } else {
-            if (!force && isFileSame(file, zosFile, userConfig.zoweProfileName)) {
+            const zosFileExists = !force && zosExistsSync(zosFile);
+            if (!force && zosFileExists && isFileSame(file, zosFile, userConfig.zoweProfileName)) {
                 command.log(`${file} has not changed`)
                 return;
             }
             const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
-            if (!force && file.endsWith(".jar") && existsSync(oldFile)) {
+            if (!force && file.endsWith(".jar") && existsSync(oldFile) && zosFileExists) {
                 command.log(`Patching ${zosFile} to be same as ${file}`);
                 const patchFile = file + "-patch";
                 const zosPatchFile = zosFile + "-patch";
@@ -106,12 +118,13 @@ export function transferFiles(
             }
         }
         const postCommands: string[] = [];
-        if (soUpdated && options.postSoUpdateCommands) {
+        if ((soUpdated || force) && options.postSoUpdateCommands) {
             postCommands.push(...options.postSoUpdateCommands);
         }
         if (options.postCommands) {
             postCommands.push(...options.postCommands);
         }
+        debug("postCommands", postCommands);
         for (const postCommand of postCommands) {
             let finalCommand = postCommand;
             if (postCommand.startsWith("java") && userConfig.javaHome) {

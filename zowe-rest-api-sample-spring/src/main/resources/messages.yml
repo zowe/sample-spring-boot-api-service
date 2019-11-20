@@ -3,3 +3,7 @@ messages:
       number: ZWEASA001
       type: ERROR
       text: "The provided name is empty. Provide a name that is not empty."
+    - key: org.zowe.commons.service.started
+      number: ZWEASA101
+      type: INFO
+      text: "'%s' has been started in %.3f seconds"

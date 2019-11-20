@@ -16,17 +16,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -72,7 +69,7 @@ public class JarPatcher {
             } else if (args[0].equals("patch")) {
                 String targetPath = args[1];
                 String patchPath = args[2];
-                String ignoredPrefix = (args.length >= 4) ?  args[3] : null;
+                String ignoredPrefix = (args.length >= 4) ? args[3] : null;
                 applyPatch(targetPath, patchPath, ignoredPrefix);
             }
         } catch (IOException e) {
@@ -109,13 +106,15 @@ public class JarPatcher {
     }
 
     private void printEntry(ZipFile f, ZipEntry entry) {
-        logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s", f.getName(), entry.getName(),
-                entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment()));
+        logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s method=%s", f.getName(),
+                entry.getName(), entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment(),
+                entry.getMethod()));
     }
 
     private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {
         return (entry1.isDirectory() == entry2.isDirectory()) && (entry1.getSize() == entry2.getSize())
-                && (entry1.getName().equals(entry2.getName())) && (entry1.getCrc() == entry2.getCrc());
+                && (entry1.getName().equals(entry2.getName())) && (entry1.getCrc() == entry2.getCrc()
+                        && (entry1.isDirectory() || (entry1.getMethod() == entry2.getMethod())));
     }
 
     private Set<String> setFromEntryNames(ZipFile zipFile) {
@@ -136,19 +135,24 @@ public class JarPatcher {
             String filename = inEntry.getName();
             if (result.isFileChangedOrCreated(filename)) {
                 ZipEntry patchEntry = new ZipEntry(filename);
+                copyZipEntryAttributes(inEntry, patchEntry);
                 zipOut.putNextEntry(patchEntry);
                 if (!inEntry.isDirectory()) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = zipIn.read(buffer)) > 0) {
-                        zipOut.write(buffer, 0, len);
-                    }
+                    copyStream(zipIn, zipOut);
                 }
                 zipOut.closeEntry();
             }
             inEntry = zipIn.getNextEntry();
         }
         zipIn.close();
+    }
+
+    private void copyStream(InputStream zipIn, OutputStream zipOut) throws IOException {
+        byte[] buffer = new byte[4096];
+        int len;
+        while ((len = zipIn.read(buffer)) > 0) {
+            zipOut.write(buffer, 0, len);
+        }
     }
 
     private void addDeletedEntries(Set<String> deletedFiles, ZipOutputStream zipOut) throws IOException {
@@ -159,8 +163,7 @@ public class JarPatcher {
         }
     }
 
-    private void addFiles(String fromPath, ZipOutputStream zipOut, String ignoredPath)
-            throws IOException {
+    private void addFiles(String fromPath, ZipOutputStream zipOut, String ignoredPath) throws IOException {
         ZipInputStream zipIn = new ZipInputStream(new FileInputStream(fromPath));
         ZipEntry inEntry = zipIn.getNextEntry();
         while (inEntry != null) {
@@ -182,7 +185,8 @@ public class JarPatcher {
         zipIn.close();
     }
 
-    public boolean createPatch(String oldPath, String newPath, String patchPath, String patcherPath) throws ZipException, IOException {
+    public boolean createPatch(String oldPath, String newPath, String patchPath, String patcherPath)
+            throws ZipException, IOException {
         CompareResult result = compare(oldPath, newPath);
         logger.info(String.format("Comparing %s and %s: %s", oldPath, newPath, result));
 
@@ -201,30 +205,27 @@ public class JarPatcher {
         return result.archivesAreSame();
     }
 
-    private static String operatingSystem = System.getProperty("os.name");
-
-    private static boolean isWindows() {
-       return operatingSystem.startsWith("Windows");
-    }
-
-    private URI jarFileUri(String path) {
-        if (isWindows()) {
-            return URI.create("jar:file:/" + path.replace("\\", "/"));
+    private void createDirectories(String filename, ZipOutputStream zipOut, Set<String> createdDirectories)
+            throws IOException {
+        Path dir = Paths.get(filename).getParent();
+        String dirname = (dir == null) ? null : (dir.toString() + "/");
+        if ((dirname != null) && !createdDirectories.contains(dirname)) {
+            createDirectories(dirname, zipOut, createdDirectories);
+            ZipEntry zipEntry = new ZipEntry(dirname);
+            zipOut.putNextEntry(zipEntry);
+            zipOut.closeEntry();
+            createdDirectories.add(dirname);
         }
-        return URI.create("jar:file://" + path);
     }
 
     public void applyPatch(String targetPath, String patchPath, String ignoredPath) throws IOException {
-        FileSystem jarPatch;
-        FileSystem jarTarget;
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "false");
-        try {
-            jarPatch = FileSystems.newFileSystem(jarFileUri(patchPath), env);
-            jarTarget = FileSystems.newFileSystem(jarFileUri(targetPath), env);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
+        String originalTargetPath = targetPath + "-original";
+        Files.copy(Paths.get(targetPath), Paths.get(originalTargetPath), StandardCopyOption.REPLACE_EXISTING);
+        FileOutputStream fos = new FileOutputStream(targetPath.toString());
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        Set<String> deletedOrPatchedNames = new HashSet<>();
+        int keeping = 0;
+
         ZipFile zipPatch = new ZipFile(patchPath);
         Enumeration<? extends ZipEntry> entries = zipPatch.entries();
         while (entries.hasMoreElements()) {
@@ -234,23 +235,56 @@ public class JarPatcher {
             if (filename.startsWith(DELETED)) {
                 String realFilename = filename.substring(DELETED.length());
                 logger.info("Deleting: " + realFilename);
-                Files.delete(jarTarget.getPath(realFilename));
+                deletedOrPatchedNames.add(realFilename);
             } else if ((ignoredPath != null) && (filename.startsWith(ignoredPath))) {
                 logger.info("Ignoring: " + filename);
             } else {
                 logger.info("Patching: " + filename);
-                Path dir = Paths.get(filename).getParent();
-                String dirname = (dir == null) ? null : dir.toString();
-                if ((dirname != null) && !Files.exists(jarTarget.getPath(dirname))) {
-                    Files.createDirectories(jarTarget.getPath(dirname));
-                }
-                Files.copy(jarPatch.getPath(filename), jarTarget.getPath(filename),
-                        StandardCopyOption.REPLACE_EXISTING);
+                deletedOrPatchedNames.add(filename);
+                writeEntry(zipOut, deletedOrPatchedNames, zipPatch, entry, filename);
             }
         }
-        jarTarget.close();
         zipPatch.close();
-        jarPatch.close();
+
+        ZipFile zipIn = new ZipFile(originalTargetPath);
+        entries = zipIn.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String filename = entry.getName();
+
+            if (!deletedOrPatchedNames.contains(filename)) {
+                keeping++;
+                deletedOrPatchedNames.add(filename);
+                writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
+            }
+        }
+        zipIn.close();
+
+        logger.info(String.format("Keeping %d ZIP entries", keeping));
+
+        zipOut.close();
+        fos.close();
+        Files.delete(Paths.get(originalTargetPath));
+    }
+
+    private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,
+            String filename) throws IOException {
+        createDirectories(filename, zipOut, createdDirectories);
+        ZipEntry zipEntry = new ZipEntry(filename);
+        copyZipEntryAttributes(entry, zipEntry);
+        InputStream inputStream = zipPatch.getInputStream(entry);
+        zipOut.putNextEntry(zipEntry);
+        copyStream(inputStream, zipOut);
+        zipOut.closeEntry();
+    }
+
+    private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {
+        outEntry.setMethod(inEntry.getMethod());
+        outEntry.setComment(inEntry.getComment());
+        if (inEntry.getMethod() == ZipEntry.STORED) {
+            outEntry.setCrc(inEntry.getCrc());
+            outEntry.setCompressedSize(inEntry.getCompressedSize());
+        }
     }
 
     public static void main(String[] args) {

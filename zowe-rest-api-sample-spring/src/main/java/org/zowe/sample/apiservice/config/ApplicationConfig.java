@@ -9,9 +9,6 @@
  */
 package org.zowe.sample.apiservice.config;
 
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.error.ErrorServiceImpl;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,6 +16,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.zowe.commons.error.ErrorService;
+import org.zowe.commons.error.ErrorServiceImpl;
 import org.zowe.commons.spring.ServiceStartupEventHandler;
 
 @Configuration
@@ -31,9 +30,11 @@ public class ApplicationConfig implements ApplicationListener<ApplicationReadyEv
     @Autowired
     private ServiceStartupEventHandler serviceStartupEventHandler;
 
+    private final ErrorService errorService = ErrorServiceImpl.getDefault();
+
     @Bean
     public ErrorService errorService() {
-        return new ErrorServiceImpl("/messages.yml");
+        return errorService;
     }
 
     @Override

@@ -20,6 +20,9 @@ public class SafPlatformUser implements PlatformUser {
 
     @Override
     public PlatformReturned authenticate(String userid, String password) {
+        if ((password == null) || password.isEmpty()) {
+            return PlatformReturned.builder().success(false).rc(0).errno(PlatformPwdErrno.EINVAL.errno).errno2(PlatformErrno2.ERRNO2_BASE | PlatformErrno2.JRPasswordLenError.errno2).build();
+        }
         try {
             Object safReturned = platformClassFactory.getPlatformUserClass()
                     .getMethod("authenticate", String.class, String.class)
