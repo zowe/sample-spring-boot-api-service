@@ -221,15 +221,21 @@ We recommend to use #1 since it has no dependencies (but #2 has) and the shared 
 
 In case of #1 and #2 there are two methods with different security requirements:
 
-- a) The service user ID has UPDATE access to the BPX.DAEMON resource in the FACILITY class
-  - This allows to use `pthread_security_applid_np` without password
-  - The service needs to validate the authentication (e.g. Zowe JWT token) so there is not need to obtain the PassTicket or remember the password
+- a) The service user ID has UPDATE access to the `BPX.DAEMON` resource in the FACILITY class (or READ access and is superuser)
+  - This allows to use `pthread_security_applid_np` without password and with `TLS_DAEMON_THREAD_SEC#` function
+  - The service needs to validate the authentication (e.g. Zowe JWT token) so there is no need to obtain the PassTicket or remember the password
 
-- b) The service user ID has READ access to the BPX.SERVER resource in the FACILITY class
+- b) The service user ID has READ access to the `BPX.SERVER` resource in the FACILITY class
   - The `pthread_security_applid_np` needs to be called with a password or a valid PassTicket
   - This requires a REST API that generates a PassTicket if you have a valid JWT token
 
-Currenly **#1 a)** - `pthread_security_applid_np` via JNI without password and `BPX.DAEMON` requirement is implemented.
+- c) The service user ID has UPDATE access to the `BPX.SERVER` resource in the facility class
+  - The server is capable of acting as a surrogate for the client
+  - The server needs to have READ access to `BPX.SRV.<userid>` in the SURROGAT class
+  - The `pthread_security_applid_np` needs to be called with empty password
+  - See <https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxb200/srvdef.htm>
+
+Currenly **#1 a)** - `pthread_security_applid_np` via JNI without password and with `BPX.DAEMON` requirement is implemented.
 
 **#1 b)** is defined in the backlog as <https://github.com/zowe/sample-spring-boot-api-service/issues/17>.
 
@@ -319,8 +325,8 @@ The SDK defined two new security expressions:
     ```yaml
     zowe.commons.security.saf:
         serviceResourceClass: "ZOWE"
-        serviceResourceNamePrefix: "SAMPLE."    
-    ```    
+        serviceResourceNamePrefix: "SAMPLE."
+    ```
 
 So you can do following:
 
@@ -341,8 +347,13 @@ The second `@PreAuthorize` expression `hasSafServiceResourceAccess('RESOURCE', '
 You need following access to be able to develop a REST API service:
 
 - `UPDATE` access to the `SUPERUSER.FILESYS.MOUNT` resource in the UNIXPRIV class
-- `READ` access to `BPX.FILEATTR.PROGCTL` and `BPX.FILEATTR.APF` in the facility class
-- `UPDATE` access to `BPX.SERVER`
+- `READ` access to `BPX.FILEATTR.PROGCTL` and `BPX.FILEATTR.APF` in the FACILITY class
+
+You need following access to be able to run a REST API service:
+
+- `READ` access to `BPX.SERVER` in the FACILITY class to be able to check access to resources
+- `READ` access to `BPX.DAEMON` in the FACILITY class to be able to establish thread-level security
+- nothing special if you want to be able to authenticate users
 
 Commands for CA Top Secret for z/OS:
 
@@ -350,7 +361,8 @@ Commands for CA Top Secret for z/OS:
 TSS PERMIT(userid) UNIXPRIV(SUPERUSER.FILESYS.MOUNT) ACCESS(UPDATE)
 TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.PROGCTL) ACCESS(READ)
 TSS PERMIT(userid) IBMFAC(BPX.FILEATTR.APF) ACCESS(READ)
-TSS PERMIT(userid) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+TSS PERMIT(userid) IBMFAC(BPX.SERVER) ACCESS(READ)
+TSS PERMIT(userid) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
 ```
 
 Commands for RACF:
@@ -359,7 +371,8 @@ Commands for RACF:
 PERMIT SUPERUSER.FILESYS.MOUNT CLASS(UNIXPRIV) ID(userid) ACCESS(UPDATE)
 PERMIT BPX.FILEATTR.PROGCTL CLASS(FACILITY) ID(userid) ACCESS(READ)
 PERMIT BPX.FILEATTR.APF CLASS(FACILITY) ID(userid) ACCESS(READ)
-PERMIT BPX.SERVER CLASS(FACILITY) ID(userid) ACCESS(UPDATE)
+PERMIT BPX.SERVER CLASS(FACILITY) ID(userid) ACCESS(READ)
+PERMIT BPX.DAEMON CLASS(FACILITY) ID(userid) ACCESS(UPDATE)
 SETROPTS RACLIST(FACILITY) REFRESH
 SETROPTS RACLIST(UNIXPRIV) REFRESH
 ```

@@ -86,6 +86,8 @@ export ${TIMEZONE%%#*}
 export JAVA_DUMP_HEAP=false
 export JAVA_PROPAGATE=NO
 export IBM_JAVA_ZOS_TDUMP=NO
+export _EDC_ADD_ERRNO2=1
+export _BPXK_JOBLOG=STDERR
 
 echo "Working directory: `pwd`"
 /*

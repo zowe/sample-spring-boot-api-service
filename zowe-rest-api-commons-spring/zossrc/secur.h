@@ -31,6 +31,14 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_removeSecurityEnvironment
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_zowe_commons_zos_security_jni_Secur
+ * Method:    getLastErrno2
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_getLastErrno2
+  (JNIEnv *env, jobject obj);
+
 #ifdef __cplusplus
 }
 #endif

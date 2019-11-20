@@ -10,10 +10,10 @@
 package org.zowe.commons.zos.security.service;
 
 import org.zowe.commons.zos.security.platform.PlatformAccessControl;
+import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.platform.PlatformAckErrno;
 import org.zowe.commons.zos.security.platform.PlatformErrno2;
 import org.zowe.commons.zos.security.platform.PlatformReturned;
-import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 
 import lombok.extern.slf4j.Slf4j;
 
