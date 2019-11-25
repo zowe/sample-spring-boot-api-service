@@ -352,7 +352,7 @@ You need following access to be able to develop a REST API service:
 You need following access to be able to run a REST API service:
 
 - `READ` access to `BPX.SERVER` in the FACILITY class to be able to check access to resources
-- `READ` access to `BPX.DAEMON` in the FACILITY class to be able to establish thread-level security
+- `UPDATE` access to `BPX.DAEMON` in the FACILITY class to be able to establish thread-level security
 - nothing special if you want to be able to authenticate users
 
 Commands for CA Top Secret for z/OS:
