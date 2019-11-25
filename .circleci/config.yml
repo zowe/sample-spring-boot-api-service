@@ -21,6 +21,11 @@ jobs:
             cd zowe-api-dev
             npm install
             npm pack
+            mkdir -p ../build/
+            cp -v zowedev-zowe-api-dev-*.tgz ../build/zowedev-zowe-api-dev.tgz
+      - store_artifacts:
+          path: build/zowedev-zowe-api-dev.tgz
+          destination: zowedev-zowe-api-dev.tgz
       - run: &zosbuild
           name: Building Native z/OS Code
           command: |
@@ -38,6 +43,9 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
+      - store_artifacts:
+          path: build/zowe-rest-api-sample-spring.jar
+          destination: zowe-rest-api-sample-spring.jar
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
           command: |
@@ -54,7 +62,7 @@ jobs:
             source .circleci/river.env
             npm run zos-cleanup
             scripts/package-sample.sh
-      - store_artifacts:
+      - store_artifacts: &store_sample_zip
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
       - save_cache:

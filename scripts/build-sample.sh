@@ -21,3 +21,5 @@ echo "zoweSampleVersion=$VERSION" >> gradle.properties
 ./gradlew build
 
 rm build.gradle-orig
+
+cp -v build/libs/zowe-rest-api-sample-spring-*.jar ../build/zowe-rest-api-sample-spring.jar
