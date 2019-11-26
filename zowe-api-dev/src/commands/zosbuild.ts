@@ -8,15 +8,10 @@ import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync
 export default class ZosBuild extends Command {
     static description = "build z/OS source on z/OS UNIX";
 
-    static flags = {
-        force: flags.boolean({ char: "f", description: "forces full upload and build even if there is no change", default: false }),
-    };
-
     async run() {
-        const f = this.parse(ZosBuild);
         const [userConfig, projectConfig] = readConfiguration(this);
         const zosDir = `${userConfig.zosTargetDir}/${projectConfig.zosSourcesDir}`;
-        const uploadedFiles = uploadDir(projectConfig.zosSourcesDir, zosDir, userConfig.zoweProfileName, this, f.flags.force);
+        const uploadedFiles = uploadDir(projectConfig.zosSourcesDir, zosDir, userConfig.zoweProfileName, this);
         if (uploadedFiles) {
             const env: { [name: string]: string } = {};
             if (userConfig.javaHome) {
@@ -37,14 +32,14 @@ export default class ZosBuild extends Command {
     }
 }
 
-function uploadDir(dir: string, zosDir: string, profileName: string, command: Command, force = false) {
+function uploadDir(dir: string, zosDir: string, profileName: string, command: Command) {
     let uploadedFiles = 0;
     if (existsSync(dir) && lstatSync(dir).isDirectory()) {
         const files = readdirSync(dir);
         files.forEach(file => {
             const sourceFile = `${dir}/${file}`;
             const targetFile = `${zosDir}/${file}`;
-            if (force || !isFileSame(sourceFile, targetFile, profileName)) {
+            if (!isFileSame(sourceFile, targetFile, profileName)) {
                 uploadedFiles += 1;
                 if (uploadedFiles === 1) {
                     execSshCommandWithDefaultEnvCwd(`mkdir -p ${zosDir}`);
