@@ -106,6 +106,10 @@ This section focuses on the way how services in the Zowe API ecosystem are expec
 
 **Example**:
 
+```bash
+curl -v -c - -X POST "https://localhost:10080/api/v1/auth/login" -d "{ \"username\": \"zowe\", \"password\": \"zowe\"}"
+```
+
 ```http
 POST /api/v1/auth/login HTTP/1.1
 Accept: application/json, */*
@@ -157,6 +161,10 @@ API client does not need to validate the tokens, the API services must do it the
 that is provided by the service.
 
 The response is a JSON response with fields `creation`, `expiration`, `userId` that correspond to `iss`, `exp`, and `sub` JWT token claims. The timestamps are in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+
+```bash
+curl -k --cookie "apimlAuthenticationToken=eyJhbGciOiJSUzI1NiJ9..." -X GET "https://localhost:10080/api/v1/auth/query"
+```
 
 ```http
 GET /api/v1/auth/query HTTP/1.1
