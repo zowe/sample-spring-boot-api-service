@@ -21,7 +21,7 @@ The API client needs to provide information than can be verified by the API serv
 This can be done in two ways for API services in the Zowe ecosystem:
 
 1. HTTP basic authentication with the user ID and password/passphrase
-2. A JWT token that proves that its owner is who she/he claims to be
+2. A JSON Web Token (JWT) token that proves that its owner is who she/he claims to be
 
 ## HTTP Basic Authentication
 
@@ -104,7 +104,6 @@ This section focuses on the way how services in the Zowe API ecosystem are expec
 
 - Failed authentication returns `401` without `WWW-Authenticate`
 
-
 **Example**:
 
 ```http
@@ -137,6 +136,8 @@ HTTP/1.1 200
 ### Token format
 
 The JWT must contain unencrypted claims `sub`, `iat`, `exp`, `iss`, and `jti` in the meaning defined by <https://tools.ietf.org/html/rfc7519#section-4.1>. Specifically, the `sub` is the z/OS user ID and `iss` is the name of the service that issued the JWT token.
+
+The JWT must use RS256 signature algorithm and the secret used to sign the JWT is an asymmetric key generated during installation.
 
 **Example**:
 
