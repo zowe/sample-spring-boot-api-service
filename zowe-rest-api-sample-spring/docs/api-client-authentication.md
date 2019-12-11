@@ -12,6 +12,7 @@
     - [Token format](#token-format)
     - [Validating tokens](#validating-tokens)
     - [The support for token-based authentication in the Zowe REST API SDK](#the-support-for-token-based-authentication-in-the-zowe-rest-api-sdk)
+  - [HTTP basic authentication with PassTicket support](#http-basic-authentication-with-passticket-support)
 
 This document describe how the API client can authenticate to a Zowe API service and what the Zowe REST API SDK provides in order to achieve it.
 
@@ -22,6 +23,7 @@ This can be done in two ways for API services in the Zowe ecosystem:
 
 1. HTTP basic authentication with the user ID and password/passphrase
 2. A JSON Web Token (JWT) token that proves that its owner is who she/he claims to be
+3. HTTP basic authentication with the user ID and PassTicket
 
 ## HTTP Basic Authentication
 
@@ -189,3 +191,11 @@ The JWT token provider can be:
 
 1. Simple standalone provider that validates the credentials via `SafPlatformUser`
 2. Zowe APIML provider that uses the Zowe Authentication and Authorization Service to obtain and validate JWT tokens
+
+## HTTP basic authentication with PassTicket support
+
+In order to support MFA without supporting JWT in the service, the service can accept PassTickets and the API client is
+responsible for obtaining valid PassTicket (for example by using Zowe APIML that will be able to generate PassTickets
+if the API client provides a valid JWT token).
+
+The authentication scheme is same as in the HTTP Basic authentication scheme. The PassTicket is used instead of the password.
