@@ -39,6 +39,10 @@ jobs:
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
+      - run: &sonar
+          name: Sonar
+          command: |
+             ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
       - run: &sample
           name: Building Standalone Sample
           command: |
