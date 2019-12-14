@@ -2,6 +2,15 @@ apply plugin: "org.sonarqube"
 
 ext.pullRequest = System.getenv()['CHANGE_ID'] ?: null
 
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
+
 sonarqube {
     properties {
         property "sonar.host.url", project.getProperty('sonar.host.url')
@@ -22,7 +31,7 @@ sonarqube {
             property "sonar.github.repository", "zowe/sample-spring-boot-api-service"
             property "sonar.github.oauth",  project.hasProperty('sonar.github.oauth') ? project.getProperty('sonar.github.oauth') : null
         } else {
-            property "sonar.branch.name", System.getenv()['BRANCH_NAME'] ?: null
+            property "sonar.branch.name", System.getenv()['BRANCH_NAME'] ?: gitBranch()
         }
     }
 }
