@@ -71,11 +71,11 @@ This is optional and is meant for diagnostics purposes.
 
 ### The support for HTTP basic authentication in the Zowe REST API SDK
 
-REST API services that are developed by the Zowe REST API SDK support HTTP basic authentication by default. When it is running on z/OS then it is using the SAF interface to validate the user ID and password by the z/OS security subsystems. For testing outside of z/OS, it uses a predefined dummy credentials. For more information see [Web Security](web-security.md) and [z/OS Security](zos-security.md).
+REST API services that are developed by the Zowe REST API SDK support HTTP basic authentication by default. When it is running on z/OS then it is using the SAF interface to validate the user ID and password by the z/OS security subsystems. For testing outside of z/OS, it uses predefined dummy credentials. For more information see [Web Security](web-security.md) and [z/OS Security](zos-security.md).
 
 ## Token-based Authentication
 
-Since every REST request requires to provide valid authentication and REST API services do not have mechanism of a long-term web session, it is necessary to have a way how to establish an authenticated session outside of individual REST API services.
+Since every REST request is required to provide valid authentication and REST API services do not have mechanism of a long-term web session, it is necessary to have a way how to establish an authenticated session outside of individual REST API services.
 
 In Zowe and in many other applications, this is achieved using JWT tokens that can be obtained by a specialized serviced and then used as the authentication information. This service is described in more details at [Zowe Authentication and Authorization Service](https://github.com/zowe/api-layer/wiki/Zowe-Authentication-and-Authorization-Service).
 
@@ -129,7 +129,7 @@ Set-Cookie: apimlAuthenticationToken=eyJhbGciOiJSUzI1NiJ9...; Path=/; Secure; Ht
 
 #### Authenticated request
 
-The API client just pass the JWT token as a Cookie header with name `apimlAuthenticationToken`:
+The API client can just pass the JWT token as a Cookie header with name `apimlAuthenticationToken`:
 
 ```http
 GET /api/v1/greeting HTTP/1.1
@@ -138,6 +138,28 @@ Cookie: apimlAuthenticationToken=eyJhbGciOiJSUzI1NiJ9...
 HTTP/1.1 200
 ...
 ```
+
+The second option is to pass it in the `Authorization: Bearer` header:
+
+```http
+GET /api/v1/greeting HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9...
+
+HTTP/1.1 200
+...
+```
+
+The first option (cookies) is preferred for web browsers with attributes `Secure` and `HttpOnly`.
+Browsers store and send cookies automatically.
+Cookies are present on all requests, including those coming from DOM elements.
+They are compatible with web mechanisms such as CORS, SSE, or WebSockets.
+
+Cookies are more diffcult to support in non-web applications.
+Headers, such as `Authorization: Bearer`, are easier to be used in non-web applications.
+But they are difficult to use and secure in web browser.
+The web application needs to store them and attach to all requests where they are required.
+
+The API service needs to support both of them so the API clients can use what makes more sense for them.
 
 ### Token format
 
@@ -159,7 +181,7 @@ The JWT must use RS256 signature algorithm and the secret used to sign the JWT i
 
 ### Validating tokens
 
-API client does not need to validate the tokens, the API services must do it themselves. If the API client receives the token from another source or needs to check details in it (like user ID, expiration) then it can use `/auth/query` endpoint
+API client does not need to validate the tokens, the API services must do it themselves. If the API client receives the token from another source and needs to validate such JWT token or needs to check details in it (like user ID, expiration) then it can use `/auth/query` endpoint
 that is provided by the service.
 
 The response is a JSON response with fields `creation`, `expiration`, `userId` that correspond to `iss`, `exp`, and `sub` JWT token claims. The timestamps are in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
