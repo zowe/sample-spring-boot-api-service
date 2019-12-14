@@ -9,6 +9,8 @@
  */
 package org.zowe.commons.zos.security.platform;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,12 +21,14 @@ import lombok.Data;
  * See also:
  * https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformReturned.html
  */
-public class PlatformReturned {
+public class PlatformReturned implements Serializable {
+    private static final long serialVersionUID = -2699057722238941755L;
+
     private boolean success;
     private int rc;
     private int errno;
     private int errno2;
     private String errnoMsg;
     private String stringRet;
-    private Object objectRet;
+    private transient Object objectRet;
 }

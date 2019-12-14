@@ -28,7 +28,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
 
     @Override
     public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-        if (shouldExit(level, t)) {
+        if (reportFatalErrorAndDecideToExit(level, t)) {
             System.exit(1);
         }
 
@@ -41,7 +41,8 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                     message = ExceptionUtils.getRootCauseMessage(t);
                 }
                 if ((message != null) && !message.isEmpty()) {
-                    log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.unableToRegister", message));
+                    log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.unableToRegister",
+                            message));
                     logOriginalError(t);
                 }
             }
@@ -51,32 +52,42 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
         return FilterReply.NEUTRAL;
     }
 
-    boolean shouldExit(Level level, Throwable t) {
+    private boolean isErrorFromDiscoveryClient(String stackFrame) {
+        return ((stackFrame.indexOf(".ApiMediationClient") >= 0)
+                || (stackFrame.indexOf("com.netflix.discovery.DiscoveryClient") >= 0));
+    }
+
+    private boolean isErrorFromDiscoveryClient(Throwable throwable) {
+        for (String s : ExceptionUtils.getStackFrames(throwable)) {
+            if (isErrorFromDiscoveryClient(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean reportFatalErrorAndDecideToExit(Level level, Throwable t) {
+        String errorMessageKey = null;
         if (level.isGreaterOrEqual(Level.ERROR)) {
             if (ExceptionUtils.indexOfType(t, SSLPeerUnverifiedException.class) >= 0) {
-                for (String s : ExceptionUtils.getStackFrames(t)) {
-                    if ((s.indexOf(".ApiMediationClient") >= 0)
-                            || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
-                        log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.apimlCertificateNotTrusted",
-                                t.getMessage()));
-                        logOriginalError(t);
-                        if (SpringContext.getApplicationContext() == null) {
-                            return true;
-                        }
-                    }
+                if (isErrorFromDiscoveryClient(t)) {
+                    errorMessageKey = "org.zowe.commons.apiml.apimlCertificateNotTrusted";
+
                 }
+
             } else if (ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0) {
-                for (String s : ExceptionUtils.getStackFrames(t)) {
-                    if ((s.indexOf(".ApiMediationClient") >= 0)
-                            || (s.indexOf("com.netflix.discovery.DiscoveryClient") > 0)) {
-                        log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.serviceCertificateNotTrusted",
-                                t.getMessage()));
-                        logOriginalError(t);
-                        if (SpringContext.getApplicationContext() == null) {
-                            return true;
-                        }
-                    }
+                if (isErrorFromDiscoveryClient(t)) {
+                    errorMessageKey = "org.zowe.commons.apiml.serviceCertificateNotTrusted";
+
                 }
+            }
+        }
+
+        if (errorMessageKey != null) {
+            log.error(CommonsErrorService.get().getReadableMessage(errorMessageKey, t.getMessage()));
+            logOriginalError(t);
+            if (SpringContext.getApplicationContext() == null) {
+                return true;
             }
         }
 

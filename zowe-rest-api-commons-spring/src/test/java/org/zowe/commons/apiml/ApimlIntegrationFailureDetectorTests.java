@@ -31,8 +31,8 @@ public class ApimlIntegrationFailureDetectorTests {
         ApimlIntegrationFailureDetector detector = new ApimlIntegrationFailureDetector();
         assertEquals(FilterReply.NEUTRAL,
                 detector.decide(null, null, Level.INFO, null, null, new NullPointerException()));
-        assertFalse(detector.shouldExit(Level.INFO, new NullPointerException()));
-        assertTrue(detector.shouldExit(Level.ERROR, new SSLHandshakeException("test")));
+        assertFalse(detector.reportFatalErrorAndDecideToExit(Level.INFO, new NullPointerException()));
+        assertTrue(detector.reportFatalErrorAndDecideToExit(Level.ERROR, new SSLHandshakeException("test")));
 
         LoggerContext ctx = new LoggerContext();
         Logger logger = ctx.getLogger("com.netflix.DiscoveryClient");
