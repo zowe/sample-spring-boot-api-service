@@ -28,7 +28,7 @@ public enum PlatformTlsErrno {
     EPERM("EPERM", 139, "The calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space", PlatformErrorType.INTERNAL),
     ESRCH("ESRCH", 143, "The identity that was specified is not defined to the security product", PlatformErrorType.DEFAULT);
 
-    private static Map<Integer, PlatformTlsErrno> BY_ERRNO = new HashMap<>();
+    private static final Map<Integer, PlatformTlsErrno> BY_ERRNO = new HashMap<>();
 
     static {
         for (PlatformTlsErrno e : values()) {
@@ -36,13 +36,13 @@ public enum PlatformTlsErrno {
         }
     }
 
-    public final String name;
+    public final String shortErrorName;
     public final int errno;
     public final String explanation;
     public final PlatformErrorType errorType;
 
-    private PlatformTlsErrno(String name, int errno, String explanation, PlatformErrorType errorType) {
-        this.name = name;
+    private PlatformTlsErrno(String shortErrorName, int errno, String explanation, PlatformErrorType errorType) {
+        this.shortErrorName = shortErrorName;
         this.errno = errno;
         this.explanation = explanation;
         this.errorType = errorType;

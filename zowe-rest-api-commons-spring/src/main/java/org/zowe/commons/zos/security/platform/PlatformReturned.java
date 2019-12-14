@@ -20,11 +20,11 @@ import lombok.Data;
  * https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.zsecurity.api.80.doc/com.ibm.os390.security/com/ibm/os390/security/PlatformReturned.html
  */
 public class PlatformReturned {
-    public boolean success;
-    public int rc;
-    public int errno;
-    public int errno2;
-    public String errnoMsg;
-    public String stringRet;
-    public Object objectRet;
+    private boolean success;
+    private int rc;
+    private int errno;
+    private int errno2;
+    private String errnoMsg;
+    private String stringRet;
+    private Object objectRet;
 }

@@ -61,7 +61,7 @@ public class ErrorServiceImpl implements ErrorService {
 
     private final ErrorMessageStorage messageStorage;
     private String defaultMessageSource;
-    private volatile ErrorServiceControl control = new ErrorServiceControl();
+    private final ErrorServiceControl control = new ErrorServiceControl();
 
     /**
      * Cache to hold loaded ResourceBundles. The key to this map is bundle basename

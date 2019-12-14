@@ -52,7 +52,7 @@ public class ZosJniPlatformSecurityService extends AccessControlService
             PlatformErrno2 platformErrno2 = PlatformErrno2.valueOfErrno(errno2);
             String explanation;
             if (tlsErrno != null) {
-                explanation = tlsErrno.name + " " + tlsErrno.explanation;
+                explanation = tlsErrno.shortErrorName + " " + tlsErrno.explanation;
             } else {
                 explanation = "unknown reason";
             }

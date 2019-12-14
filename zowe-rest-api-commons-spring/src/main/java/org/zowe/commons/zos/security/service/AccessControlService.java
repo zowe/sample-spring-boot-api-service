@@ -38,8 +38,8 @@ public abstract class AccessControlService implements PlatformSecurityService {
             return true;
         } else {
             String message;
-            PlatformAckErrno errno = PlatformAckErrno.valueOfErrno(returned.errno);
-            PlatformErrno2 errno2 = PlatformErrno2.valueOfErrno(returned.errno2);
+            PlatformAckErrno errno = PlatformAckErrno.valueOfErrno(returned.getErrno());
+            PlatformErrno2 errno2 = PlatformErrno2.valueOfErrno(returned.getErrno2());
             if ((errno == null) || (errno2 == null)) {
                 message = "Unknown access control error";
                 log.error("Platform access control failed: {}", returned);
@@ -52,7 +52,7 @@ public abstract class AccessControlService implements PlatformSecurityService {
                 } else if (errno2 == PlatformErrno2.JRSAFResourceUndefined) {
                     return false;
                 }
-                log.error("Platform access control failed: {} {} {} {}", errno.name, errno2.name, errno2.explanation,
+                log.error("Platform access control failed: {} {} {} {}", errno.shortErrorName, errno2.shortErrorName, errno2.explanation,
                         returned);
             }
             throw new AccessControlError(message + ": " + returned.toString(), returned);
