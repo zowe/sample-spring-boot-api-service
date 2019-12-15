@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.junit.Test;
 import org.zowe.commons.spring.SpringContext;
@@ -33,6 +34,7 @@ public class ApimlIntegrationFailureDetectorTests {
                 detector.decide(null, null, Level.INFO, null, null, new NullPointerException()));
         assertFalse(detector.reportFatalErrorAndDecideToExit(Level.INFO, new NullPointerException()));
         assertTrue(detector.reportFatalErrorAndDecideToExit(Level.ERROR, new SSLHandshakeException("test")));
+        assertTrue(detector.reportFatalErrorAndDecideToExit(Level.ERROR, new SSLPeerUnverifiedException("test")));
 
         LoggerContext ctx = new LoggerContext();
         Logger logger = ctx.getLogger("com.netflix.DiscoveryClient");

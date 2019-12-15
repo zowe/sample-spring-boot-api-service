@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -289,12 +287,11 @@ public class ErrorServiceImpl implements ErrorService {
             return parameters;
         }
     }
-
     /**
      * Custom implementation of {@code ResourceBundle.Control}, adding support for
      * UTF-8.
      */
-    private class ErrorServiceControl extends ResourceBundle.Control {
+    class ErrorServiceControl extends ResourceBundle.Control {
         protected ResourceBundle loadBundle(Reader reader) throws IOException {
             return new PropertyResourceBundle(reader);
         }
@@ -310,20 +307,15 @@ public class ErrorServiceImpl implements ErrorService {
         }
 
         private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader, boolean reload)
-                throws IOException, UnsupportedEncodingException {
+                throws IOException {
             String bundleName = toBundleName(baseName, locale);
             String resourceName = toResourceName(bundleName, "properties");
             ClassLoader classLoader = loader;
-            boolean reloadFlag = reload;
             InputStream inputStream;
             try {
                 inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
                     InputStream is = null;
-                    if (reloadFlag) {
-                        is = reloadResource(resourceName, classLoader, is);
-                    } else {
-                        is = classLoader.getResourceAsStream(resourceName);
-                    }
+                    is = classLoader.getResourceAsStream(resourceName);
                     return is;
                 });
             } catch (PrivilegedActionException ex) {
@@ -340,18 +332,6 @@ public class ErrorServiceImpl implements ErrorService {
             } else {
                 return null;
             }
-        }
-
-        private InputStream reloadResource(String resourceName, ClassLoader classLoader, InputStream is) throws IOException {
-            URL url = classLoader.getResource(resourceName);
-            if (url != null) {
-                URLConnection connection = url.openConnection();
-                if (connection != null) {
-                    connection.setUseCaches(false);
-                    is = connection.getInputStream();
-                }
-            }
-            return is;
         }
     }
 }

@@ -22,6 +22,11 @@ import org.zowe.commons.rest.response.ApiMessage;
 public class ErrorServiceImplTest {
     private final ErrorService errorService = ErrorServiceImpl.getCommonsDefault();
 
+    @Test(expected = MessageLoadException.class)
+    public void defaultErrorServiceFailsInCommons() {
+        ErrorServiceImpl.getDefault();
+    }
+
     @Test
     public void invalidMessageKey() {
         ApiMessage message = errorService.createApiMessage("nonExistingKey", "someParameter1", "someParameter2");
