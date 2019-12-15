@@ -13,8 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.zowe.commons.rest.response.ApiMessage;
-import org.zowe.commons.rest.response.Message;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

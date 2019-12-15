@@ -38,8 +38,8 @@ public class SafPlatformClassFactory implements PlatformClassFactory {
     }
 
     @Override
-    public PlatformReturned convertPlatformReturned(Object safReturned) throws ClassNotFoundException,
-            IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    public PlatformReturned convertPlatformReturned(Object safReturned)
+            throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
         Class<?> returnedClass = this.getPlatformReturnedClass();
         if (safReturned == null) {
             return null;

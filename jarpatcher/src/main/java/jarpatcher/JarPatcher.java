@@ -234,7 +234,7 @@ public class JarPatcher {
     public void applyPatch(String targetPath, String patchPath, String ignoredPath) throws IOException {
         String originalTargetPath = targetPath + "-original";
         Files.copy(Paths.get(targetPath), Paths.get(originalTargetPath), StandardCopyOption.REPLACE_EXISTING);
-        try (FileOutputStream fos = new FileOutputStream(targetPath.toString());
+        try (FileOutputStream fos = new FileOutputStream(targetPath);
                 ZipOutputStream zipOut = new ZipOutputStream(fos)) {
             Set<String> deletedOrPatchedNames = new HashSet<>();
             int keeping = 0;

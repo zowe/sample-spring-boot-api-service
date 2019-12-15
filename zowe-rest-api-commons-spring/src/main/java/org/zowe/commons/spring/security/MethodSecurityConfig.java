@@ -29,8 +29,6 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
-        SafMethodSecurityExpressionHandler expressionHandler = new SafMethodSecurityExpressionHandler(
-                platformSecurityService, safSecurityConfigurationProperties);
-        return expressionHandler;
+        return new SafMethodSecurityExpressionHandler(platformSecurityService, safSecurityConfigurationProperties);
     }
 }

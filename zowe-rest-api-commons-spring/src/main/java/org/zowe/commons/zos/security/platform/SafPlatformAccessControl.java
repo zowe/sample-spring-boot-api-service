@@ -20,7 +20,7 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
         try {
 			this.platformAccessControl = platformClassFactory.getPlatformAccessControl();
 		} catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new SafPlatformError(e);
 		}
     }
 
@@ -35,7 +35,7 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SafPlatformError(e.getMessage(), e);
         }
     }
 
@@ -49,7 +49,7 @@ public class SafPlatformAccessControl implements PlatformAccessControl {
             return platformClassFactory.convertPlatformReturned(safReturned);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SafPlatformError(e.getMessage(), e);
         }
     }
 }

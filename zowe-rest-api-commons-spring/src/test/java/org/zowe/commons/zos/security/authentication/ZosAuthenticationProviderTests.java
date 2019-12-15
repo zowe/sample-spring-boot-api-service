@@ -58,7 +58,7 @@ public class ZosAuthenticationProviderTests {
     @Test
     public void validAuthenticationOnValidCredentials() {
         Authentication authentication = provider.authenticate(VALID_TOKEN);
-        assertEquals(authentication.getPrincipal(), VALID_USERID);
+        assertEquals(VALID_USERID, authentication.getPrincipal());
     }
 
     @Test

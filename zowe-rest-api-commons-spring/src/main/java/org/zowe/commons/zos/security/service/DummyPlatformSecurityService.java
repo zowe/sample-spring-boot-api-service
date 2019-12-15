@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service("platformSecurityService")
 @Slf4j
 public class DummyPlatformSecurityService extends AccessControlService implements PlatformSecurityService, InitializingBean {
-    static String INVALID_VALUE = "INVALID";
+    static final String INVALID_VALUE = "INVALID";
 
     private static final SecurityRequestFailed SECURITY_REQUEST_FAILED = new SecurityRequestFailed(null, 0, 1);
 

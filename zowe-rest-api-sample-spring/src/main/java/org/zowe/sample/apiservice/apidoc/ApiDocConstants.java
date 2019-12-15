@@ -10,5 +10,9 @@
 package org.zowe.sample.apiservice.apidoc;
 
 public final class ApiDocConstants {
-    public final static String DOC_SCHEME_BASIC_AUTH = "basicAuth";
+    public static final String DOC_SCHEME_BASIC_AUTH = "basicAuth";
+
+    private ApiDocConstants() {
+        // Utility class
+    }
 }

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zowe.commons.rest.response.ApiMessage;
+import org.zowe.commons.zos.security.platform.SafPlatformError;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +36,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "Greeting", description = "REST API for greetings")
+@Api(tags = "Greeting")
 @RestController
 @RequestMapping("/api/v1/greeting")
 public class GreetingController implements MessageSourceAware {
@@ -62,12 +63,12 @@ public class GreetingController implements MessageSourceAware {
         if (name.trim().isEmpty()) {
             throw new EmptyNameError();
         }
-        String greeting = GreetingController.greeting.get(locale.getLanguage());
-        if (greeting == null) {
-            greeting = messageSource.getMessage("GreetingController.greeting", null, locale);
+        String greetingText = GreetingController.greeting.get(locale.getLanguage());
+        if (greetingText == null) {
+            greetingText = messageSource.getMessage("GreetingController.greeting", null, locale);
         }
         return new Greeting(counter.incrementAndGet(), String
-                .format(messageSource.getMessage("GreetingController.greetingTemplate", null, locale), greeting, name),
+                .format(messageSource.getMessage("GreetingController.greetingTemplate", null, locale), greetingText, name),
                 locale.toLanguageTag());
     }
 
@@ -85,6 +86,6 @@ public class GreetingController implements MessageSourceAware {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/failed")
     public Greeting failedGreeting() {
-        throw new RuntimeException("exception");
+        throw new SafPlatformError("exception");
     }
 }

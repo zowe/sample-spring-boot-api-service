@@ -14,6 +14,6 @@ public class SafConstants {
         // no instances
     }
 
-    public final static String CLASS_FACILITY = "FACILITY";
-    public final static String BPX_SERVER = "BPX.SERVER";
+    public static final String CLASS_FACILITY = "FACILITY";
+    public static final String BPX_SERVER = "BPX.SERVER";
 }
