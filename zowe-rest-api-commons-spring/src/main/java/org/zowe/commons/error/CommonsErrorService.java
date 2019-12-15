@@ -9,9 +9,6 @@
  */
 package org.zowe.commons.error;
 
-import org.zowe.commons.error.ErrorService;
-import org.zowe.commons.error.ErrorServiceImpl;
-
 public final class CommonsErrorService {
     private static ErrorService errorService = ErrorServiceImpl.getCommonsDefault();
 

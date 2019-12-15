@@ -20,6 +20,14 @@ import java.nio.file.Paths;
 import org.springframework.util.ResourceUtils;
 
 public class LibExtractor {
+    public class LibExtractionError extends RuntimeException {
+        private static final long serialVersionUID = 2453905334387687806L;
+
+        public LibExtractionError(String message, IOException e) {
+            super(message, e);
+        }
+    }
+
     private static final int BUFFER_SIZE = 4096;
 
     private LibLoader libLoader = new LibLoader();
@@ -27,7 +35,7 @@ public class LibExtractor {
     public void extractLibrary(String libraryName, String targetDir) {
         String filename = "lib/lib" + libraryName + ".so";
         Path targetPath = Paths.get(targetDir, libLoader.libraryFileName(libraryName));
-        System.out.println(String.format("Extracting %s to %s", filename, targetPath));
+        System.out.println(String.format("Extracting %s to %s", filename, targetPath));  // NOSONAR
         try {
             URL url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + filename);
             try (InputStream inputStream = url.openStream();
@@ -39,7 +47,7 @@ public class LibExtractor {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Error extracting library %s to %s", libraryName, targetDir), e);
+            throw new LibExtractionError(String.format("Error extracting library %s to %s", libraryName, targetDir), e);
         }
     }
 
@@ -48,7 +56,7 @@ public class LibExtractor {
         if (args.length == 2) {
             ex.extractLibrary(args[0], args[1]);
         } else {
-            System.err.println("No arguments provided. Expected: libName targetDir");
+            System.err.println("No arguments provided. Expected: libName targetDir");  // NOSONAR
         }
     }
 }

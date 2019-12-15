@@ -49,6 +49,6 @@ public enum PlatformTlsErrno {
     }
 
     public static PlatformTlsErrno valueOfErrno(int errno) {
-        return BY_ERRNO.get(errno);
+        return BY_ERRNO.getOrDefault(errno, null);
     }
 }

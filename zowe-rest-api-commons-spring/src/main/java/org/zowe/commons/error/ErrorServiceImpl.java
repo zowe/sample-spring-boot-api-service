@@ -213,7 +213,6 @@ public class ErrorServiceImpl implements ErrorService {
         try (Formatter formatter = new Formatter(sb, locale)) {
             formatter.format(localizedText(locale, key + ".text", message.getText()), messageParameters);
             text = sb.toString();
-            formatter.close();
         } catch (IllegalFormatConversionException exception) {
             LOGGER.debug("Internal error: Invalid message format was used", exception);
             message = messageStorage.getErrorMessage(INVALID_MESSAGE_TEXT_FORMAT);
@@ -255,6 +254,7 @@ public class ErrorServiceImpl implements ErrorService {
                 try {
                     return bundle.getString("messages." + key);
                 } catch (MissingResourceException ignored) {
+                    return defaultText;
                 }
             }
         }

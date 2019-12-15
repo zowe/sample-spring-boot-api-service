@@ -1806,7 +1806,7 @@ public enum PlatformErrno2 {
     }
 
     public static PlatformErrno2 valueOfErrno(int errno2) {
-        return BY_ERRNO.get(errno2 & 0xffff);
+        return BY_ERRNO.getOrDefault(errno2 & 0xffff, null);
     }
 
 	public String format() {
