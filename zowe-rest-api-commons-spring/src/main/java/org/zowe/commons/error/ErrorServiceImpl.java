@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
@@ -302,41 +303,55 @@ public class ErrorServiceImpl implements ErrorService {
         public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader,
                 boolean reload) throws IllegalAccessException, InstantiationException, IOException {
             if (format.equals("java.properties")) {
-                String bundleName = toBundleName(baseName, locale);
-                String resourceName = toResourceName(bundleName, "properties");
-                ClassLoader classLoader = loader;
-                boolean reloadFlag = reload;
-                InputStream inputStream;
-                try {
-                    inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-                        InputStream is = null;
-                        if (reloadFlag) {
-                            URL url = classLoader.getResource(resourceName);
-                            if (url != null) {
-                                URLConnection connection = url.openConnection();
-                                if (connection != null) {
-                                    connection.setUseCaches(false);
-                                    is = connection.getInputStream();
-                                }
-                            }
-                        } else {
-                            is = classLoader.getResourceAsStream(resourceName);
-                        }
-                        return is;
-                    });
-                } catch (PrivilegedActionException ex) {
-                    throw (IOException) ex.getException();
-                }
-                if (inputStream != null) {
-                    try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
-                        return loadBundle(bundleReader);
-                    }
-                } else {
-                    return null;
-                }
+                return newJavaPropertiesBundle(baseName, locale, loader, reload);
             } else {
                 return super.newBundle(baseName, locale, format, loader, reload);
             }
+        }
+
+        private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader, boolean reload)
+                throws IOException, UnsupportedEncodingException {
+            String bundleName = toBundleName(baseName, locale);
+            String resourceName = toResourceName(bundleName, "properties");
+            ClassLoader classLoader = loader;
+            boolean reloadFlag = reload;
+            InputStream inputStream;
+            try {
+                inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
+                    InputStream is = null;
+                    if (reloadFlag) {
+                        is = reloadResource(resourceName, classLoader, is);
+                    } else {
+                        is = classLoader.getResourceAsStream(resourceName);
+                    }
+                    return is;
+                });
+            } catch (PrivilegedActionException ex) {
+                throw (IOException) ex.getException();
+            }
+            return loadBundleFromInputStream(inputStream);
+        }
+
+        private ResourceBundle loadBundleFromInputStream(InputStream inputStream) throws IOException, UnsupportedEncodingException {
+            if (inputStream != null) {
+                try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
+                    return loadBundle(bundleReader);
+                }
+            } else {
+                return null;
+            }
+        }
+
+        private InputStream reloadResource(String resourceName, ClassLoader classLoader, InputStream is) throws IOException {
+            URL url = classLoader.getResource(resourceName);
+            if (url != null) {
+                URLConnection connection = url.openConnection();
+                if (connection != null) {
+                    connection.setUseCaches(false);
+                    is = connection.getInputStream();
+                }
+            }
+            return is;
         }
     }
 }
