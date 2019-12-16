@@ -101,9 +101,9 @@ public class JarPatcher {
             CompareResult result = new CompareResult();
             Set<String> inBoth = files1.stream().distinct().filter(files2::contains).collect(Collectors.toSet());
             for (String filename : inBoth) {
-                if (!compareEntries(zipFile1.getEntry(filename), zipFile2.getEntry(filename))) {
-                    printEntry(zipFile1, zipFile1.getEntry(filename));
-                    printEntry(zipFile2, zipFile2.getEntry(filename));
+                if (!compareEntries(zipFile1.getEntry(filename), zipFile2.getEntry(filename))) {  // NOSONAR
+                    printEntry(zipFile1, zipFile1.getEntry(filename));  // NOSONAR
+                    printEntry(zipFile2, zipFile2.getEntry(filename));  // NOSONAR
                     result.changed.add(filename);
                 }
             }
@@ -116,7 +116,7 @@ public class JarPatcher {
         }
     }
 
-    private void printEntry(ZipFile f, ZipEntry entry) {
+    private void printEntry(ZipFile f, ZipEntry entry) {  // NOSONAR
         if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s method=%s", f.getName(),
                 entry.getName(), entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment(),
@@ -124,7 +124,7 @@ public class JarPatcher {
         }
     }
 
-    private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {
+    private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {  // NOSONAR
         return (entry1.isDirectory() == entry2.isDirectory()) && (entry1.getSize() == entry2.getSize())
                 && (entry1.getName().equals(entry2.getName())) && (entry1.getCrc() == entry2.getCrc()
                         && (entry1.isDirectory() || (entry1.getMethod() == entry2.getMethod())));
@@ -134,7 +134,7 @@ public class JarPatcher {
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         Set<String> set = new HashSet<>();
         while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
+            ZipEntry entry = entries.nextElement();  // NOSONAR
             set.add(entry.getName());
         }
         return set;
@@ -143,7 +143,7 @@ public class JarPatcher {
     private void addChangedOrCreatedFiles(String newPath, CompareResult result, ZipOutputStream zipOut)
             throws IOException {
         try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(newPath))) {
-            ZipEntry inEntry = zipIn.getNextEntry();
+            ZipEntry inEntry = zipIn.getNextEntry();  // NOSONAR
             while (inEntry != null) {
                 String filename = inEntry.getName();
                 if (result.isFileChangedOrCreated(filename)) {
@@ -155,7 +155,7 @@ public class JarPatcher {
                     }
                     zipOut.closeEntry();
                 }
-                inEntry = zipIn.getNextEntry();
+                inEntry = zipIn.getNextEntry();  // NOSONAR
             }
         }
     }
@@ -178,7 +178,7 @@ public class JarPatcher {
 
     private void addFiles(String fromPath, ZipOutputStream zipOut, String ignoredPath) throws IOException {
         try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(fromPath))) {
-            ZipEntry inEntry = zipIn.getNextEntry();
+            ZipEntry inEntry = zipIn.getNextEntry();  // NOSONAR
             while (inEntry != null) {
                 String filename = inEntry.getName();
                 if (!filename.startsWith(ignoredPath)) {
@@ -193,7 +193,7 @@ public class JarPatcher {
                     }
                     zipOut.closeEntry();
                 }
-                inEntry = zipIn.getNextEntry();
+                inEntry = zipIn.getNextEntry();  // NOSONAR
             }
         }
     }
@@ -242,7 +242,7 @@ public class JarPatcher {
             ZipFile zipPatch = new ZipFile(patchPath);
             Enumeration<? extends ZipEntry> entries = zipPatch.entries();
             while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
+                ZipEntry entry = entries.nextElement();  // NOSONAR
                 processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
             }
             zipPatch.close();
@@ -250,7 +250,7 @@ public class JarPatcher {
             ZipFile zipIn = new ZipFile(originalTargetPath);
             entries = zipIn.entries();
             while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
+                ZipEntry entry = entries.nextElement();  // NOSONAR
                 String filename = entry.getName();
 
                 if (!deletedOrPatchedNames.contains(filename)) {
@@ -269,7 +269,7 @@ public class JarPatcher {
     }
 
     private void processPatchEntry(String ignoredPath, ZipOutputStream zipOut, Set<String> deletedOrPatchedNames,
-            ZipFile zipPatch, ZipEntry entry) throws IOException {
+            ZipFile zipPatch, ZipEntry entry) throws IOException {  // NOSONAR
         String filename = entry.getName();
         if (filename.startsWith(DELETED)) {
             String realFilename = filename.substring(DELETED.length());
@@ -290,7 +290,7 @@ public class JarPatcher {
         }
     }
 
-    private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,
+    private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,  // NOSONAR
             String filename) throws IOException {
         createDirectories(filename, zipOut, createdDirectories);
         ZipEntry zipEntry = new ZipEntry(filename);
@@ -301,7 +301,7 @@ public class JarPatcher {
         zipOut.closeEntry();
     }
 
-    private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {
+    private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {  // NOSONAR
         outEntry.setMethod(inEntry.getMethod());
         outEntry.setComment(inEntry.getComment());
         if (inEntry.getMethod() == ZipEntry.STORED) {
@@ -310,7 +310,7 @@ public class JarPatcher {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {  // NOSONAR: Arguments are validated by JarPatcher
         System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
         System.exit(new JarPatcher().run(args));
     }

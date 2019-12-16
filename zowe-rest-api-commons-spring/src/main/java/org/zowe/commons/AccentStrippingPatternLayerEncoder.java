@@ -37,7 +37,7 @@ public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {  
 
     private String stripAccents(String input) {
         return input == null ? null
-                : Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+                : Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");  // NOSONAR: Used for internal strings
     }
 
     void overrideLayout(Layout layout) {

@@ -16,7 +16,7 @@ import org.zowe.commons.zos.LibExtractor;
 import org.zowe.commons.zos.CommonsNativeLibraries;
 
 public class LibsExtractor {
-    public static void main(String[] args) {
+    public static void main(String[] args) {  // NOSONAR
         LibExtractor ex = new LibExtractor();
         List<String> libraries = new ArrayList<>();
         libraries.addAll(new AppNativeLibraries().getNativeLibrariesNames());

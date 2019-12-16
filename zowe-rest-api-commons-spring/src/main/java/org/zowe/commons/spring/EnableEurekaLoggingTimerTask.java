@@ -26,7 +26,7 @@ public class EnableEurekaLoggingTimerTask extends TimerTask {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         for (String name : EUREKA_LOGGER_NAMES) {
             Logger logger = loggerContext.getLogger(name);
-            logger.setLevel(Level.ERROR);
+            logger.setLevel(Level.ERROR);  // NOSONAR: Error level is safe
         }
     }
 }

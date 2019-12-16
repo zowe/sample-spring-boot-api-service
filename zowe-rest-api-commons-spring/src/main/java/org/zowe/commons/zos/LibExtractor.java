@@ -51,7 +51,7 @@ public class LibExtractor {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {  // NOSONAR
         LibExtractor ex = new LibExtractor();
         if (args.length == 2) {
             ex.extractLibrary(args[0], args[1]);

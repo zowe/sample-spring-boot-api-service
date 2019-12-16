@@ -20,7 +20,7 @@ import org.zowe.commons.zos.security.service.PlatformSecurityService;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableConfigurationProperties(SafSecurityConfigurationProperties.class)
-public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {  // NOSONAR
     @Autowired
     private PlatformSecurityService platformSecurityService;
 
