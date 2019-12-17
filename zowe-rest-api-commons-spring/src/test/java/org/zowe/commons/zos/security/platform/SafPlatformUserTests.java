@@ -55,40 +55,7 @@ public class SafPlatformUserTests {
 
     @Test(expected = SafPlatformError.class)
     public void returnSafPlatformErrorForInvalidClassNames() {
-        SafPlatformUser badPlatformUser = new SafPlatformUser(new PlatformClassFactory(){
-
-            @Override
-            public Class<?> getPlatformUserClass() throws ClassNotFoundException {
-                return Class.forName("bad");
-            }
-
-            @Override
-            public Object getPlatformUser() {
-                return null;
-            }
-
-            @Override
-            public Class<?> getPlatformReturnedClass() throws ClassNotFoundException {
-                return null;
-            }
-
-            @Override
-            public Class<?> getPlatformAccessControlClass() throws ClassNotFoundException {
-                return null;
-            }
-
-            @Override
-            public Object getPlatformAccessControl() throws ClassNotFoundException {
-                return null;
-            }
-
-            @Override
-            public PlatformReturned convertPlatformReturned(Object safReturned)
-                    throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
-                return null;
-            }
-        });
-
+        SafPlatformUser badPlatformUser = new SafPlatformUser(new BadMockPlatformClassFactory());
         assertNull(badPlatformUser.authenticate(VALID_USERID, VALID_PASSWORD));
     }
 }
