@@ -1,0 +1,46 @@
+apply plugin: "org.sonarqube"
+
+ext.pullRequest = System.getenv()['CHANGE_ID'] ?: null
+
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
+
+sonarqube {
+    properties {
+        property "sonar.host.url", project.getProperty('sonar.host.url')
+        property "sonar.login", project.hasProperty('sonar.login') ? project.getProperty('sonar.login') : null
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.organization", "zowe"
+        property "sonar.projectKey", "zowe_sample-spring-boot-api-service"
+        property "sonar.projectName", "Zowe REST API SDK and Sample Service"
+        property "sonar.projectVersion", project.version
+        property "sonar.language", "java"
+        property "sonar.links.scm", "https://github.com/zowe/sample-spring-boot-api-service"
+        property "sonar.links.ci", System.getenv()['BUILD_URL'] ?: null
+        if (pullRequest != null) {
+            property "sonar.pullrequest.key", System.getenv()['CHANGE_ID'] ?: null
+            property "sonar.pullrequest.branch", System.getenv()['CHANGE_BRANCH'] ?: null
+            property "sonar.pullrequest.base", System.getenv()['CHANGE_TARGET'] ?: null
+            property "sonar.github.pullRequest", pullRequest
+            property "sonar.github.repository", "zowe/sample-spring-boot-api-service"
+            property "sonar.github.oauth",  project.hasProperty('sonar.github.oauth') ? project.getProperty('sonar.github.oauth') : null
+        } else {
+            property "sonar.branch.name", System.getenv()['BRANCH_NAME'] ?: gitBranch()
+        }
+    }
+}
+
+subprojects {
+    sonarqube {
+        properties {
+            property "sonar.sources", "src/main/java"
+            property "sonar.tests", "src/test/java"
+        }
+    }
+}

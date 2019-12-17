@@ -41,7 +41,7 @@ public class WtoController {
         this.wto = wto;
     }
 
-    private static final String template = "Hello, %s!";
+    private static final String TEMPLATE = "Hello, %s!";
     private final AtomicInteger counter = new AtomicInteger();
 
     @ApiOperation(value = "Executes WTO on z/OS and returns a greeting for the name passed", nickname = "greetingToSomeone", authorizations = {
@@ -50,6 +50,6 @@ public class WtoController {
     public WtoResponse greeting(
             @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name)
             throws Exception {
-        return wto.call(counter.incrementAndGet(), String.format(template, name));
+        return wto.call(counter.incrementAndGet(), String.format(TEMPLATE, name));
     }
 }

@@ -26,9 +26,9 @@ public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {
     public byte[] encode(ILoggingEvent event) {
         String txt = layout.doLayout(event);
         if (stripAccents) {
-            return stripAccents(txt).getBytes();
-        }
-        else {
+            String stripped = stripAccents(txt);
+            return (stripped != null) ? stripped.getBytes() : null;
+        } else {
             return super.encode(event);
         }
     }

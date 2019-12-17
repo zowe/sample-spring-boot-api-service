@@ -1,3 +1,17 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8'
+    }
+}
+
+apply from: 'gradle/sonar.gradle'
+
 allprojects {
     ext.getLastGitTag = { ->
         try {

@@ -58,12 +58,12 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
             }
 
             String message;
-            PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.errno);
+            PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.getErrno());
             if (errno == null) {
                 message = "Authentication error";
                 log.debug("Platform authentication failed: {}", returned);
             } else {
-                log.debug("Platform authentication failed: {} {} {}", errno.name, errno.explanation, returned);
+                log.debug("Platform authentication failed: {} {} {}", errno.shortErrorName, errno.explanation, returned);
                 if ((errno != null) && (errno.errorType == PlatformErrorType.INTERNAL)) {
                     message = "Internal authentication error: " + errno.explanation;
                 } else if ((errno != null) && (errno.errorType == PlatformErrorType.USER_EXPLAINED)) {

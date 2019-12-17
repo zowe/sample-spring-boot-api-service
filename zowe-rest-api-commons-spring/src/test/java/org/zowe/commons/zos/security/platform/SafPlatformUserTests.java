@@ -38,9 +38,9 @@ public class SafPlatformUserTests {
     public void returnsErrorDetailsForEmptyPassword() {
         PlatformReturned returned = safPlatformUser.authenticate(VALID_USERID, "");
         assertFalse(returned.isSuccess());
-        assertEquals(PlatformPwdErrno.EINVAL.errno, returned.errno);
-        assertEquals(0, returned.rc);
-        assertEquals(0x090C02A7, returned.errno2);
-        assertEquals(PlatformErrno2.JRPasswordLenError, PlatformErrno2.valueOfErrno(returned.errno2));
+        assertEquals(PlatformPwdErrno.EINVAL.errno, returned.getErrno());
+        assertEquals(0, returned.getRc());
+        assertEquals(0x090C02A7, returned.getErrno2());
+        assertEquals(PlatformErrno2.JRPasswordLenError, PlatformErrno2.valueOfErrno(returned.getErrno2()));
     }
 }

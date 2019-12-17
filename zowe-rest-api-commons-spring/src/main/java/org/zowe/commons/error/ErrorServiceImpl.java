@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.UnsupportedEncodingException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -61,7 +60,7 @@ public class ErrorServiceImpl implements ErrorService {
 
     private final ErrorMessageStorage messageStorage;
     private String defaultMessageSource;
-    private volatile ErrorServiceControl control = new ErrorServiceControl();
+    private final ErrorServiceControl control = new ErrorServiceControl();
 
     /**
      * Cache to hold loaded ResourceBundles. The key to this map is bundle basename
@@ -288,12 +287,11 @@ public class ErrorServiceImpl implements ErrorService {
             return parameters;
         }
     }
-
     /**
      * Custom implementation of {@code ResourceBundle.Control}, adding support for
      * UTF-8.
      */
-    private class ErrorServiceControl extends ResourceBundle.Control {
+    class ErrorServiceControl extends ResourceBundle.Control {
         protected ResourceBundle loadBundle(Reader reader) throws IOException {
             return new PropertyResourceBundle(reader);
         }
@@ -302,40 +300,37 @@ public class ErrorServiceImpl implements ErrorService {
         public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader,
                 boolean reload) throws IllegalAccessException, InstantiationException, IOException {
             if (format.equals("java.properties")) {
-                String bundleName = toBundleName(baseName, locale);
-                String resourceName = toResourceName(bundleName, "properties");
-                ClassLoader classLoader = loader;
-                boolean reloadFlag = reload;
-                InputStream inputStream;
-                try {
-                    inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-                        InputStream is = null;
-                        if (reloadFlag) {
-                            URL url = classLoader.getResource(resourceName);
-                            if (url != null) {
-                                URLConnection connection = url.openConnection();
-                                if (connection != null) {
-                                    connection.setUseCaches(false);
-                                    is = connection.getInputStream();
-                                }
-                            }
-                        } else {
-                            is = classLoader.getResourceAsStream(resourceName);
-                        }
-                        return is;
-                    });
-                } catch (PrivilegedActionException ex) {
-                    throw (IOException) ex.getException();
-                }
-                if (inputStream != null) {
-                    try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
-                        return loadBundle(bundleReader);
-                    }
-                } else {
-                    return null;
-                }
+                return newJavaPropertiesBundle(baseName, locale, loader, reload);
             } else {
                 return super.newBundle(baseName, locale, format, loader, reload);
+            }
+        }
+
+        private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader, boolean reload)
+                throws IOException {
+            String bundleName = toBundleName(baseName, locale);
+            String resourceName = toResourceName(bundleName, "properties");
+            ClassLoader classLoader = loader;
+            InputStream inputStream;
+            try {
+                inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
+                    InputStream is = null;
+                    is = classLoader.getResourceAsStream(resourceName);
+                    return is;
+                });
+            } catch (PrivilegedActionException ex) {
+                throw (IOException) ex.getException();
+            }
+            return loadBundleFromInputStream(inputStream);
+        }
+
+        private ResourceBundle loadBundleFromInputStream(InputStream inputStream) throws IOException, UnsupportedEncodingException {
+            if (inputStream != null) {
+                try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
+                    return loadBundle(bundleReader);
+                }
+            } else {
+                return null;
             }
         }
     }

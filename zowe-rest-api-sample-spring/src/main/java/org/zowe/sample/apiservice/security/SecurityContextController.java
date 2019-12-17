@@ -9,6 +9,8 @@
  */
 package org.zowe.sample.apiservice.security;
 
+import static org.zowe.commons.zos.security.platform.SafConstants.BPX_SERVER;
+import static org.zowe.commons.zos.security.platform.SafConstants.CLASS_FACILITY;
 import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 import java.util.LinkedHashMap;
@@ -52,10 +54,10 @@ public class SecurityContextController {
     public Map<String, String> authenticated(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
         String beforeSwitchUserName = platformSecurityService.getCurrentThreadUserId();
-        boolean accessToBpxServerServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER",
+        boolean accessToBpxServerServer = platformSecurityService.checkPermission(CLASS_FACILITY, BPX_SERVER,
                 AccessLevel.READ);
-        boolean accessToBpxServerUserid = platformSecurityService.checkPermission(authentication.getName(), "FACILITY",
-                "BPX.SERVER", AccessLevel.READ);
+        boolean accessToBpxServerUserid = platformSecurityService.checkPermission(authentication.getName(),
+                CLASS_FACILITY, BPX_SERVER, AccessLevel.READ);
         result.put("authenticatedUserName", authentication.getName());
         result.put("beforeSwitchUserName", beforeSwitchUserName);
         result.put("accessToBpxServerServer", Boolean.toString(accessToBpxServerServer));
@@ -66,12 +68,12 @@ public class SecurityContextController {
             public void run() {
                 String afterSwitchUserName = platformSecurityService.getCurrentThreadUserId();
                 String afterSwitchUserNameSpring = SecurityContextHolder.getContext().getAuthentication().getName();
-                boolean accessToBpxServer = platformSecurityService.checkPermission("FACILITY", "BPX.SERVER",
+                boolean accessToBpxServer = platformSecurityService.checkPermission(CLASS_FACILITY, BPX_SERVER,
                         AccessLevel.READ);
-                boolean accessToUndefinedResource = platformSecurityService.checkPermission("FACILITY", "UNDEFINED",
+                boolean accessToUndefinedResource = platformSecurityService.checkPermission(CLASS_FACILITY, "UNDEFINED",
                         AccessLevel.READ);
                 boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService
-                        .checkPermission("FACILITY", "UNDEFINED", AccessLevel.READ, false);
+                        .checkPermission(CLASS_FACILITY, "UNDEFINED", AccessLevel.READ, false);
                 result.put("afterSwitchUserName", afterSwitchUserName);
                 result.put("afterSwitchUserNameSpring", afterSwitchUserNameSpring);
                 result.put("accessToBpxServer", Boolean.toString(accessToBpxServer));
@@ -140,5 +142,6 @@ public class SecurityContextController {
     @GetMapping("/safDeniedResource")
     @PreAuthorize("hasSafServiceResourceAccess('RESOURCE', 'CONTROL')")
     public void safDeniedResource(@ApiIgnore Authentication authentication) {
+        // This is never called since the nobody has access to the resource
     }
 }

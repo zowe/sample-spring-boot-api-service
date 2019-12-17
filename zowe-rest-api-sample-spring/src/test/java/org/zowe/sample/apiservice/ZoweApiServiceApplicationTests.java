@@ -23,14 +23,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ZoweApiServiceApplicationTests {
 
     @Test
-    public void contextLoads() {
-    }
-
-    @Test
     public void csrfControllerReturnsCsrfToken() {
         CsrfController controller = new CsrfController();
         CsrfToken token = new DefaultCsrfToken("headerName", "parameterName", "token");
         assertEquals(token, controller.csrf(token));
     }
-
 }

@@ -30,14 +30,14 @@ public class LibExtractor {
         System.out.println(String.format("Extracting %s to %s", filename, targetPath));
         try {
             URL url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + filename);
-            InputStream inputStream = url.openStream();
-            OutputStream outputStream = new FileOutputStream(targetPath.toString());
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int lengthRead;
-            while ((lengthRead = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, lengthRead);
+            try (InputStream inputStream = url.openStream();
+                    OutputStream outputStream = new FileOutputStream(targetPath.toString())) {
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int lengthRead;
+                while ((lengthRead = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, lengthRead);
+                }
             }
-            outputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error extracting library %s to %s", libraryName, targetDir), e);
         }
