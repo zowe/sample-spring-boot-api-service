@@ -71,7 +71,7 @@ After you configure your application, you can add a new controller that implemen
     import io.swagger.annotations.ApiOperation;
     import io.swagger.annotations.ApiParam;
 
-    @Api(tags = "Hello", description = "REST API for saying hello")
+    @Api(tags = "Hello")
     @RestController
     @RequestMapping("/api/v1/hello")
     public class HelloController {

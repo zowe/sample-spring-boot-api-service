@@ -9,7 +9,6 @@
  */
 package org.zowe.commons.spring;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,11 @@ public class SpringContext implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
+    public void setApplicationContext(ApplicationContext context) {
+        setSpringContext(context);
+    }
+
+    private static synchronized  void setSpringContext(ApplicationContext context) {
         SpringContext.context = context;
     }
 }

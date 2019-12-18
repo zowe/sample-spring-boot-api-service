@@ -29,7 +29,7 @@ import io.swagger.annotations.Authorization;
  * Handles the /wto endpoint and calls either the z/OS or off-z/OS
  * implementation of Wto depending on the spring profile settings.
  */
-@Api(tags = "WTO", description = "REST API for z/OS greetings via WTO")
+@Api(tags = "WTO")
 @RestController
 @RequestMapping("/api/v1/wto")
 public class WtoController {
@@ -41,15 +41,14 @@ public class WtoController {
         this.wto = wto;
     }
 
-    private static final String template = "Hello, %s!";
+    private static final String TEMPLATE = "Hello, %s!";
     private final AtomicInteger counter = new AtomicInteger();
 
     @ApiOperation(value = "Executes WTO on z/OS and returns a greeting for the name passed", nickname = "greetingToSomeone", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping
     public WtoResponse greeting(
-            @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name)
-            throws Exception {
-        return wto.call(counter.incrementAndGet(), String.format(template, name));
+            @ApiParam(value = "Person or object to be greeted", required = false) @RequestParam(value = "name", defaultValue = "world") String name) {
+        return wto.call(counter.incrementAndGet(), String.format(TEMPLATE, name));
     }
 }

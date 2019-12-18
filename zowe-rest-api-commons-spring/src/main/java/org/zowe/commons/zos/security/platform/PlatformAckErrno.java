@@ -25,7 +25,7 @@ public enum PlatformAckErrno {
     EPERM("EPERM", 139, "The user does not have the access specified to the resource or the calling address space is not authorized to use this service or a load from a not program-controlled library was done in the address space", PlatformErrorType.ERRNO2_REQUIRED),
     ESRCH("ESRCH", 143, "The user ID or resource is not defined to the security product", PlatformErrorType.ERRNO2_REQUIRED);
 
-    private static Map<Integer, PlatformAckErrno> BY_ERRNO = new HashMap<>();
+    private static final Map<Integer, PlatformAckErrno> BY_ERRNO = new HashMap<>();
 
     static {
         for (PlatformAckErrno e : values()) {
@@ -33,19 +33,19 @@ public enum PlatformAckErrno {
         }
     }
 
-    public final String name;
+    public final String shortErrorName;
     public final int errno;
     public final String explanation;
     public final PlatformErrorType errorType;
 
-    private PlatformAckErrno(String name, int errno, String explanation, PlatformErrorType errorType) {
-        this.name = name;
+    private PlatformAckErrno(String shortErrorName, int errno, String explanation, PlatformErrorType errorType) {
+        this.shortErrorName = shortErrorName;
         this.errno = errno;
         this.explanation = explanation;
         this.errorType = errorType;
     }
 
     public static PlatformAckErrno valueOfErrno(int errno) {
-        return BY_ERRNO.get(errno);
+        return BY_ERRNO.getOrDefault(errno, null);
     }
 }

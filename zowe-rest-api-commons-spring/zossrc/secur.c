@@ -11,6 +11,8 @@
 https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxbd00/ptsec.htm
 */
 
+int lastErrno2 = 0;
+
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecurityEnvironmentByDaemon(JNIEnv *env, jobject obj, jstring user, jstring applId)
 {
     int rc = EINVAL;
@@ -21,9 +23,11 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
         int userLength = strlen(platformUser);
         if (pthread_security_applid_np(__DAEMON_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, NULL, 0, platformApplId) != 0) {
             rc = errno;
+            lastErrno2 = __errno2();
         }
         else {
             rc = 0;
+            lastErrno2 = 0;
         }
     }
     free_if_not_null(platformUser);
@@ -42,9 +46,11 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
         int userLength = strlen(platformUser);
         if (pthread_security_applid_np(__CREATE_SECURITY_ENV, __USERID_IDENTITY, userLength, platformUser, platformPassword, 0, platformApplId) != 0) {
             rc = errno;
+            lastErrno2 = __errno2();
         }
         else {
             rc = 0;
+            lastErrno2 = 0;
         }
     }
     free_if_not_null(platformUser);
@@ -55,4 +61,9 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecuri
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_removeSecurityEnvironment(JNIEnv *env, jobject obj)
 {
     return pthread_security_applid_np(__DELETE_SECURITY_ENV, __USERID_IDENTITY, 0, NULL, NULL, 0, NULL);
+}
+
+JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_getLastErrno2(JNIEnv *env, jobject obj)
+{
+    return lastErrno2;
 }

@@ -58,21 +58,24 @@ public class MockPlatformAccessControl implements PlatformAccessControl {
                 for (Entry<String, List<String>> level : resource.getValue().entrySet()) {
                     String levelName = level.getKey().toUpperCase();
                     List<String> users = level.getValue();
-
-                    if (!levelName.equalsIgnoreCase(FAILING_LEVEL) && !levelName.equalsIgnoreCase(NONE)
-                            && (toAccessLevel(levelName) == null)) {
-                        throw new IllegalArgumentException("Invalid level: " + levelName);
-                    }
-
-                    definedResource.add(resourceKey(resourceClass, resourceName));
-
-                    if (!levelName.equalsIgnoreCase(NONE)) {
-                        for (String userid : users) {
-                            validUserid.add((userid.toUpperCase()));
-                            safAccess.put(safAccessKey(userid, resourceClass, resourceName), levelName);
-                        }
-                    }
+                    defineAccessToResourceForUsers(resourceClass, resourceName, levelName, users);
                 }
+            }
+        }
+    }
+
+    private void defineAccessToResourceForUsers(String resourceClass, String resourceName, String levelName, List<String> users) {
+        if (!levelName.equalsIgnoreCase(FAILING_LEVEL) && !levelName.equalsIgnoreCase(NONE)
+                && (toAccessLevel(levelName) == null)) {
+            throw new IllegalArgumentException("Invalid level: " + levelName);
+        }
+
+        definedResource.add(resourceKey(resourceClass, resourceName));
+
+        if (!levelName.equalsIgnoreCase(NONE)) {
+            for (String userid : users) {
+                validUserid.add((userid.toUpperCase()));
+                safAccess.put(safAccessKey(userid, resourceClass, resourceName), levelName);
             }
         }
     }

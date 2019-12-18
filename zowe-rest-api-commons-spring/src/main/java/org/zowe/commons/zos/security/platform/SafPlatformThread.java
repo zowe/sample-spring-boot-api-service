@@ -21,7 +21,7 @@ public class SafPlatformThread implements PlatformThread {
 
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SafPlatformError(e.getMessage(), e);
         }
     }
 }

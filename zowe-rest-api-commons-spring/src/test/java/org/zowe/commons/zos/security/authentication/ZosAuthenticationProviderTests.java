@@ -11,6 +11,7 @@
 package org.zowe.commons.zos.security.authentication;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.EXPIRED_PASSWORD;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.FAILING_PASSWORD;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.INVALID_PASSWORD;
@@ -57,12 +58,12 @@ public class ZosAuthenticationProviderTests {
     @Test
     public void validAuthenticationOnValidCredentials() {
         Authentication authentication = provider.authenticate(VALID_TOKEN);
-        assertEquals(authentication.getPrincipal(), VALID_USERID);
+        assertEquals(VALID_USERID, authentication.getPrincipal());
     }
 
     @Test
     public void supportsUsernamePasswordAuthenticationToken() {
-        provider.supports(VALID_TOKEN.getClass());
+        assertTrue(provider.supports(VALID_TOKEN.getClass()));
     }
 
 }

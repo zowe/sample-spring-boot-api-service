@@ -7,15 +7,13 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.error;
+package org.zowe.commons.zos.security.platform;
 
-public final class CommonsErrorService {
-    private static ErrorService errorService = ErrorServiceImpl.getCommonsDefault();
-
-    private CommonsErrorService() {
+public class SafConstants {
+    private SafConstants() {
+        // no instances
     }
 
-    public static ErrorService get() {
-        return errorService;
-    }
+    public static final String CLASS_FACILITY = "FACILITY";
+    public static final String BPX_SERVER = "BPX.SERVER";
 }

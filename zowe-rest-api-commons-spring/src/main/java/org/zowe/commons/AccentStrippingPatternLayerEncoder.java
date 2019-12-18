@@ -16,7 +16,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Layout;
 import lombok.Setter;
 
-public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {
+public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {  // NOSONAR
+    // Sonar exclusion: This class is extending Logback class that is not under our control
+
     private static final String STRIP_ACCENTS_PROPERTY_NAME = "org.zowe.commons.logging.stripAccents";
 
     @Setter
@@ -26,16 +28,16 @@ public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {
     public byte[] encode(ILoggingEvent event) {
         String txt = layout.doLayout(event);
         if (stripAccents) {
-            return stripAccents(txt).getBytes();
-        }
-        else {
+            String stripped = stripAccents(txt);
+            return (stripped != null) ? stripped.getBytes() : null;
+        } else {
             return super.encode(event);
         }
     }
 
     private String stripAccents(String input) {
         return input == null ? null
-                : Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+                : Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");  // NOSONAR: Used for internal strings
     }
 
     void overrideLayout(Layout layout) {

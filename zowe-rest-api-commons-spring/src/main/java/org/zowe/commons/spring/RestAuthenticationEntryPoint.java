@@ -62,12 +62,12 @@ public final class RestAuthenticationEntryPoint implements AuthenticationEntryPo
         PlatformReturned returned = (PlatformReturned) request
                 .getAttribute(ZosAuthenticationProvider.ZOWE_AUTHENTICATE_RETURNED);
         if (returned != null) {
-            PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.errno);
+            PlatformPwdErrno errno = PlatformPwdErrno.valueOfErrno(returned.getErrno());
             if ((errno != null) && (errno.errorType == PlatformErrorType.INTERNAL)) {
                 httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
                 message = errorService.createApiMessage(LocaleContextHolder.getLocale(), INTERNAL_AUTHENTICATION_ERROR_MESSAGE_KEY, errno.explanation);
                 log.error(message.toLogMessage()
-                        + String.format(" Security error details: %s %s %s", errno.name, errno.explanation, returned));
+                        + String.format(" Security error details: %s %s %s", errno.shortErrorName, errno.explanation, returned));
             } else if ((errno != null) && (errno.errorType == PlatformErrorType.USER_EXPLAINED)) {
                 message = errorService.createApiMessage(LocaleContextHolder.getLocale(), UNAUTHORIZED_MESSAGE_KEY, errno.explanation);
                 ApiMessage expiredMessage = errorService.createApiMessage(LocaleContextHolder.getLocale(), EXPIRED_MESSAGE_KEY);

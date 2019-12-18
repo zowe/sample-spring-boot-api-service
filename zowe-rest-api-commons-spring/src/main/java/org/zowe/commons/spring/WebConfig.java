@@ -35,6 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeInterceptor());
     }
 
+    @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.favorPathExtension(true).favorParameter(false).ignoreAcceptHeader(true)
                 .useRegisteredExtensionsOnly(true).defaultContentType(MediaType.APPLICATION_JSON);

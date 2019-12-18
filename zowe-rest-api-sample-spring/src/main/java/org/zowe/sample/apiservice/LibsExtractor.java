@@ -9,8 +9,6 @@
  */
 package org.zowe.sample.apiservice;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,7 @@ import org.zowe.commons.zos.LibExtractor;
 import org.zowe.commons.zos.CommonsNativeLibraries;
 
 public class LibsExtractor {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) {  // NOSONAR
         LibExtractor ex = new LibExtractor();
         List<String> libraries = new ArrayList<>();
         libraries.addAll(new AppNativeLibraries().getNativeLibrariesNames());
@@ -28,7 +26,7 @@ public class LibsExtractor {
                 ex.extractLibrary(library, args[0]);
             }
         } else {
-            System.err.println("No arguments provided. Expected: targetDir");
+            System.err.println("No arguments provided. Expected: targetDir");  // NOSONAR
         }
     }
 }

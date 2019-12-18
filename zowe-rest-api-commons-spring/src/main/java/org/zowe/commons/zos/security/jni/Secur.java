@@ -26,4 +26,6 @@ public class Secur {
     public native int createSecurityEnvironmentByDaemon(String userid, String applId);
 
     public native int removeSecurityEnvironment();
+
+    public native int getLastErrno2();
 }

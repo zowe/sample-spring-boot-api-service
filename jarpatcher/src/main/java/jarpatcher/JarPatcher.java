@@ -25,10 +25,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -53,6 +53,14 @@ public class JarPatcher {
         }
     }
 
+    public class JarPatcherError extends RuntimeException {
+        private static final long serialVersionUID = 8522323019867383326L;
+
+        public JarPatcherError(IOException e) {
+            super(e);
+        }
+    }
+
     private static final String DELETED = "_deleted_-";
 
     public int run(String[] args) {
@@ -73,45 +81,50 @@ public class JarPatcher {
                 applyPatch(targetPath, patchPath, ignoredPrefix);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new JarPatcherError(e);
         }
         return 0;
     }
 
-    public CompareResult compare(String path1, String path2) throws ZipException, IOException {
-        logger.info(String.format("Comparing %s to %s", path1, path2));
-        ZipFile zipFile1 = new ZipFile(new File(path1));
-        ZipFile zipFile2 = new ZipFile(new File(path2));
-
-        Set<String> files1 = setFromEntryNames(zipFile1);
-        Set<String> files2 = setFromEntryNames(zipFile2);
-        logger.info(String.format("Files in %s: %s", path1, files1));
-        logger.info(String.format("Files in %s: %s", path2, files2));
-
-        CompareResult result = new CompareResult();
-        Set<String> inBoth = files1.stream().distinct().filter(files2::contains).collect(Collectors.toSet());
-        for (String filename : inBoth) {
-            if (!compareEntries(zipFile1.getEntry(filename), zipFile2.getEntry(filename))) {
-                printEntry(zipFile1, zipFile1.getEntry(filename));
-                printEntry(zipFile2, zipFile2.getEntry(filename));
-                result.changed.add(filename);
-            }
+    public CompareResult compare(String path1, String path2) throws IOException {
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("Comparing %s to %s", path1, path2));
         }
-        result.deleted.addAll(files1.stream().distinct().filter(f -> !files2.contains(f)).collect(Collectors.toSet()));
-        result.created.addAll(files2.stream().distinct().filter(f -> !files1.contains(f)).collect(Collectors.toSet()));
+        try (ZipFile zipFile1 = new ZipFile(new File(path1)); ZipFile zipFile2 = new ZipFile(new File(path2))) {
+            Set<String> files1 = setFromEntryNames(zipFile1);
+            Set<String> files2 = setFromEntryNames(zipFile2);
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("Files in %s: %s", path1, files1));
+                logger.info(String.format("Files in %s: %s", path2, files2));
+            }
 
-        zipFile1.close();
-        zipFile2.close();
-        return result;
+            CompareResult result = new CompareResult();
+            Set<String> inBoth = files1.stream().distinct().filter(files2::contains).collect(Collectors.toSet());
+            for (String filename : inBoth) {
+                if (!compareEntries(zipFile1.getEntry(filename), zipFile2.getEntry(filename))) {  // NOSONAR
+                    printEntry(zipFile1, zipFile1.getEntry(filename));  // NOSONAR
+                    printEntry(zipFile2, zipFile2.getEntry(filename));  // NOSONAR
+                    result.changed.add(filename);
+                }
+            }
+            result.deleted
+                    .addAll(files1.stream().distinct().filter(f -> !files2.contains(f)).collect(Collectors.toSet()));
+            result.created
+                    .addAll(files2.stream().distinct().filter(f -> !files1.contains(f)).collect(Collectors.toSet()));
+
+            return result;
+        }
     }
 
-    private void printEntry(ZipFile f, ZipEntry entry) {
-        logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s method=%s", f.getName(),
+    private void printEntry(ZipFile f, ZipEntry entry) {  // NOSONAR
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s method=%s", f.getName(),
                 entry.getName(), entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment(),
                 entry.getMethod()));
+        }
     }
 
-    private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {
+    private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {  // NOSONAR
         return (entry1.isDirectory() == entry2.isDirectory()) && (entry1.getSize() == entry2.getSize())
                 && (entry1.getName().equals(entry2.getName())) && (entry1.getCrc() == entry2.getCrc()
                         && (entry1.isDirectory() || (entry1.getMethod() == entry2.getMethod())));
@@ -121,7 +134,7 @@ public class JarPatcher {
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         Set<String> set = new HashSet<>();
         while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
+            ZipEntry entry = entries.nextElement();  // NOSONAR
             set.add(entry.getName());
         }
         return set;
@@ -129,22 +142,22 @@ public class JarPatcher {
 
     private void addChangedOrCreatedFiles(String newPath, CompareResult result, ZipOutputStream zipOut)
             throws IOException {
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(newPath));
-        ZipEntry inEntry = zipIn.getNextEntry();
-        while (inEntry != null) {
-            String filename = inEntry.getName();
-            if (result.isFileChangedOrCreated(filename)) {
-                ZipEntry patchEntry = new ZipEntry(filename);
-                copyZipEntryAttributes(inEntry, patchEntry);
-                zipOut.putNextEntry(patchEntry);
-                if (!inEntry.isDirectory()) {
-                    copyStream(zipIn, zipOut);
+        try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(newPath))) {
+            ZipEntry inEntry = zipIn.getNextEntry();  // NOSONAR
+            while (inEntry != null) {
+                String filename = inEntry.getName();
+                if (result.isFileChangedOrCreated(filename)) {
+                    ZipEntry patchEntry = new ZipEntry(filename);
+                    copyZipEntryAttributes(inEntry, patchEntry);
+                    zipOut.putNextEntry(patchEntry);
+                    if (!inEntry.isDirectory()) {
+                        copyStream(zipIn, zipOut);
+                    }
+                    zipOut.closeEntry();
                 }
-                zipOut.closeEntry();
+                inEntry = zipIn.getNextEntry();  // NOSONAR
             }
-            inEntry = zipIn.getNextEntry();
         }
-        zipIn.close();
     }
 
     private void copyStream(InputStream zipIn, OutputStream zipOut) throws IOException {
@@ -164,43 +177,43 @@ public class JarPatcher {
     }
 
     private void addFiles(String fromPath, ZipOutputStream zipOut, String ignoredPath) throws IOException {
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(fromPath));
-        ZipEntry inEntry = zipIn.getNextEntry();
-        while (inEntry != null) {
-            String filename = inEntry.getName();
-            if (!filename.startsWith(ignoredPath)) {
-                ZipEntry patchEntry = new ZipEntry(filename);
-                zipOut.putNextEntry(patchEntry);
-                if (!inEntry.isDirectory()) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = zipIn.read(buffer)) > 0) {
-                        zipOut.write(buffer, 0, len);
+        try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(fromPath))) {
+            ZipEntry inEntry = zipIn.getNextEntry();  // NOSONAR
+            while (inEntry != null) {
+                String filename = inEntry.getName();
+                if (!filename.startsWith(ignoredPath)) {
+                    ZipEntry patchEntry = new ZipEntry(filename);
+                    zipOut.putNextEntry(patchEntry);
+                    if (!inEntry.isDirectory()) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = zipIn.read(buffer)) > 0) {
+                            zipOut.write(buffer, 0, len);
+                        }
                     }
+                    zipOut.closeEntry();
                 }
-                zipOut.closeEntry();
+                inEntry = zipIn.getNextEntry();  // NOSONAR
             }
-            inEntry = zipIn.getNextEntry();
         }
-        zipIn.close();
     }
 
     public boolean createPatch(String oldPath, String newPath, String patchPath, String patcherPath)
-            throws ZipException, IOException {
+            throws IOException {
         CompareResult result = compare(oldPath, newPath);
-        logger.info(String.format("Comparing %s and %s: %s", oldPath, newPath, result));
-
-        FileOutputStream fos = new FileOutputStream(patchPath);
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
-
-        addChangedOrCreatedFiles(newPath, result, zipOut);
-        addDeletedEntries(result.deleted, zipOut);
-        if (patcherPath != null) {
-            addFiles(patcherPath, zipOut, "META-INF");
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(String.format("Comparing %s and %s: %s", oldPath, newPath, result));
         }
 
-        zipOut.close();
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(patchPath);
+                ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+
+            addChangedOrCreatedFiles(newPath, result, zipOut);
+            addDeletedEntries(result.deleted, zipOut);
+            if (patcherPath != null) {
+                addFiles(patcherPath, zipOut, "META-INF");
+            }
+        }
 
         return result.archivesAreSame();
     }
@@ -221,53 +234,63 @@ public class JarPatcher {
     public void applyPatch(String targetPath, String patchPath, String ignoredPath) throws IOException {
         String originalTargetPath = targetPath + "-original";
         Files.copy(Paths.get(targetPath), Paths.get(originalTargetPath), StandardCopyOption.REPLACE_EXISTING);
-        FileOutputStream fos = new FileOutputStream(targetPath.toString());
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
-        Set<String> deletedOrPatchedNames = new HashSet<>();
-        int keeping = 0;
+        try (FileOutputStream fos = new FileOutputStream(targetPath);
+                ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            Set<String> deletedOrPatchedNames = new HashSet<>();
+            int keeping = 0;
 
-        ZipFile zipPatch = new ZipFile(patchPath);
-        Enumeration<? extends ZipEntry> entries = zipPatch.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            String filename = entry.getName();
+            ZipFile zipPatch = new ZipFile(patchPath);
+            Enumeration<? extends ZipEntry> entries = zipPatch.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();  // NOSONAR
+                processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
+            }
+            zipPatch.close();
 
-            if (filename.startsWith(DELETED)) {
-                String realFilename = filename.substring(DELETED.length());
-                logger.info("Deleting: " + realFilename);
-                deletedOrPatchedNames.add(realFilename);
-            } else if ((ignoredPath != null) && (filename.startsWith(ignoredPath))) {
-                logger.info("Ignoring: " + filename);
-            } else {
-                logger.info("Patching: " + filename);
-                deletedOrPatchedNames.add(filename);
-                writeEntry(zipOut, deletedOrPatchedNames, zipPatch, entry, filename);
+            ZipFile zipIn = new ZipFile(originalTargetPath);
+            entries = zipIn.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();  // NOSONAR
+                String filename = entry.getName();
+
+                if (!deletedOrPatchedNames.contains(filename)) {
+                    keeping++;
+                    deletedOrPatchedNames.add(filename);
+                    writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
+                }
+            }
+            zipIn.close();
+
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("Keeping %d ZIP entries", keeping));
             }
         }
-        zipPatch.close();
-
-        ZipFile zipIn = new ZipFile(originalTargetPath);
-        entries = zipIn.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            String filename = entry.getName();
-
-            if (!deletedOrPatchedNames.contains(filename)) {
-                keeping++;
-                deletedOrPatchedNames.add(filename);
-                writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
-            }
-        }
-        zipIn.close();
-
-        logger.info(String.format("Keeping %d ZIP entries", keeping));
-
-        zipOut.close();
-        fos.close();
         Files.delete(Paths.get(originalTargetPath));
     }
 
-    private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,
+    private void processPatchEntry(String ignoredPath, ZipOutputStream zipOut, Set<String> deletedOrPatchedNames,
+            ZipFile zipPatch, ZipEntry entry) throws IOException {  // NOSONAR
+        String filename = entry.getName();
+        if (filename.startsWith(DELETED)) {
+            String realFilename = filename.substring(DELETED.length());
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("Deleting: %s", realFilename));
+            }
+            deletedOrPatchedNames.add(realFilename);
+        } else if ((ignoredPath != null) && (filename.startsWith(ignoredPath))) {
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("Ignoring: %s", filename));
+            }
+        } else {
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("Patching: %s", filename));
+            }
+            deletedOrPatchedNames.add(filename);
+            writeEntry(zipOut, deletedOrPatchedNames, zipPatch, entry, filename);
+        }
+    }
+
+    private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,  // NOSONAR
             String filename) throws IOException {
         createDirectories(filename, zipOut, createdDirectories);
         ZipEntry zipEntry = new ZipEntry(filename);
@@ -278,7 +301,7 @@ public class JarPatcher {
         zipOut.closeEntry();
     }
 
-    private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {
+    private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {  // NOSONAR
         outEntry.setMethod(inEntry.getMethod());
         outEntry.setComment(inEntry.getComment());
         if (inEntry.getMethod() == ZipEntry.STORED) {
@@ -287,7 +310,7 @@ public class JarPatcher {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {  // NOSONAR: Arguments are validated by JarPatcher
         System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
         System.exit(new JarPatcher().run(args));
     }

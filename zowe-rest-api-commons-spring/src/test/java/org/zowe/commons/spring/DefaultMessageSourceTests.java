@@ -17,7 +17,7 @@ import org.zowe.commons.error.CommonsErrorService;
 
 public class DefaultMessageSourceTests {
     @Test
-    public void enableEurekaLoggingTimerTaskDoesNotFails() {
+    public void defaultMessageSourceContainsPortAndServiceName() {
         DefaultMessageSource defaultMessageSource = new DefaultMessageSource(CommonsErrorService.get(), new MockEnvironment().withProperty("apiml.service.serviceId", "testservice").withProperty("server.port", "1234"));
         defaultMessageSource.onApplicationEvent(null);
         assertTrue(CommonsErrorService.get().getDefaultMessageSource().endsWith(":1234:testservice"));

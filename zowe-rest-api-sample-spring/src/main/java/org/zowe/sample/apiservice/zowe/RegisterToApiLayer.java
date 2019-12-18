@@ -28,8 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableConfigurationProperties(value = { ApiMediationServiceConfigBean.class, SslConfigBean.class })
 public class RegisterToApiLayer {
-    private ApiMediationClient apiMediationClient;
-
     @Autowired
     private ApiMediationServiceConfigBean config;
 
@@ -50,7 +48,7 @@ public class RegisterToApiLayer {
     }
 
     public void register(ApiMediationServiceConfig config, Ssl ssl) {
-        apiMediationClient = new ApiMediationClientImpl();
+        ApiMediationClient apiMediationClient = new ApiMediationClientImpl();
         config.setSsl(ssl);
         config.setEureka(new Eureka(null, null, ipAddress));
         log.info("Registering to API Mediation Layer: baseUrl={}, ipAddress={}, discoveryServiceUrls={}",

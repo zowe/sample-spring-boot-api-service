@@ -12,6 +12,7 @@ package org.zowe.commons.zos.security.platform;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
 import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_USERID;
@@ -38,9 +39,23 @@ public class SafPlatformUserTests {
     public void returnsErrorDetailsForEmptyPassword() {
         PlatformReturned returned = safPlatformUser.authenticate(VALID_USERID, "");
         assertFalse(returned.isSuccess());
-        assertEquals(PlatformPwdErrno.EINVAL.errno, returned.errno);
-        assertEquals(0, returned.rc);
-        assertEquals(0x090C02A7, returned.errno2);
-        assertEquals(PlatformErrno2.JRPasswordLenError, PlatformErrno2.valueOfErrno(returned.errno2));
+        assertEquals(PlatformPwdErrno.EINVAL.errno, returned.getErrno());
+        assertEquals(0, returned.getRc());
+        assertEquals(0x090C02A7, returned.getErrno2());
+        assertEquals(PlatformErrno2.JRPasswordLenError, PlatformErrno2.valueOfErrno(returned.getErrno2()));
+    }
+
+    @Test
+    public void safPlatformErrorCanBeInstantiated() {
+        assertNotNull(new SafPlatformError("test"));
+        assertNotNull(new SafPlatformError("test", new Exception()));
+        assertNotNull(new SafPlatformError(new Exception()));
+    }
+
+
+    @Test(expected = SafPlatformError.class)
+    public void returnSafPlatformErrorForInvalidClassNames() {
+        SafPlatformUser badPlatformUser = new SafPlatformUser(new BadMockPlatformClassFactory());
+        assertNull(badPlatformUser.authenticate(VALID_USERID, VALID_PASSWORD));
     }
 }
