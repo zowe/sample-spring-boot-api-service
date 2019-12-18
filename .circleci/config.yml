@@ -38,11 +38,11 @@ jobs:
           command: |
             ./gradlew build
             scripts/so-test.sh
+      - codecov/upload
       - run: &sonar
           name: Sonar
           command: |
              ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
-      - codecov/upload
       - run: &sample
           name: Building Standalone Sample
           command: |
@@ -89,8 +89,8 @@ jobs:
       - run: *build_devtool
       - run: *zosbuild
       - run: *build
-      - run: *sonar
       - codecov/upload
+      - run: *sonar
       - run: *sample
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos

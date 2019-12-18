@@ -15,7 +15,6 @@ import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "Security", description = "REST API to test security functions in the commons library")
+@Api(tags = "Security")
 @RestController
 @RequestMapping("/api/v1/securityTest")
 public class SecurityContextController {
@@ -63,34 +62,27 @@ public class SecurityContextController {
         result.put("accessToBpxServerServer", Boolean.toString(accessToBpxServerServer));
         result.put("accessToBpxServerUserid", Boolean.toString(accessToBpxServerUserid));
 
-        platformThreadLevelSecurity.wrapRunnableInEnvironmentForAuthenticatedUser(new Runnable() {
-            @Override
-            public void run() {
-                String afterSwitchUserName = platformSecurityService.getCurrentThreadUserId();
-                String afterSwitchUserNameSpring = SecurityContextHolder.getContext().getAuthentication().getName();
-                boolean accessToBpxServer = platformSecurityService.checkPermission(CLASS_FACILITY, BPX_SERVER,
-                        AccessLevel.READ);
-                boolean accessToUndefinedResource = platformSecurityService.checkPermission(CLASS_FACILITY, "UNDEFINED",
-                        AccessLevel.READ);
-                boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService
-                        .checkPermission(CLASS_FACILITY, "UNDEFINED", AccessLevel.READ, false);
-                result.put("afterSwitchUserName", afterSwitchUserName);
-                result.put("afterSwitchUserNameSpring", afterSwitchUserNameSpring);
-                result.put("accessToBpxServer", Boolean.toString(accessToBpxServer));
-                result.put("accessToUndefinedResource", Boolean.toString(accessToUndefinedResource));
-                result.put("accessToUndefinedResourceAllowMissingResource",
-                        Boolean.toString(accessToUndefinedResourceAllowMissingResource));
-            }
+        platformThreadLevelSecurity.wrapRunnableInEnvironmentForAuthenticatedUser(() -> {
+            String afterSwitchUserName = platformSecurityService.getCurrentThreadUserId();
+            String afterSwitchUserNameSpring = SecurityContextHolder.getContext().getAuthentication().getName();
+            boolean accessToBpxServer = platformSecurityService.checkPermission(CLASS_FACILITY, BPX_SERVER,
+                    AccessLevel.READ);
+            boolean accessToUndefinedResource = platformSecurityService.checkPermission(CLASS_FACILITY, "UNDEFINED",
+                    AccessLevel.READ);
+            boolean accessToUndefinedResourceAllowMissingResource = platformSecurityService
+                    .checkPermission(CLASS_FACILITY, "UNDEFINED", AccessLevel.READ, false);
+            result.put("afterSwitchUserName", afterSwitchUserName);
+            result.put("afterSwitchUserNameSpring", afterSwitchUserNameSpring);
+            result.put("accessToBpxServer", Boolean.toString(accessToBpxServer));
+            result.put("accessToUndefinedResource", Boolean.toString(accessToUndefinedResource));
+            result.put("accessToUndefinedResourceAllowMissingResource",
+                    Boolean.toString(accessToUndefinedResourceAllowMissingResource));
         }).run();
 
         try {
             String afterSwitchUserNameCall = (String) platformThreadLevelSecurity
-                    .wrapCallableInEnvironmentForAuthenticatedUser(new Callable<String>() {
-                        @Override
-                        public String call() {
-                            return platformSecurityService.getCurrentThreadUserId();
-                        }
-                    }).call();
+                    .wrapCallableInEnvironmentForAuthenticatedUser(platformSecurityService::getCurrentThreadUserId)
+                    .call();
             result.put("afterSwitchUserNameCall", afterSwitchUserNameCall);
         } catch (Exception e) {
             result.put("callException", e.toString());

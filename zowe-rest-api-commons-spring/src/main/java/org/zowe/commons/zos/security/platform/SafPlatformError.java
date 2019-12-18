@@ -9,11 +9,18 @@
  */
 package org.zowe.commons.zos.security.platform;
 
-public class SafConstants {
-    private SafConstants() {
-        // no instances
-    }
+public class SafPlatformError extends RuntimeException {
+    private static final long serialVersionUID = 1920433542069453114L;
 
-    public static final String CLASS_FACILITY = "FACILITY";
-    public static final String BPX_SERVER = "BPX.SERVER";
+    public SafPlatformError(Throwable e) {
+        super(e);
+	}
+
+	public SafPlatformError(String message, Exception e) {
+        super(message, e);
+	}
+
+	public SafPlatformError(String message) {
+        super(message);
+	}
 }

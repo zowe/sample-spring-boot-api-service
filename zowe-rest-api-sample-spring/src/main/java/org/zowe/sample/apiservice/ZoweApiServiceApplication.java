@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan
 public class ZoweApiServiceApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {  // NOSONAR
         SpringApplication.run(ZoweApiServiceApplication.class, args);
     }
 

@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -213,7 +213,6 @@ public class ErrorServiceImpl implements ErrorService {
         try (Formatter formatter = new Formatter(sb, locale)) {
             formatter.format(localizedText(locale, key + ".text", message.getText()), messageParameters);
             text = sb.toString();
-            formatter.close();
         } catch (IllegalFormatConversionException exception) {
             LOGGER.debug("Internal error: Invalid message format was used", exception);
             message = messageStorage.getErrorMessage(INVALID_MESSAGE_TEXT_FORMAT);
@@ -255,6 +254,7 @@ public class ErrorServiceImpl implements ErrorService {
                 try {
                     return bundle.getString("messages." + key);
                 } catch (MissingResourceException ignored) {
+                    return defaultText;
                 }
             }
         }
@@ -300,13 +300,13 @@ public class ErrorServiceImpl implements ErrorService {
         public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader,
                 boolean reload) throws IllegalAccessException, InstantiationException, IOException {
             if (format.equals("java.properties")) {
-                return newJavaPropertiesBundle(baseName, locale, loader, reload);
+                return newJavaPropertiesBundle(baseName, locale, loader);
             } else {
                 return super.newBundle(baseName, locale, format, loader, reload);
             }
         }
 
-        private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader, boolean reload)
+        private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader)
                 throws IOException {
             String bundleName = toBundleName(baseName, locale);
             String resourceName = toResourceName(bundleName, "properties");
@@ -324,9 +324,9 @@ public class ErrorServiceImpl implements ErrorService {
             return loadBundleFromInputStream(inputStream);
         }
 
-        private ResourceBundle loadBundleFromInputStream(InputStream inputStream) throws IOException, UnsupportedEncodingException {
+        private ResourceBundle loadBundleFromInputStream(InputStream inputStream) throws IOException {
             if (inputStream != null) {
-                try (InputStreamReader bundleReader = new InputStreamReader(inputStream, "UTF-8")) {
+                try (InputStreamReader bundleReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
                     return loadBundle(bundleReader);
                 }
             } else {

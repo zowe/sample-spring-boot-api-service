@@ -27,6 +27,6 @@ public interface PlatformClassFactory {
 
     Object getPlatformAccessControl() throws ClassNotFoundException;
 
-    PlatformReturned convertPlatformReturned(Object safReturned) throws ClassNotFoundException,
-            IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException;
+    PlatformReturned convertPlatformReturned(Object safReturned)
+            throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException;
 }

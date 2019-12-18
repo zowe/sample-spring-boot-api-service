@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import jarpatcher.JarPatcher.CompareResult;
+import jarpatcher.JarPatcher.JarPatcherError;
 
 public class JarPatcherTests {
     private static final String ANOTHER_DATA = "other\n";
@@ -121,6 +122,11 @@ public class JarPatcherTests {
     public void filesCanBeChangedInArchive() throws ZipException, IOException {
         testPatchFromArchiveToAnotherArchive(new ArchiveDefinition().addFiles(new TestFile("dir/One.class", SOME_DATA)),
                 new ArchiveDefinition().addFiles(new TestFile("dir/One.class", ANOTHER_DATA)));
+    }
+
+    @Test(expected = JarPatcherError.class)
+    public void invalidPathsFail() {
+        new JarPatcher().run(new String[] { "diff", "a", "b", "c" });
     }
 
     private String createTestArchiveFromDefinition(String basename, ArchiveDefinition def) throws IOException {

@@ -18,7 +18,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 
 public class EnableEurekaLoggingTimerTask extends TimerTask {
-    static String[] EUREKA_LOGGER_NAMES = new String[] { "com.netflix.discovery.DiscoveryClient",
+    static final String[] EUREKA_LOGGER_NAMES = new String[] { "com.netflix.discovery.DiscoveryClient",
             "com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient" };
 
     @Override
@@ -26,7 +26,7 @@ public class EnableEurekaLoggingTimerTask extends TimerTask {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         for (String name : EUREKA_LOGGER_NAMES) {
             Logger logger = loggerContext.getLogger(name);
-            logger.setLevel(Level.ERROR);
+            logger.setLevel(Level.ERROR);  // NOSONAR: Error level is safe
         }
     }
 }

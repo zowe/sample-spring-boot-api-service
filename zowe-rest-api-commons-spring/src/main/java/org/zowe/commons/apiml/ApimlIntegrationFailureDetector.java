@@ -69,17 +69,12 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
     boolean reportFatalErrorAndDecideToExit(Level level, Throwable t) {
         String errorMessageKey = null;
         if (level.isGreaterOrEqual(Level.ERROR)) {
-            if (ExceptionUtils.indexOfType(t, SSLPeerUnverifiedException.class) >= 0) {
-                if (isErrorFromDiscoveryClient(t)) {
-                    errorMessageKey = "org.zowe.commons.apiml.apimlCertificateNotTrusted";
-
-                }
-
-            } else if (ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0) {
-                if (isErrorFromDiscoveryClient(t)) {
-                    errorMessageKey = "org.zowe.commons.apiml.serviceCertificateNotTrusted";
-
-                }
+            if ((ExceptionUtils.indexOfType(t, SSLPeerUnverifiedException.class) >= 0)
+                    && isErrorFromDiscoveryClient(t)) {
+                errorMessageKey = "org.zowe.commons.apiml.apimlCertificateNotTrusted";
+            } else if ((ExceptionUtils.indexOfType(t, SSLHandshakeException.class) >= 0)
+                    && isErrorFromDiscoveryClient(t)) {
+                errorMessageKey = "org.zowe.commons.apiml.serviceCertificateNotTrusted";
             }
         }
 

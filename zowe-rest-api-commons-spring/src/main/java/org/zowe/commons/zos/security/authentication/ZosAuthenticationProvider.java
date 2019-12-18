@@ -19,7 +19,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -44,7 +43,7 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
     private Environment environment;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         String userid = authentication.getName();
         String password = authentication.getCredentials().toString();
         PlatformReturned returned = getPlatformUser().authenticate(userid, password);
@@ -64,9 +63,9 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
                 log.debug("Platform authentication failed: {}", returned);
             } else {
                 log.debug("Platform authentication failed: {} {} {}", errno.shortErrorName, errno.explanation, returned);
-                if ((errno != null) && (errno.errorType == PlatformErrorType.INTERNAL)) {
+                if (errno.errorType == PlatformErrorType.INTERNAL) {
                     message = "Internal authentication error: " + errno.explanation;
-                } else if ((errno != null) && (errno.errorType == PlatformErrorType.USER_EXPLAINED)) {
+                } else if (errno.errorType == PlatformErrorType.USER_EXPLAINED) {
                     message = "Authentication error: " + errno.explanation;
                 } else {
                     message = "Authentication error";

@@ -50,6 +50,6 @@ public enum PlatformPwdErrno {
     }
 
     public static PlatformPwdErrno valueOfErrno(int errno) {
-        return BY_ERRNO.get(errno);
+        return BY_ERRNO.getOrDefault(errno, null);
     }
 }

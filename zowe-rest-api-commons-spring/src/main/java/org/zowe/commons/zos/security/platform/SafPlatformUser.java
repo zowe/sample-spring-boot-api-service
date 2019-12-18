@@ -34,7 +34,7 @@ public class SafPlatformUser implements PlatformUser {
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SafPlatformError(e.getMessage(), e);
         }
     }
 }
