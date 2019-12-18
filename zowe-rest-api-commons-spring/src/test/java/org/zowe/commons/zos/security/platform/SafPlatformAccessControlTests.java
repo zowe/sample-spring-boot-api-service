@@ -40,9 +40,16 @@ public class SafPlatformAccessControlTests {
     }
 
     @Test(expected = SafPlatformError.class)
-    public void returnSafPlatformErrorForInvalidClassNames() {
+    public void returnSafPlatformErrorForInvalidClassNamesWhenCallingCheckPermision() {
         SafPlatformAccessControl badPlatformAccessControl = new SafPlatformAccessControl(
                 new BadMockPlatformClassFactory());
         assertNull(badPlatformAccessControl.checkPermission("ZOWE", "SAMPLE.RESOURCE", AccessLevel.READ.getValue()));
+    }
+
+    @Test(expected = SafPlatformError.class)
+    public void returnSafPlatformErrorForInvalidClassNamesWhenCallingCheckPermisionWithUserid() {
+        SafPlatformAccessControl badPlatformAccessControl = new SafPlatformAccessControl(
+                new BadMockPlatformClassFactory());
+        assertNull(badPlatformAccessControl.checkPermission("ZOWE", "ZOWE", "SAMPLE.RESOURCE", AccessLevel.READ.getValue()));
     }
 }
