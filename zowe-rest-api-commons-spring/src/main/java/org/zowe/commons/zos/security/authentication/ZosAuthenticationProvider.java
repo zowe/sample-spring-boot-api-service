@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,7 @@ import org.zowe.commons.zos.security.platform.PlatformReturned;
 import org.zowe.commons.zos.security.platform.PlatformUser;
 import org.zowe.commons.zos.security.platform.SafPlatformClassFactory;
 import org.zowe.commons.zos.security.platform.SafPlatformUser;
+import org.zowe.commons.zos.security.platform.SafUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,10 +44,14 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
     @Autowired
     private Environment environment;
 
+    @Value("${zowe.commons.security.saf.applid:}")
+    private String applid;
+
     @Override
     public Authentication authenticate(Authentication authentication) {
         String userid = authentication.getName();
         String password = authentication.getCredentials().toString();
+        SafUtils.setThreadApplid(applid);
         PlatformReturned returned = getPlatformUser().authenticate(userid, password);
 
         if ((returned == null) || (returned.isSuccess())) {
@@ -94,6 +100,12 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
                 platformUser = new MockPlatformUser();
                 log.warn("The mock authentication provider is used. This application should not be used in production");
             }
+        }
+        if ((applid != null) && !applid.isEmpty()) {
+            log.info("APPLID is " + applid);
+        }
+        else {
+            log.info("APPLID is not set. PassTickets are not enabled");
         }
     }
 }

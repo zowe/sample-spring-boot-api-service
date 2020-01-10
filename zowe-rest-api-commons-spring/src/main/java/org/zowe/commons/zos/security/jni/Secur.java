@@ -28,4 +28,6 @@ public class Secur {
     public native int removeSecurityEnvironment();
 
     public native int getLastErrno2();
+
+    public native int setApplid(String applid);
 }

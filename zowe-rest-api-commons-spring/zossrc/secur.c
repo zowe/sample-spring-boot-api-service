@@ -7,11 +7,19 @@
 #include "secur.h"
 #include "jnitools.h"
 
+#define PSATOLD 0x21C
+#define TCBSTCB 0x138
+#define STCBOTCB 0x0D8
+#define OTCBTHLI 0x0BC
+
+#define THLIAPPLIDLEN 0x052
+#define THLIAPPLID 0x070
+
+int lastErrno2 = 0;
+
 /*
 https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxbd00/ptsec.htm
 */
-
-int lastErrno2 = 0;
 
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_createSecurityEnvironmentByDaemon(JNIEnv *env, jobject obj, jstring user, jstring applId)
 {
@@ -66,4 +74,48 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_removeSecuri
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_getLastErrno2(JNIEnv *env, jobject obj)
 {
     return lastErrno2;
+}
+
+JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid(JNIEnv *env, jobject obj, jstring jApplid)
+{
+    void *__ptr32 psa = 0;
+    void *__ptr32 tcb = *(void *__ptr32 *)(psa + PSATOLD);
+    printf("tcb=%p\n", tcb);
+    void *__ptr32 stcb = *(void *__ptr32 *)(tcb + TCBSTCB);
+    printf("stcb=%p\n", stcb);
+    void *__ptr32 otcb = *(void *__ptr32 *)(stcb + STCBOTCB);
+    printf("otcb=%p\n", otcb);
+    void *__ptr32 thli = *(void *__ptr32 *)(otcb + OTCBTHLI);
+    printf("thli=%p\n", thli);
+
+    if (memcmp("THLI", thli, 4) != 0)
+    {
+        int rc = -2;
+        printf("Could not set APPLID: BPXYTHLI control block not found\b");
+        return -1;
+    }
+
+    char *origApplid = (char *)malloc(9);
+    char *applid = jstring_to_ebcdic(env, jApplid);
+    const int applidLength = strlen(applid);
+
+    printf("APPLID length: %d\n", applidLength);
+    printf("APPLID value: %s\n", applid);
+
+    char *__ptr32 thliApplidLen = (char *__ptr32)(thli + THLIAPPLIDLEN);
+    *thliApplidLen = applidLength;
+
+    void *__ptr32 thliApplid = (void *__ptr32)(thli + THLIAPPLID);
+    memset(thliApplid, ' ', 8);
+    origApplid[8] = 0;
+    memcpy(origApplid, thliApplid, 8);
+    memcpy(thliApplid, applid, applidLength);
+    free_if_not_null(applid);
+
+    printf("Orig APPLID value: %s\n", origApplid);
+
+    /* A call to pthread_security_np causes that the value set above is correctly propagated */
+    pthread_security_np(0, 0, 0, NULL, NULL, 0);
+    errno = 0;
+    return 0;
 }

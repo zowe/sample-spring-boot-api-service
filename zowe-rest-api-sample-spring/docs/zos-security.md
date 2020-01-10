@@ -13,6 +13,8 @@
   - [Authorization Checks](#authorization-checks)
     - [Protecting Access to REST API Endpoints](#protecting-access-to-rest-api-endpoints)
   - [Required Security Access for Development](#required-security-access-for-development)
+  - [PassTicket Support](#passticket-support)
+    - [Commands to Setup PassTickets for Your Service](#commands-to-setup-passtickets-for-your-service)
 
 ## Types of API Services
 
@@ -390,3 +392,57 @@ RECKEY BPX ADD(SERVER UID(userid) SERVICE(READ) ALLOW)
 RECKEY BPX ADD(DAEMON UID(userid) SERVICE(UPDATE) ALLOW)
 F ACF2,REBUILD(FAC)
 ```
+
+## PassTicket Support
+
+It is possible to enable usage of [PassTickets](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.icha700/secsign.htm) for authentication.
+
+The PassTicket is used instead of the password in HTTP Basic Authorization header.
+
+The replay protection needs to be switched off if you need to use the PassTicket multiple times which you need in case of REST API service.
+
+The API service needs to be configured with the APPLID.
+
+This can be done using Spring configuration property `zowe.commons.security.saf.applid: ZOWEAPPL` that is usally set in the external `application.yml` file.
+
+### Commands to Setup PassTickets for Your Service
+
+Commands for CA Top Secret for z/OS:
+
+```tss
+  /* Define PassTicket for APPLID <applid> without replay protection */
+  TSS ADDTO(NDT) PSTKAPPL(<applid>) SESSKEY(<key>) SIGNMULTI
+```
+
+Commands for IBM RACF:
+
+```racf
+  /* Define APPLID <applid> that can be used by <srv> user */
+  RDEFINE APPL <applid> UACC(NONE)
+  PERMIT <applid> CL(APPL) ACCESS(NONE) ID(<srv>)
+  SETROPTS RACLIST(APPL) REFRESH
+
+  /* Activate PassTickets in RACF, if not activated */
+  SETROPTS CLASSACT(PTKTDATA)
+  SETROPTS RACLIST(PTKTDATA)
+  SETROPTS GENERIC(PTKTDATA)
+
+  /* Define PassTicket for APPLID <applid> without replay protection */
+  RDEFINE PTKTDATA <applid> SSIGNON(KEYMASKED(<key>)) +
+    APPLDATA('NO REPLAY PROTECTION') UACC(NONE)
+  SETROPTS RACLIST(PTKTDATA) REFRESH
+```
+
+Commands for ACF2:
+
+```acf2
+SET RESOURCE(APL)
+RECKEY <applid> ADD(UID(<user>) ALLOW)
+F ACF2,REBUILD(APL)
+
+SET PROFILE(PTKTDATA) DIVISION(SSIGNON)
+INSERT <applid> SSKEY(<key>) MULT-USE
+F ACF2,REBUILD(PTK),CLASS(P)
+```
+
+`<key>` is the value of 16 hexadecimal digits (creating an 8-byte or 64-bit key). For example: `FEDCBA9876543210`.
