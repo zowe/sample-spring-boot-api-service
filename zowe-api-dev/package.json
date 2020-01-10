@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2.2.1",
     "@types/unzipper": "^0.10.0",
     "debug": "^4.1.1",
-    "handlebars": "^4.4.3",
+    "handlebars": "^4.5.3",
     "log-symbols": "^3.0.0",
     "tmp": "^0.1.0",
     "tslib": "^1.10.0",
