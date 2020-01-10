@@ -30,6 +30,12 @@ public class SafPlatformUserTests {
     }
 
     @Test
+    public void worksWithSetApplid() {
+        SafUtils.setThreadApplid("APPLID");
+        assertNull(safPlatformUser.authenticate(VALID_USERID, VALID_PASSWORD));
+    }
+
+    @Test
     public void returnsErrorDetailsForInvalidAuthentication() {
         PlatformReturned returned = safPlatformUser.authenticate(INVALID_USERID, INVALID_PASSWORD);
         assertFalse(returned.isSuccess());
