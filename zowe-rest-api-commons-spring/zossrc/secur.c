@@ -80,13 +80,9 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid(JN
 {
     void *__ptr32 psa = 0;
     void *__ptr32 tcb = *(void *__ptr32 *)(psa + PSATOLD);
-    printf("tcb=%p\n", tcb);
     void *__ptr32 stcb = *(void *__ptr32 *)(tcb + TCBSTCB);
-    printf("stcb=%p\n", stcb);
     void *__ptr32 otcb = *(void *__ptr32 *)(stcb + STCBOTCB);
-    printf("otcb=%p\n", otcb);
     void *__ptr32 thli = *(void *__ptr32 *)(otcb + OTCBTHLI);
-    printf("thli=%p\n", thli);
 
     if (memcmp("THLI", thli, 4) != 0)
     {
@@ -99,9 +95,6 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid(JN
     char *applid = jstring_to_ebcdic(env, jApplid);
     const int applidLength = strlen(applid);
 
-    printf("APPLID length: %d\n", applidLength);
-    printf("APPLID value: %s\n", applid);
-
     char *__ptr32 thliApplidLen = (char *__ptr32)(thli + THLIAPPLIDLEN);
     *thliApplidLen = applidLength;
 
@@ -111,8 +104,6 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid(JN
     memcpy(origApplid, thliApplid, 8);
     memcpy(thliApplid, applid, applidLength);
     free_if_not_null(applid);
-
-    printf("Orig APPLID value: %s\n", origApplid);
 
     /* A call to pthread_security_np causes that the value set above is correctly propagated */
     pthread_security_np(0, 0, 0, NULL, NULL, 0);
