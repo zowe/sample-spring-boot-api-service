@@ -86,8 +86,7 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid(JN
 
     if (memcmp("THLI", thli, 4) != 0)
     {
-        int rc = -2;
-        printf("Could not set APPLID: BPXYTHLI control block not found\b");
+        printf("Could not set APPLID: BPXYTHLI control block not found\n");
         return -1;
     }
 
