@@ -37,7 +37,15 @@ JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_removeSecuri
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_getLastErrno2
-  (JNIEnv *env, jobject obj);
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_zowe_commons_zos_security_jni_Secur
+ * Method:    setApplid
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_zowe_commons_zos_security_jni_Secur_setApplid
+  (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
 }
