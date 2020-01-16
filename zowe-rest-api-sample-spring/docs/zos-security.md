@@ -401,7 +401,8 @@ The PassTicket is used instead of the password in HTTP Basic Authorization heade
 
 The replay protection needs to be switched off if you need to use the PassTicket multiple times which you need in case of REST API service.
 
-The API service needs to be configured with the APPLID.
+The API service needs to be configured with the APPLID. The APPLID is a name of the application (up to 8 characters)
+that is used by security products to differentiate certain security operations (like PassTickets) between applications.
 
 This can be done using Spring configuration property `zowe.commons.security.saf.applid: ZOWEAPPL` that is usally set in the external `application.yml` file.
 
