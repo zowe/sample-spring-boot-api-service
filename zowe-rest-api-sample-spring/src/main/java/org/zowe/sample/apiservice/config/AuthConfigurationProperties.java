@@ -39,8 +39,8 @@ public class AuthConfigurationProperties {
         private long shortTtlExpirationInSeconds = 1;
         //TODO: What should be the right value for it
         public String secretKeyToGenJWTs = "SecretKeyToGenJWTs";
-        public String tokenPrefix = "Bearer ";
         public String requestHeader = "Authorization";
+        public String tokenPrefix = "Bearer_";
     }
 
     //Cookie properties

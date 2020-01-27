@@ -1,7 +1,8 @@
 package org.zowe.sample.apiservice.security;
 
 
-import com.auth0.jwt.JWT;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
@@ -12,15 +13,12 @@ import org.springframework.stereotype.Component;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 import org.zowe.sample.apiservice.config.AuthConfigurationProperties;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static java.util.Collections.emptyList;
 
 @Slf4j
@@ -59,12 +57,16 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider i
         return null;
     }
 
-    public String successfulAuthentication(UserDetails user) throws IOException, ServletException {
+    public String successfulAuthentication(UserDetails user) {
+        long now = System.currentTimeMillis();
 
-        return JWT.create()
-            .withSubject(user.getUsername())
-            .withExpiresAt(new Date(System.currentTimeMillis() + authConfigurationProperties.getTokenProperties().getExpirationInSeconds()))
-            .sign(HMAC512(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs().getBytes()));
+        return authConfigurationProperties.getTokenProperties().getTokenPrefix() + Jwts.builder()
+            .setSubject(user.getUsername())
+            .setExpiration(new Date(now + authConfigurationProperties.getTokenProperties().getExpirationInSeconds() * 1000))
+            //TODO: Which algorithm should be used for signing
+            .signWith(SignatureAlgorithm.HS512, authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
+            .setIssuedAt(new Date(now))
+            .compact();
     }
 
     public void setCookie(String token, HttpServletResponse response) {
@@ -77,6 +79,12 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider i
         tokenCookie.setSecure(authConfigurationProperties.getCookieProperties().isCookieSecure());
 
         response.addCookie(tokenCookie);
+    }
+
+    public void setHeader(String token, HttpServletResponse response) {
+
+        response.setHeader(authConfigurationProperties.getTokenProperties().getRequestHeader(),
+            token);
     }
 
     public static String decode(String encodedString) {

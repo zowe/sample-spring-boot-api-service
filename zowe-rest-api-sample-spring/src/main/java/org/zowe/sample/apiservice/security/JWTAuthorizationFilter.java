@@ -1,7 +1,6 @@
 package org.zowe.sample.apiservice.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,15 +42,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(authConfigurationProperties.getTokenProperties().getRequestHeader());
+
         if (token != null) {
-            // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs().getBytes()))
-                .build()
-                .verify(token.replace(authConfigurationProperties.getTokenProperties().getTokenPrefix(), ""))
+
+            String username = Jwts.parser()
+                .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
+                .parseClaimsJws(token.replace(authConfigurationProperties.getTokenProperties().getTokenPrefix(), ""))
+                .getBody()
                 .getSubject();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+            if (username != null) {
+                return new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
             }
             return null;
         }

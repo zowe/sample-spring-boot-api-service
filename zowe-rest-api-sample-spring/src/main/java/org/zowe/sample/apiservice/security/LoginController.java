@@ -51,6 +51,7 @@ public class LoginController {
 
             String token = service.successfulAuthentication(user);
             service.setCookie(token, response);
+            service.setHeader(token, response);
 
             return ResponseEntity
                 .status(HttpStatus.SC_OK)
