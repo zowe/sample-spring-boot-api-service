@@ -10,9 +10,7 @@
  */
 package org.zowe.commons.zos.security.authentication;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.zowe.commons.zos.security.platform.MockPlatformUser;
-import org.zowe.commons.zos.security.platform.PlatformErrorType;
-import org.zowe.commons.zos.security.platform.PlatformPwdErrno;
-import org.zowe.commons.zos.security.platform.PlatformReturned;
-import org.zowe.commons.zos.security.platform.PlatformUser;
-import org.zowe.commons.zos.security.platform.SafPlatformClassFactory;
-import org.zowe.commons.zos.security.platform.SafPlatformUser;
-import org.zowe.commons.zos.security.platform.SafUtils;
+import org.zowe.commons.zos.security.platform.*;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Component
 @Slf4j
@@ -103,9 +95,10 @@ public class ZosAuthenticationProvider implements AuthenticationProvider, Initia
         }
         if ((applid != null) && !applid.isEmpty()) {
             log.info("APPLID is " + applid);
-        }
-        else {
+        } else {
             log.info("APPLID is not set. PassTickets are not enabled");
         }
     }
+
+
 }

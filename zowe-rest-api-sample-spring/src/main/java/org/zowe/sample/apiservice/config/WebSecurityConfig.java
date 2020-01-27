@@ -12,37 +12,50 @@ package org.zowe.sample.apiservice.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
+import org.zowe.sample.apiservice.security.SampleApiAuthenticationProvider;
+import org.zowe.sample.apiservice.security.JWTAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("org.zowe.commons.zos.security")
+@ComponentScan("org.zowe.zos.security")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthConfigurationProperties authConfigurationProperties;
+
+    public WebSecurityConfig(AuthConfigurationProperties authConfigurationProperties) {
+        this.authConfigurationProperties = authConfigurationProperties;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**");
-        http.headers().httpStrictTransportSecurity().disable();
-        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.httpBasic();
-        http.authorizeRequests()
-                .antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
-                        "/api/*/apiDocs", "/swagger-resources/**", "/csrf", "/actuator/info", "/actuator/health")
-                .permitAll().anyRequest().authenticated();
+
+        http.csrf().disable()
+            .headers()
+            .httpStrictTransportSecurity().disable()
+            .frameOptions().disable()
+
+            //Session config
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+            //login endpoint
+            .and()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.GET, authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
+            .anyRequest().authenticated()
+
+            .and()
+            .addFilter(new JWTAuthorizationFilter(authenticationManager(), authConfigurationProperties));
     }
 
     @Autowired
-    private ZosAuthenticationProvider authProvider;
+    private SampleApiAuthenticationProvider authProvider;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
