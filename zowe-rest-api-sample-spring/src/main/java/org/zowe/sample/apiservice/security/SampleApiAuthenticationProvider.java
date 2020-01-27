@@ -1,6 +1,7 @@
 package org.zowe.sample.apiservice.security;
 
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import static java.util.Collections.emptyList;
 
 @Slf4j
 @Component
-public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider implements UserDetailsService {
+    public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider implements UserDetailsService {
 
     private final AuthConfigurationProperties authConfigurationProperties;
 
@@ -82,7 +83,6 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider i
     }
 
     public void setHeader(String token, HttpServletResponse response) {
-
         response.setHeader(authConfigurationProperties.getTokenProperties().getRequestHeader(),
             token);
     }
@@ -90,5 +90,23 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider i
     public static String decode(String encodedString) {
         byte[] decoded = Base64.getDecoder().decode(encodedString.getBytes(StandardCharsets.UTF_8));
         return new String(decoded, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Parse the JWT token and return a {@link QueryResponse} object containing the domain, user id, date of creation and date of expiration
+     *
+     * @param token the JWT token
+     * @return the query response
+     */
+    public QueryResponse parseJwtToken(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
+            .parseClaimsJws(token.replace(authConfigurationProperties.getTokenProperties().getTokenPrefix(), ""))
+            .getBody();
+
+        return new QueryResponse(
+            claims.getSubject(),
+            claims.getIssuedAt(),
+            claims.getExpiration());
     }
 }

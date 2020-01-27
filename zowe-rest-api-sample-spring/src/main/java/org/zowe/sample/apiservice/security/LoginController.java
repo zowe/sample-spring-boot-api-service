@@ -70,9 +70,9 @@ public class LoginController {
     //TODO: This need to be implemented from scratch
     @GetMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "/query", hidden = true)
-    public ResponseEntity<AppResponse> query(@RequestHeader("Authorization") String authorization, HttpServletResponse response) {
+    public ResponseEntity<QueryResponse> query(@RequestHeader("Authorization") String authorization) {
         return ResponseEntity
-            .status(HttpStatus.SC_UNAUTHORIZED)
-            .body(new AppResponse("Unauthorised", HttpStatus.SC_UNAUTHORIZED, "User not authenticated"));
+            .status(HttpStatus.SC_OK)
+            .body(service.parseJwtToken(authorization));
     }
 }
