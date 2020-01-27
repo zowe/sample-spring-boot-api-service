@@ -18,15 +18,14 @@ import org.springframework.stereotype.Component;
 /**
  * Configuration class for authentication-related security properties
  */
+//TODO: Whether we want to put them in properties file
 @Data
 @Component
 @ConfigurationProperties(prefix = "apiml.security.auth", ignoreUnknownFields = false)
 public class AuthConfigurationProperties {
 
     public String basicAuthenticationPrefix = "Basic";
-
     private String serviceLoginEndpoint = "/api/v1/auth/login";
-    private String serviceLogoutEndpoint = "/auth/logout";
 
     private AuthConfigurationProperties.TokenProperties tokenProperties;
     private AuthConfigurationProperties.CookieProperties cookieProperties;
@@ -38,6 +37,7 @@ public class AuthConfigurationProperties {
         private String issuer = "ZOWESDK";
         private String shortTtlUsername = "expire";
         private long shortTtlExpirationInSeconds = 1;
+        //TODO: What should be the right value for it
         public String secretKeyToGenJWTs = "SecretKeyToGenJWTs";
         public String tokenPrefix = "Bearer ";
         public String requestHeader = "Authorization";

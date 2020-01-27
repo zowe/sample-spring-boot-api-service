@@ -16,7 +16,6 @@ import org.zowe.commons.zos.security.authentication.ZosAuthenticationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Base64;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.zowe.sample.apiservice.security.SampleApiAuthenticationProvider.decode;
@@ -67,33 +66,12 @@ public class LoginController {
     }
 
 
+    //TODO: This need to be implemented from scratch
     @GetMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "/query", hidden = true)
-    public ResponseEntity<AppResponse> query(@RequestHeader("Authorization") String authorization, HttpServletResponse response)
-        throws IOException, ServletException {
-
-        UserDetails user = userDetailsService.loadUserByUsername(authorization);
-
-        byte[] decodedBytes = Base64.getDecoder().decode(user.getPassword());
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(),
-            new String(decodedBytes));
-
-        try {
-            service.authenticate(authenticationToken);
-
-            String token = service.successfulAuthentication(user);
-            service.setCookie(token, response);
-
-            return ResponseEntity
-                .status(HttpStatus.SC_OK)
-                .body(new AppResponse("OK", HttpStatus.SC_OK, "User is authenticated"));
-
-
-        } catch (
-            ZosAuthenticationException zosAuthenticationException) {
-            return ResponseEntity
-                .status(HttpStatus.SC_UNAUTHORIZED)
-                .body(new AppResponse("Unauthorised", HttpStatus.SC_UNAUTHORIZED, "User not authenticated"));
-        }
+    public ResponseEntity<AppResponse> query(@RequestHeader("Authorization") String authorization, HttpServletResponse response) {
+        return ResponseEntity
+            .status(HttpStatus.SC_UNAUTHORIZED)
+            .body(new AppResponse("Unauthorised", HttpStatus.SC_UNAUTHORIZED, "User not authenticated"));
     }
 }

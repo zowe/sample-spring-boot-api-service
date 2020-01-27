@@ -22,7 +22,6 @@ import java.util.Date;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static java.util.Collections.emptyList;
-import static org.zowe.sample.apiservice.config.AuthConfigurationProperties.*;
 
 @Slf4j
 @Component

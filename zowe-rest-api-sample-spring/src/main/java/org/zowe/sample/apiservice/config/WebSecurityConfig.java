@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+        //TODO: what could be the best configuration for SDK in terms of CSRF and other security parameters
         http.csrf().disable()
             .headers()
             .httpStrictTransportSecurity().disable()
