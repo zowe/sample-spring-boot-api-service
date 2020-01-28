@@ -33,7 +33,7 @@ public class AuthConfigurationProperties {
     //Token properties
     @Data
     public static class TokenProperties {
-        private int expirationInSeconds = 24 * 60 * 60;
+        private int expirationTime = 24 * 60 * 60;
         private String issuer = "ZOWESDK";
         private String shortTtlUsername = "expire";
         private long shortTtlExpirationInSeconds = 1;

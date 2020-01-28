@@ -10,7 +10,6 @@
 package org.zowe.sample.apiservice.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,12 +17,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.zowe.sample.apiservice.security.SampleApiAuthenticationProvider;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.zowe.sample.apiservice.security.JWTAuthorizationFilter;
+import org.zowe.sample.apiservice.security.SampleApiAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("org.zowe.zos.security")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthConfigurationProperties authConfigurationProperties;
 
@@ -34,8 +33,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        //TODO: what could be the best configuration for SDK in terms of CSRF and other security parameters
-        http.csrf().disable()
+        //CSRF configuration
+        http.csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**")
+
+            .and()
             .headers()
             .httpStrictTransportSecurity().disable()
             .frameOptions().disable()
@@ -45,12 +47,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-            //login endpoint
+            //Login endpoint
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
+            .antMatchers(HttpMethod.POST, authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
             .anyRequest().authenticated()
 
+            //Filter to validate JWT token in all the rest endpoints
             .and()
             .addFilter(new JWTAuthorizationFilter(authenticationManager(), authConfigurationProperties));
     }

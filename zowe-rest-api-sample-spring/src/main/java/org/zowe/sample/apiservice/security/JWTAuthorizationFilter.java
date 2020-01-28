@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Filter to validate JWT token in all the rest API's.
+ */
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final AuthConfigurationProperties authConfigurationProperties;
@@ -40,6 +43,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(req, res);
     }
 
+    /**
+     * Method to parse the token adn to validate it
+     *
+     * @param request
+     * @return
+     */
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(authConfigurationProperties.getTokenProperties().getRequestHeader());
 
