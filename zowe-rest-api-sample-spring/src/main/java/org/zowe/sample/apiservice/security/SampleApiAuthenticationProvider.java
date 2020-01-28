@@ -35,7 +35,7 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider {
     public String onSuccessfulLoginCreateToken(LoginRequest user) {
         long now = System.currentTimeMillis();
 
-        return authConfigurationProperties.getTokenProperties().getTokenPrefix() + Jwts.builder()
+        return Jwts.builder()
             .setSubject(user.getUsername())
             .setExpiration(new Date(now + authConfigurationProperties.getTokenProperties().getExpirationTime() * 1000))
             .signWith(SignatureAlgorithm.HS512, authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
@@ -62,7 +62,7 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider {
     }
 
     /**
-     * Parse the JWT token and return a {@link QueryResponse} object containing the domain, user id, date of creation and date of expiration
+     * Parse the JWT token and return a {@link QueryResponse} object containing the user id, date of creation and date of expiration
      *
      * @param token the JWT token
      * @return the query response
@@ -70,7 +70,7 @@ public class SampleApiAuthenticationProvider extends ZosAuthenticationProvider {
     public QueryResponse parseJwtToken(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
-            .parseClaimsJws(token.replace(authConfigurationProperties.getTokenProperties().getTokenPrefix(), ""))
+            .parseClaimsJws(token)
             .getBody();
 
         return new QueryResponse(

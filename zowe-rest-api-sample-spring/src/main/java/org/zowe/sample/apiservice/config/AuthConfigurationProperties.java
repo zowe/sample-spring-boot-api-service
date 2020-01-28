@@ -40,7 +40,6 @@ public class AuthConfigurationProperties {
         //TODO: What should be the right value for it
         public String secretKeyToGenJWTs = "SecretKeyToGenJWTs";
         public String requestHeader = "Authorization";
-        public String tokenPrefix = "Bearer_";
     }
 
     //Cookie properties

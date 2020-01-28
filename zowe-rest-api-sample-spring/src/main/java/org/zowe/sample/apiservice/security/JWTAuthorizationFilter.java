@@ -32,7 +32,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                                     FilterChain chain) throws IOException, ServletException {
         String header = req.getHeader(authConfigurationProperties.getTokenProperties().getRequestHeader());
 
-        if (header == null || !header.startsWith(authConfigurationProperties.getTokenProperties().getTokenPrefix())) {
+        if (header == null) {
             chain.doFilter(req, res);
             return;
         }
@@ -56,7 +56,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
             String username = Jwts.parser()
                 .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
-                .parseClaimsJws(token.replace(authConfigurationProperties.getTokenProperties().getTokenPrefix(), ""))
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
 
