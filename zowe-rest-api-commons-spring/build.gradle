@@ -46,6 +46,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
 	compileOnly 'org.projectlombok:lombok:1.18.10'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	annotationProcessor 'org.projectlombok:lombok:1.18.10'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     testImplementation 'net.javacrumbs.json-unit:json-unit-fluent:2.8.0'
