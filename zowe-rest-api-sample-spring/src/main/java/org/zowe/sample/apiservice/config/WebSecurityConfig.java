@@ -9,40 +9,31 @@
  */
 package org.zowe.sample.apiservice.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.zowe.commons.security.AuthConfigurationProperties;
+import org.zowe.commons.security.SuccessfulLoginHandler;
+import org.zowe.commons.security.ZoweWebSecurityConfig;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
 @ComponentScan("org.zowe.commons.zos.security")
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends ZoweWebSecurityConfig {
     @Autowired
     AuthenticationEntryPoint authenticationEntryPoint;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**");
-        http.headers().httpStrictTransportSecurity().disable();
-        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.httpBasic();
-        http.authorizeRequests()
-                .antMatchers("/", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/apiDocs/**",
-                        "/api/*/apiDocs", "/swagger-resources/**", "/csrf", "/actuator/info", "/actuator/health")
-                .permitAll().anyRequest().authenticated();
-    }
-
     @Autowired
     private ZosAuthenticationProvider authProvider;
+
+    public WebSecurityConfig(AuthConfigurationProperties authConfigurationProperties, SuccessfulLoginHandler successfulLoginHandler, ObjectMapper securityObjectMapper) {
+        super(authConfigurationProperties, successfulLoginHandler, securityObjectMapper);
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
