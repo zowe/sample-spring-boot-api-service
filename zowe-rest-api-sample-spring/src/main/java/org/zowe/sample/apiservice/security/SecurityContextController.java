@@ -11,7 +11,7 @@ package org.zowe.sample.apiservice.security;
 
 import static org.zowe.commons.zos.security.platform.SafConstants.BPX_SERVER;
 import static org.zowe.commons.zos.security.platform.SafConstants.CLASS_FACILITY;
-import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
+import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

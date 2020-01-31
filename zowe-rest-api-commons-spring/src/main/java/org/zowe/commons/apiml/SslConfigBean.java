@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.zowe;
+package org.zowe.commons.apiml;
 
 import com.ca.mfaas.eurekaservice.client.config.Ssl;
 

@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.zowe.commons.spring.security.CsrfController;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

@@ -9,7 +9,7 @@
  */
 package org.zowe.sample.apiservice.wto;
 
-import static org.zowe.sample.apiservice.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
+import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
