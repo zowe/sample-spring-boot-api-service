@@ -1,4 +1,4 @@
-package org.zowe.commons.security;
+package org.zowe.commons.spring.token;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,6 +19,7 @@ public class SuccessfulLoginHandler implements AuthenticationSuccessHandler {
 
     private final AuthConfigurationProperties authConfigurationProperties;
 
+
     /**
      * Set cookie and http response on successful authentication
      *
@@ -33,7 +34,6 @@ public class SuccessfulLoginHandler implements AuthenticationSuccessHandler {
         setCookie(token, response);
         response.setStatus(HttpStatus.NO_CONTENT.value());
     }
-
 
     public String createToken(Authentication authentication) {
         long now = System.currentTimeMillis();

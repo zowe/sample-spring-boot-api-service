@@ -1,4 +1,4 @@
-package org.zowe.commons.security;
+package org.zowe.commons.spring.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
