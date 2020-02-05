@@ -2,6 +2,7 @@ package org.zowe.commons.spring.token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,13 @@ public class TokenFailureHandler {
      * @param ex       Exception to be handled
      * @throws ServletException Fallback exception if exception cannot be handled
      */
+    //TODO: Proper message and errors for individual exception type
     public void handleException(HttpServletResponse response, RuntimeException ex) throws ServletException {
         if (ex instanceof SignatureException) {
             handleSignatureInvalidException(response);
         } else if (ex instanceof ExpiredJwtException) {
+            handleExpiredTokenException(response);
+        } else if (ex instanceof MalformedJwtException) {
             handleExpiredTokenException(response);
         } else {
             throw ex;
