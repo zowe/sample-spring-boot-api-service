@@ -25,14 +25,14 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthConfigurationProperties authConfigurationProperties;
     private SuccessfulLoginHandler successfulLoginHandler;
-    private final TokenFailureHandler tokenFailureHandler;
+    private final AuthenticationFailureHandler tokenFailureHandler;
 
     @Autowired
     TokenService tokenService;
 
     public ZoweWebSecurityConfig(AuthConfigurationProperties authConfigurationProperties,
                                  SuccessfulLoginHandler successfulLoginHandler,
-                                 TokenFailureHandler tokenFailureHanlder) {
+                                 AuthenticationFailureHandler tokenFailureHanlder) {
         this.authConfigurationProperties = authConfigurationProperties;
         this.successfulLoginHandler = successfulLoginHandler;
         this.tokenFailureHandler = tokenFailureHanlder;

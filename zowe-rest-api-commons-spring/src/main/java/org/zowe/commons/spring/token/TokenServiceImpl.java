@@ -13,12 +13,19 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @Service
@@ -26,6 +33,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class TokenServiceImpl extends ZosAuthenticationProvider implements TokenService {
     private final AuthConfigurationProperties authConfigurationProperties;
+    private final AuthenticationFailureHandler failureHandler;
 
     /**
      * Calls authentication manager to validate the username and password
@@ -33,7 +41,8 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
      * @return the authenticated token
      */
     @Override
-    public TokenResponse login(LoginRequest loginRequest, HttpServletRequest request) {
+    public ResponseEntity login(LoginRequest loginRequest,
+                                HttpServletRequest request) throws ServletException {
         if (loginRequest == null) {
             loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
         }
@@ -42,7 +51,7 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
             = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
         authenticate(authentication);
-        return new TokenResponse(createToken(authentication));
+        return ResponseEntity.ok(new TokenResponse(createToken(authentication)));
     }
 
     /**

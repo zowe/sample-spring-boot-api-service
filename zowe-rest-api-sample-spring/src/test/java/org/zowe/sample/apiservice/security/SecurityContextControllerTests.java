@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.zowe.sample.apiservice.TestUtils;
+
+import javax.servlet.http.Cookie;
+import java.util.Arrays;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SecurityContextController.class)
@@ -31,11 +36,27 @@ public class SecurityContextControllerTests {
     @Autowired
     private MockMvc mvc;
 
+    String token = null;
+
+    @Before
+    public void setup() throws Exception {
+        MvcResult loginResult = this.mvc.perform(get("/api/v1/auth/login").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andReturn();
+
+        Cookie[] cookies = loginResult.getResponse().getCookies();
+        if (cookies != null) {
+            token = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("zoweSdkAuthenticationToken"))
+                .filter(cookie -> !cookie.getValue().isEmpty())
+                .findFirst().get().getValue();
+        }
+    }
+
     @Test
     public void returnsDataAboutSwitchedContext() throws Exception {
         mvc.perform(get("/api/v1/securityTest/authenticatedUser")
-                .header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.afterSwitchUserName", is("zowe")));
+            .header("Authorization", token).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.afterSwitchUserName", is("zowe")));
     }
 
     @Test
@@ -45,21 +66,22 @@ public class SecurityContextControllerTests {
 
     @Test
     public void failsWithInvalidAuthentication() throws Exception {
+        String invalidToken = "eyJhbGciOiJIUzUxMiJ9.fyryerytuytry.KILjk1gpVxLY1wrr8";
         mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization",
-                TestUtils.ZOWE_BASIC_AUTHENTICATION_INVALID)).andDo(print()).andExpect(status().isUnauthorized());
+            invalidToken)).andDo(print()).andExpect(status().isExpectationFailed());
     }
 
     @Test
     public void allowsRequestToPermittedResource() throws Exception {
         mvc.perform(get("/api/v1/securityTest/safProtectedResource").header("Authorization",
-                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.canMount", is("true")));
+            token)).andDo(print()).andExpect(status().isOk())
+            .andExpect(jsonPath("$.canMount", is("true")));
     }
 
     @Test
     public void forbidsRequestToDeniedResource() throws Exception {
         mvc.perform(get("/api/v1/securityTest/safDeniedResource").header("Authorization",
-                TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isForbidden());
+            token)).andDo(print()).andExpect(status().isForbidden());
     }
 
 }

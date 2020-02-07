@@ -19,7 +19,7 @@ import java.util.Optional;
 public class CookieAuthorizationFilter extends AbstractTokenHandler {
     private final AuthConfigurationProperties authConfigurationProperties;
 
-    public CookieAuthorizationFilter(TokenFailureHandler failureHandler,
+    public CookieAuthorizationFilter(AuthenticationFailureHandler failureHandler,
                                      AuthConfigurationProperties authConfigurationProperties) {
         super(failureHandler, authConfigurationProperties);
         this.authConfigurationProperties = authConfigurationProperties;

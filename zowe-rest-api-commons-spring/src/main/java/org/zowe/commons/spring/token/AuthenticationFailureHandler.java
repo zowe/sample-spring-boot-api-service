@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Component;
 import org.zowe.commons.error.CommonsErrorService;
 import org.zowe.commons.error.ErrorService;
@@ -30,7 +33,7 @@ import java.io.IOException;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class TokenFailureHandler {
+public class AuthenticationFailureHandler {
 
     private final ErrorService errorService = CommonsErrorService.get();
 
@@ -45,31 +48,46 @@ public class TokenFailureHandler {
     /**
      * Entry method that takes care of an exception passed to it
      *
-     * @param response Http response
-     * @param ex       Exception to be handled
+     * @param ex Exception to be handled
      * @throws ServletException Fallback exception if exception cannot be handled
      */
     //TODO: Proper message and errors for individual exception type
-    public void handleException(HttpServletResponse response, RuntimeException ex) throws ServletException {
+    public void handleException(RuntimeException ex,
+                                HttpServletResponse httpServletResponse) throws ServletException {
         if (ex instanceof SignatureException) {
-            handleSignatureInvalidException(response);
+            handleInvalidTokenException(httpServletResponse);
         } else if (ex instanceof ExpiredJwtException) {
-            handleExpiredTokenException(response);
+            handleExpiredTokenException(httpServletResponse);
         } else if (ex instanceof MalformedJwtException) {
-            handleExpiredTokenException(response);
+            handleInvalidTokenException(httpServletResponse);
+        } else if (ex instanceof InsufficientAuthenticationException) {
+            handleUnauthorizedException(ex, httpServletResponse);
+        } else if (ex instanceof BadCredentialsException) {
+            handleUnauthorizedException(ex, httpServletResponse);
+        } else if (ex instanceof AuthenticationCredentialsNotFoundException) {
+            handleUnauthorizedException(ex, httpServletResponse);
+        } else if (ex instanceof NullPointerException) {
+            handleUnauthorizedException(ex, httpServletResponse);
         } else {
             throw ex;
         }
     }
 
-    private void handleSignatureInvalidException(HttpServletResponse response) throws ServletException {
-        ApiMessage message = localizedMessage("org.zowe.commons.rest.expiredToken");
+    private void handleInvalidTokenException(HttpServletResponse response) throws ServletException {
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.invalidToken");
+        writeErrorResponse(message, HttpStatus.EXPECTATION_FAILED, response);
+    }
+
+    private void handleUnauthorizedException(Exception exception, HttpServletResponse response) throws ServletException {
+        ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(),
+            "org.zowe.commons.rest.unauthorized",
+            exception.getMessage());
         writeErrorResponse(message, HttpStatus.UNAUTHORIZED, response);
     }
 
     private void handleExpiredTokenException(HttpServletResponse response) throws ServletException {
         ApiMessage message = localizedMessage("org.zowe.commons.rest.expiredToken");
-        writeErrorResponse(message, HttpStatus.BAD_REQUEST, response);
+        writeErrorResponse(message, HttpStatus.NOT_ACCEPTABLE, response);
     }
 
     protected void writeErrorResponse(ApiMessage message, HttpStatus status, HttpServletResponse response) throws ServletException {

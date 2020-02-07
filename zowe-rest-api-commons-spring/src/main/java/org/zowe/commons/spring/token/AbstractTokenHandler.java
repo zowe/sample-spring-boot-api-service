@@ -29,7 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
-    private final TokenFailureHandler failureHandler;
+    private final AuthenticationFailureHandler failureHandler;
     private final AuthConfigurationProperties authConfigurationProperties;
 
     /**
@@ -61,9 +61,9 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
             } catch (AuthenticationException authenticationException) {
-                failureHandler.handleException(response, authenticationException);
-            } catch (RuntimeException e) {
-                failureHandler.handleException(response, e);
+                failureHandler.handleException(authenticationException, response);
+            } catch (RuntimeException exception) {
+                failureHandler.handleException(exception, response);
             }
         } else {
             filterChain.doFilter(request, response);

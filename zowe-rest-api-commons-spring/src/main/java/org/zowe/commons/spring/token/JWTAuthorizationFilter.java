@@ -21,7 +21,7 @@ public class JWTAuthorizationFilter extends AbstractTokenHandler {
 
     private final AuthConfigurationProperties authConfigurationProperties;
 
-    public JWTAuthorizationFilter(TokenFailureHandler failureHandler,
+    public JWTAuthorizationFilter(AuthenticationFailureHandler failureHandler,
                                   AuthConfigurationProperties authConfigurationProperties) {
         super(failureHandler, authConfigurationProperties);
         this.authConfigurationProperties = authConfigurationProperties;
