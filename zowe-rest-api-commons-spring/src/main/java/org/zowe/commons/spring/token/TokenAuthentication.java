@@ -41,3 +41,4 @@ public class TokenAuthentication extends AbstractAuthenticationToken {
         return username;
     }
 }
+

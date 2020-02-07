@@ -66,7 +66,7 @@ public class ServiceUnderTest {
 
     public ServiceUnderTest() {
         this.profile = env("TEST_PROFILE", LOCAL_PROFILE);
-        this.baseUri = env("TEST_BASE_URI", "http://localhost");
+        this.baseUri = env("TEST_BASE_URI", "https://localhost");
         this.port = Integer.parseInt(env("TEST_PORT", "10080"));
         this.userId = env("TEST_USERID", VALID_USERID);
         this.password = env("TEST_PASSWORD", VALID_PASSWORD);
@@ -89,7 +89,7 @@ public class ServiceUnderTest {
     public void defaultRestAssuredSetup() {
         RestAssured.baseURI = baseUri;
         RestAssured.port = port;
-        //RestAssured.useRelaxedHTTPSValidation();
+        RestAssured.useRelaxedHTTPSValidation();
         RestAssured.authentication = basic(userId, password);
     }
 
