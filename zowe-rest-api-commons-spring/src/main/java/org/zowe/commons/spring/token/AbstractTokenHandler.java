@@ -17,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.zowe.commons.spring.config.AuthUtility;
+import org.zowe.commons.spring.config.AuthenticationFailureHandler;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,7 +32,7 @@ import java.util.Optional;
 public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     private final AuthenticationFailureHandler failureHandler;
-    private final AuthConfigurationProperties authConfigurationProperties;
+    private final AuthUtility authConfigurationProperties;
 
     /**
      * Extracts the token from the request

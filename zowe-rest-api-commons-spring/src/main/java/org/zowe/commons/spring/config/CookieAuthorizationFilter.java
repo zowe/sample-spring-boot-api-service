@@ -7,9 +7,11 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.config;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.zowe.commons.spring.token.AbstractTokenHandler;
+import org.zowe.commons.spring.token.TokenAuthentication;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +19,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class CookieAuthorizationFilter extends AbstractTokenHandler {
-    private final AuthConfigurationProperties authConfigurationProperties;
+    private final AuthUtility authConfigurationProperties;
 
     public CookieAuthorizationFilter(AuthenticationFailureHandler failureHandler,
-                                     AuthConfigurationProperties authConfigurationProperties) {
+                                     AuthUtility authConfigurationProperties) {
         super(failureHandler, authConfigurationProperties);
         this.authConfigurationProperties = authConfigurationProperties;
     }

@@ -7,12 +7,17 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.login;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.zowe.commons.spring.config.AuthUtility;
+import org.zowe.commons.spring.token.TokenService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -26,16 +31,14 @@ import java.util.Optional;
  * Filter to authenticate the user and to set Jwt token in cookie.
  */
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
-    private final AuthConfigurationProperties authConfigurationProperties;
-    private final SuccessfulLoginHandler successHandler;
+    private final AuthUtility authConfigurationProperties;
     private final TokenService tokenService;
 
     public LoginFilter(String authEndpoint,
-                       AuthConfigurationProperties authConfigurationProperties,
-                       AuthenticationManager authenticationManager, SuccessfulLoginHandler successHandler, TokenService tokenService) {
+                       AuthUtility authConfigurationProperties,
+                       AuthenticationManager authenticationManager, TokenService tokenService) {
         super(authEndpoint);
         this.authConfigurationProperties = authConfigurationProperties;
-        this.successHandler = successHandler;
         this.tokenService = tokenService;
         this.setAuthenticationManager(authenticationManager);
     }
@@ -52,6 +55,9 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         Optional<LoginRequest> optionalLoginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request);
         LoginRequest loginRequest = optionalLoginRequest.orElseGet(() -> authConfigurationProperties.getCredentialsFromBody(request));
 
+        if (StringUtils.isBlank(loginRequest.getUsername()) || StringUtils.isBlank(loginRequest.getPassword())) {
+            throw new AuthenticationCredentialsNotFoundException("Username or password not provided.");
+        }
         UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -68,6 +74,9 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        successHandler.onAuthenticationSuccess(request, response, authResult);
+        String token = authConfigurationProperties.createToken(authResult);
+
+        authConfigurationProperties.setCookie(token, response);
+        response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 }

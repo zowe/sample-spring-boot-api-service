@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -51,7 +51,6 @@ public class AuthenticationFailureHandler {
      * @param ex Exception to be handled
      * @throws ServletException Fallback exception if exception cannot be handled
      */
-    //TODO: Proper message and errors for individual exception type
     public void handleException(RuntimeException ex,
                                 HttpServletResponse httpServletResponse) throws ServletException {
         if (ex instanceof SignatureException) {

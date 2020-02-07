@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -10,6 +10,7 @@
 package org.zowe.commons.spring.token;
 
 import org.springframework.http.ResponseEntity;
+import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

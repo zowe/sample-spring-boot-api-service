@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -20,21 +20,20 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.zowe.commons.spring.login.LoginFilter;
+import org.zowe.commons.spring.token.TokenService;
 
 @Configuration
 public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final AuthConfigurationProperties authConfigurationProperties;
-    private SuccessfulLoginHandler successfulLoginHandler;
+    private final AuthUtility authConfigurationProperties;
     private final AuthenticationFailureHandler tokenFailureHandler;
 
     @Autowired
     TokenService tokenService;
 
-    public ZoweWebSecurityConfig(AuthConfigurationProperties authConfigurationProperties,
-                                 SuccessfulLoginHandler successfulLoginHandler,
+    public ZoweWebSecurityConfig(AuthUtility authConfigurationProperties,
                                  AuthenticationFailureHandler tokenFailureHanlder) {
         this.authConfigurationProperties = authConfigurationProperties;
-        this.successfulLoginHandler = successfulLoginHandler;
         this.tokenFailureHandler = tokenFailureHanlder;
     }
 
@@ -80,7 +79,6 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             loginEndpoint,
             authConfigurationProperties,
             authenticationManager,
-            successfulLoginHandler,
             tokenService);
     }
 

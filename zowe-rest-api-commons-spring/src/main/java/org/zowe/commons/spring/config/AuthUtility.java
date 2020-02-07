@@ -7,19 +7,26 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.token;
+package org.zowe.commons.spring.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.zowe.commons.spring.login.LoginRequest;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Optional;
 
 
@@ -30,13 +37,13 @@ import java.util.Optional;
 @Data
 @Component
 @Slf4j
-public class AuthConfigurationProperties {
+public class AuthUtility {
 
     public String basicAuthenticationPrefix = "Basic";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
 
-    private AuthConfigurationProperties.TokenProperties tokenProperties;
-    private AuthConfigurationProperties.CookieProperties cookieProperties;
+    private AuthUtility.TokenProperties tokenProperties;
+    private AuthUtility.CookieProperties cookieProperties;
 
     //Token properties
     @Data
@@ -59,9 +66,9 @@ public class AuthConfigurationProperties {
         private Integer cookieMaxAge = -1;
     }
 
-    public AuthConfigurationProperties() {
-        this.cookieProperties = new AuthConfigurationProperties.CookieProperties();
-        this.tokenProperties = new AuthConfigurationProperties.TokenProperties();
+    public AuthUtility() {
+        this.cookieProperties = new AuthUtility.CookieProperties();
+        this.tokenProperties = new AuthUtility.TokenProperties();
     }
 
     /**
@@ -113,5 +120,40 @@ public class AuthConfigurationProperties {
         )
             .filter(base64Credentials -> !base64Credentials.isEmpty())
             .map(this::mapBase64Credentials);
+    }
+
+    /**
+     * This method is used to create token with Jwts library.
+     *
+     * @param authentication
+     * @return
+     */
+    public String createToken(Authentication authentication) {
+        long now = System.currentTimeMillis();
+
+        return Jwts.builder()
+            .setSubject(authentication.getName())
+            .setExpiration(new Date(now + getTokenProperties().getExpirationTime() * 1000))
+            .signWith(SignatureAlgorithm.HS512, getTokenProperties().getSecretKeyToGenJWTs())
+            .setIssuedAt(new Date(now))
+            .compact();
+    }
+
+    /**
+     * Method to set the cookie in the response. Which will contain the JWT token,HTTP flag etc.
+     *
+     * @param token
+     * @param response
+     */
+    public void setCookie(String token, HttpServletResponse response) {
+        Cookie tokenCookie = new Cookie(getCookieProperties().getCookieName(),
+            token);
+        tokenCookie.setComment(getCookieProperties().getCookieComment());
+        tokenCookie.setPath(getCookieProperties().getCookiePath());
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setMaxAge(getCookieProperties().getCookieMaxAge());
+        tokenCookie.setSecure(getCookieProperties().isCookieSecure());
+
+        response.addCookie(tokenCookie);
     }
 }
