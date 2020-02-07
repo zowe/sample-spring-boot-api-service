@@ -9,16 +9,12 @@
  */
 package org.zowe.commons.spring.token;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,16 +28,15 @@ import java.util.Optional;
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthConfigurationProperties authConfigurationProperties;
     private final SuccessfulLoginHandler successHandler;
-
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
     public LoginFilter(String authEndpoint,
                        AuthConfigurationProperties authConfigurationProperties,
-                       AuthenticationManager authenticationManager, SuccessfulLoginHandler successHandler) {
+                       AuthenticationManager authenticationManager, SuccessfulLoginHandler successHandler, TokenService tokenService) {
         super(authEndpoint);
         this.authConfigurationProperties = authConfigurationProperties;
         this.successHandler = successHandler;
+        this.tokenService = tokenService;
         this.setAuthenticationManager(authenticationManager);
     }
 
@@ -54,12 +49,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (tokenService == null) {
-            ServletContext servletContext = request.getServletContext();
-            WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-            tokenService = webApplicationContext.getBean(TokenService.class);
-        }
-        //TODO: Refine it more
         Optional<LoginRequest> optionalLoginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request);
         LoginRequest loginRequest = optionalLoginRequest.orElseGet(() -> authConfigurationProperties.getCredentialsFromBody(request));
 

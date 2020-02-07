@@ -76,7 +76,8 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             loginEndpoint,
             authConfigurationProperties,
             authenticationManager,
-            successfulLoginHandler);
+            successfulLoginHandler,
+            tokenService);
     }
 
     /**
