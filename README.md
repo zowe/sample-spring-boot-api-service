@@ -1,4 +1,4 @@
-# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [![codecov](https://codecov.io/gh/zowe/sample-spring-boot-api-service/branch/master/graph/badge.svg?token=UeytGN5vV5)](https://codecov.io/gh/zowe/sample-spring-boot-api-service) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=zowe_sample-spring-boot-api-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=zowe_sample-spring-boot-api-service)
+# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service)
 
 This project provides:
 
