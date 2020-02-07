@@ -59,7 +59,11 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
-            .anyRequest().authenticated()
+
+            // endpoint protection
+            .and()
+            .authorizeRequests()
+            .antMatchers("/actuator/**", "/actuator/info").permitAll()
 
             .and()
             .addFilterBefore(loginFilter(authConfigurationProperties.getServiceLoginEndpoint(), authenticationManager()), UsernamePasswordAuthenticationFilter.class)

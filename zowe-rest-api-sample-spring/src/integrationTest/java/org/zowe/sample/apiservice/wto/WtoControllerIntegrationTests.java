@@ -9,18 +9,27 @@
  */
 package org.zowe.sample.apiservice.wto;
 
+import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.zowe.sample.apiservice.test.IntegrationTests;
 
 public class WtoControllerIntegrationTests extends IntegrationTests {
+    String token = null;
+
+    @Before
+    public void setUp() {
+        token = serviceUnderTest.login();
+    }
+
     @Test
     public void returnsWtoMessage() throws Exception {
-        when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",
-                not(isEmptyOrNullString()));
+        given().header("Authorization", token).when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",
+            not(isEmptyOrNullString()));
     }
 }

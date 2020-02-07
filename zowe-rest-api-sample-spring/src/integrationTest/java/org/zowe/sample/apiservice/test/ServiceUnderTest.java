@@ -9,21 +9,21 @@
  */
 package org.zowe.sample.apiservice.test;
 
-import static io.restassured.RestAssured.basic;
-import static io.restassured.RestAssured.get;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.awaitility.Awaitility.await;
-import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
-import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_USERID;
-
-import java.util.Map;
-
-import org.awaitility.core.ConditionTimeoutException;
-
 import io.restassured.RestAssured;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.ConditionTimeoutException;
+
+import java.util.Base64;
+import java.util.Map;
+
+import static io.restassured.RestAssured.basic;
+import static io.restassured.RestAssured.given;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.awaitility.Awaitility.await;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_PASSWORD;
+import static org.zowe.commons.zos.security.platform.MockPlatformUser.VALID_USERID;
 
 @Slf4j
 @Getter
@@ -51,6 +51,8 @@ public class ServiceUnderTest {
 
     private final String healthEndpoint;
 
+    private final String loginEndpoint;
+
     private final int waitMinutes;
 
     private Status status = Status.UNKNOWN;
@@ -64,11 +66,12 @@ public class ServiceUnderTest {
 
     public ServiceUnderTest() {
         this.profile = env("TEST_PROFILE", LOCAL_PROFILE);
-        this.baseUri = env("TEST_BASE_URI", "https://localhost");
+        this.baseUri = env("TEST_BASE_URI", "http://localhost");
         this.port = Integer.parseInt(env("TEST_PORT", "10080"));
         this.userId = env("TEST_USERID", VALID_USERID);
         this.password = env("TEST_PASSWORD", VALID_PASSWORD);
         this.healthEndpoint = env("TEST_HEALTH_ENDPOINT", "/actuator/health");
+        this.loginEndpoint = env("TEST_LOGIN_ENDPOINT", "/api/v1/auth/login");
         this.waitMinutes = Integer.parseInt(env("TEST_WAIT_MINUTES", "1"));
 
         log.info("Service under test: {}", this.toString());
@@ -86,37 +89,53 @@ public class ServiceUnderTest {
     public void defaultRestAssuredSetup() {
         RestAssured.baseURI = baseUri;
         RestAssured.port = port;
-        RestAssured.useRelaxedHTTPSValidation();
+        //RestAssured.useRelaxedHTTPSValidation();
         RestAssured.authentication = basic(userId, password);
     }
 
     public boolean isReady() {
+        String token = login();
         try {
-            return get(healthEndpoint).body().jsonPath().get("status").equals("UP");
+            return given().header("Authorization", token).when()
+                .get(healthEndpoint).body().jsonPath().get("status").equals("UP");
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return false;
         }
     }
 
+    //TODO: Remove this method and make sure it is not filtered by spring security filter chain
+    public String login() {
+        RestAssured.baseURI = "http://localhost:10080";
+        String ZOWE_BASIC_AUTHENTICATION = "Basic "
+            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + VALID_PASSWORD).getBytes());
+        try {
+            return given().header("Authorization", ZOWE_BASIC_AUTHENTICATION).
+                get(loginEndpoint).cookie("zoweSdkAuthenticationToken");
+        } catch (Exception e) {
+            log.debug("Check has failed", e);
+            return null;
+        }
+    }
+
     public synchronized void waitUntilIsReady() {
         switch (getStatus()) {
-        case UNKNOWN:
-            log.info("Waiting for the service {} on port {} to start", baseUri, port);
-            defaultRestAssuredSetup();
-            try {
-                await().atMost(waitMinutes, MINUTES).until(this::isReady);
-                status = Status.UP;
-            } catch (ConditionTimeoutException e) {
-                status = Status.DOWN;
-                throw e;
-            }
-            break;
-        case UP:
-            defaultRestAssuredSetup();
-            break;
-        case DOWN:
-            throw new RuntimeException("The service is down");
+            case UNKNOWN:
+                log.info("Waiting for the service {} on port {} to start", baseUri, port);
+                defaultRestAssuredSetup();
+                try {
+                    await().atMost(waitMinutes, MINUTES).until(this::isReady);
+                    status = Status.UP;
+                } catch (ConditionTimeoutException e) {
+                    status = Status.DOWN;
+                    throw e;
+                }
+                break;
+            case UP:
+                defaultRestAssuredSetup();
+                break;
+            case DOWN:
+                throw new RuntimeException("The service is down");
         }
     }
 }
