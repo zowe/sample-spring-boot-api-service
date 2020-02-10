@@ -106,7 +106,6 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        RestAssured.baseURI = "http://localhost:10080";
         String ZOWE_BASIC_AUTHENTICATION = "Basic "
             + Base64.getEncoder().encodeToString((VALID_USERID + ":" + VALID_PASSWORD).getBytes());
         try {
