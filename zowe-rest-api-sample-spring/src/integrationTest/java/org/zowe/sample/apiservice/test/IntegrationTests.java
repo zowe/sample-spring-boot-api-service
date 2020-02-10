@@ -13,9 +13,12 @@ import org.junit.Before;
 
 public class IntegrationTests {
     protected ServiceUnderTest serviceUnderTest = ServiceUnderTest.getInstance();
+    protected String token = null;
 
     @Before
     public void setup() {
         serviceUnderTest.waitUntilIsReady();
+        this.token = serviceUnderTest.login();
+
     }
 }

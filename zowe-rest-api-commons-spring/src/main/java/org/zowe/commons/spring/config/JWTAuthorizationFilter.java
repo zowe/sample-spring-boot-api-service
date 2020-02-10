@@ -21,10 +21,10 @@ import java.util.Optional;
  */
 public class JWTAuthorizationFilter extends AbstractTokenHandler {
 
-    private final AuthUtility authConfigurationProperties;
+    private final ZoweAuthenticationUtility authConfigurationProperties;
 
-    public JWTAuthorizationFilter(AuthenticationFailureHandler failureHandler,
-                                  AuthUtility authConfigurationProperties) {
+    public JWTAuthorizationFilter(ZoweAuthenticationFailureHandler failureHandler,
+                                  ZoweAuthenticationUtility authConfigurationProperties) {
         super(failureHandler, authConfigurationProperties);
         this.authConfigurationProperties = authConfigurationProperties;
     }

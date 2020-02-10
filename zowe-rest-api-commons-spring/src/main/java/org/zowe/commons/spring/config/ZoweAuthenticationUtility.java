@@ -37,13 +37,13 @@ import java.util.Optional;
 @Data
 @Component
 @Slf4j
-public class AuthUtility {
+public class ZoweAuthenticationUtility {
 
     public String basicAuthenticationPrefix = "Basic";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
 
-    private AuthUtility.TokenProperties tokenProperties;
-    private AuthUtility.CookieProperties cookieProperties;
+    private ZoweAuthenticationUtility.TokenProperties tokenProperties;
+    private ZoweAuthenticationUtility.CookieProperties cookieProperties;
 
     //Token properties
     @Data
@@ -66,9 +66,9 @@ public class AuthUtility {
         private Integer cookieMaxAge = -1;
     }
 
-    public AuthUtility() {
-        this.cookieProperties = new AuthUtility.CookieProperties();
-        this.tokenProperties = new AuthUtility.TokenProperties();
+    public ZoweAuthenticationUtility() {
+        this.cookieProperties = new ZoweAuthenticationUtility.CookieProperties();
+        this.tokenProperties = new ZoweAuthenticationUtility.TokenProperties();
     }
 
     /**

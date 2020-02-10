@@ -16,7 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.zowe.commons.spring.config.AuthUtility;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.token.TokenService;
 
 import javax.servlet.FilterChain;
@@ -31,11 +31,11 @@ import java.util.Optional;
  * Filter to authenticate the user and to set Jwt token in cookie.
  */
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
-    private final AuthUtility authConfigurationProperties;
+    private final ZoweAuthenticationUtility authConfigurationProperties;
     private final TokenService tokenService;
 
     public LoginFilter(String authEndpoint,
-                       AuthUtility authConfigurationProperties,
+                       ZoweAuthenticationUtility authConfigurationProperties,
                        AuthenticationManager authenticationManager, TokenService tokenService) {
         super(authEndpoint);
         this.authConfigurationProperties = authConfigurationProperties;

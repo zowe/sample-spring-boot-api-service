@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class CookieAuthorizationFilter extends AbstractTokenHandler {
-    private final AuthUtility authConfigurationProperties;
+    private final ZoweAuthenticationUtility authConfigurationProperties;
 
-    public CookieAuthorizationFilter(AuthenticationFailureHandler failureHandler,
-                                     AuthUtility authConfigurationProperties) {
+    public CookieAuthorizationFilter(ZoweAuthenticationFailureHandler failureHandler,
+                                     ZoweAuthenticationUtility authConfigurationProperties) {
         super(failureHandler, authConfigurationProperties);
         this.authConfigurationProperties = authConfigurationProperties;
     }

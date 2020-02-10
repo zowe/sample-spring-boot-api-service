@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.zowe.commons.spring.config.AuthUtility;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.login.LoginRequest;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RequiredArgsConstructor
 public class TokenServiceImpl extends ZosAuthenticationProvider implements TokenService {
-    private final AuthUtility authConfigurationProperties;
+    private final ZoweAuthenticationUtility authConfigurationProperties;
 
     /**
      * Calls authentication manager to validate the username and password

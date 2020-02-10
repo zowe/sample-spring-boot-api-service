@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.zowe.commons.error.CommonsErrorService;
 import org.zowe.commons.error.ErrorService;
 import org.zowe.commons.rest.response.ApiMessage;
@@ -33,7 +34,7 @@ import java.io.IOException;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AuthenticationFailureHandler {
+public class ZoweAuthenticationFailureHandler {
 
     private final ErrorService errorService = CommonsErrorService.get();
 
@@ -67,6 +68,8 @@ public class AuthenticationFailureHandler {
             handleUnauthorizedException(ex, httpServletResponse);
         } else if (ex instanceof NullPointerException) {
             handleUnauthorizedException(ex, httpServletResponse);
+        } else if (ex instanceof ResourceAccessException) {
+            handleUnauthorizedException(ex, httpServletResponse);
         } else {
             throw ex;
         }
@@ -87,6 +90,11 @@ public class AuthenticationFailureHandler {
     private void handleExpiredTokenException(HttpServletResponse response) throws ServletException {
         ApiMessage message = localizedMessage("org.zowe.commons.rest.expiredToken");
         writeErrorResponse(message, HttpStatus.NOT_ACCEPTABLE, response);
+    }
+
+    private void handleResourceAccessException(HttpServletResponse response) throws ServletException {
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.forbidden");
+        writeErrorResponse(message, HttpStatus.FORBIDDEN, response);
     }
 
     protected void writeErrorResponse(ApiMessage message, HttpStatus status, HttpServletResponse response) throws ServletException {

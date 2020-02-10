@@ -9,8 +9,8 @@
  */
 package org.zowe.sample.apiservice.security;
 
+import io.restassured.RestAssured;
 import org.hamcrest.Matcher;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.zowe.sample.apiservice.test.IntegrationTests;
@@ -21,17 +21,13 @@ import static org.junit.Assume.assumeTrue;
 import static org.zowe.sample.apiservice.test.ServiceUnderTest.LOCAL_PROFILE;
 
 public class SecurityContextControllerIntegrationTests extends IntegrationTests {
-    String token = null;
-
-    @Before
-    public void setUp() {
-        token = serviceUnderTest.login();
-    }
 
     @Test
     public void switchesContextToAuthenticatedUserId() throws Exception {
         serviceUnderTest.defaultRestAssuredSetup();
         Matcher<String> equalsToAuthenticatedUserID = equalToIgnoringCase(serviceUnderTest.getUserId());
+        //TODO: Support for https is missing, as with https it throws 'SSLException: Unrecognized SSL message, plaintext connection?'
+        RestAssured.baseURI = "http://localhost";
         given().header("Authorization", token).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(200)
             .body("afterSwitchUserName", equalsToAuthenticatedUserID)
             .body("afterSwitchUserNameSpring", equalsToAuthenticatedUserID)

@@ -96,6 +96,7 @@ public class ServiceUnderTest {
     public boolean isReady() {
         String token = login();
         try {
+            //TODO: Remove token as header as 'actuator/health' should not be blocked by spring security
             return given().header("Authorization", token).when()
                 .get(healthEndpoint).body().jsonPath().get("status").equals("UP");
         } catch (Exception e) {
@@ -104,7 +105,6 @@ public class ServiceUnderTest {
         }
     }
 
-    //TODO: Remove this method and make sure it is not filtered by spring security filter chain
     public String login() {
         RestAssured.baseURI = "http://localhost:10080";
         String ZOWE_BASIC_AUTHENTICATION = "Basic "

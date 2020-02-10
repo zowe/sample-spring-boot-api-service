@@ -25,14 +25,14 @@ import org.zowe.commons.spring.token.TokenService;
 
 @Configuration
 public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final AuthUtility authConfigurationProperties;
-    private final AuthenticationFailureHandler tokenFailureHandler;
+    private final ZoweAuthenticationUtility authConfigurationProperties;
+    private final ZoweAuthenticationFailureHandler tokenFailureHandler;
 
     @Autowired
     TokenService tokenService;
 
-    public ZoweWebSecurityConfig(AuthUtility authConfigurationProperties,
-                                 AuthenticationFailureHandler tokenFailureHanlder) {
+    public ZoweWebSecurityConfig(ZoweAuthenticationUtility authConfigurationProperties,
+                                 ZoweAuthenticationFailureHandler tokenFailureHanlder) {
         this.authConfigurationProperties = authConfigurationProperties;
         this.tokenFailureHandler = tokenFailureHanlder;
     }
