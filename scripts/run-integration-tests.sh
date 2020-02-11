@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 cd zowe-rest-api-sample-spring
 java -jar build/libs/zowe-rest-api-sample-spring-*.jar --spring.config.additional-location=file:./config/local/application.yml &
 PID=$!
