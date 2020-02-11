@@ -43,8 +43,8 @@ public class ServiceUnderTest {
     private final String baseUri;
 
     private final int port;
-
     private final String userId;
+
 
     @ToString.Exclude
     private final String password;
@@ -106,10 +106,10 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        String ZOWE_BASIC_AUTHENTICATION = "Basic "
-            + Base64.getEncoder().encodeToString((VALID_USERID + ":" + VALID_PASSWORD).getBytes());
+        String zowebasicAuthHeader = "Basic "
+            + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
-            return given().header("Authorization", ZOWE_BASIC_AUTHENTICATION).
+            return given().header("Authorization", zowebasicAuthHeader).
                 get(loginEndpoint).cookie("zoweSdkAuthenticationToken");
         } catch (Exception e) {
             log.debug("Check has failed", e);
