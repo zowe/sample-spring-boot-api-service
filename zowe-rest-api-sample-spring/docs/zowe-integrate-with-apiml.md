@@ -11,7 +11,8 @@ The default external configuration file for running on workstation [`zowe-rest-a
    * Set `apiml.service.hostname` and `apiml.service.ipAddress` to the hostname and the IP address of your server. You can keep `localhost` for development purposes if your API Mediation Layer is running also running on the same server
    * Set `api.service.discoveryServiceUrls` to the URL of the API Mediation Layer Discovery Service. You can keep `https://localhost:10011/eureka` if your API Mediation Layer is running also running on the same server and using the default port `10011` for the Discovery Service
    
-    **Note**: Certificates in keystore and truststore, that establish a trust between Zowe API Mediation layer and Service, are already set correctly because both Zowe API Mediation layer and Service run on localhost hence they use keystore and truststore from git repository with pre-populated certificates. This setup is not for production use!!! If you have a temptation to use it in production you open door for [MITM attack](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) on the communication between your Service and Zowe API Mediation layer. For further details look at section [How to Set Certificates for Zowe Service](#How-to-set-certificates-for-Zowe-Service).
+    **Note**: Certificates in keystore and truststore, that establish a trust between Zowe API Mediation layer and Service, are already set correctly because both Zowe API Mediation layer and Service run on localhost hence they use keystore and truststore from git repository with pre-populated certificates. **This setup is not for production use!!!** If you have a temptation to use it in production you open door for [MITM attack](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) on the communication between your Service and Zowe API Mediation layer. For further details look at section [How to Set Certificates for Zowe Service](#How-to-set-certificates-for-Zowe-Service).
+
 
 Example of setting these values in [`zowe-rest-api-sample-spring/config/local/application.yml`](/zowe-rest-api-sample-spring/config/local/application.yml):
 
@@ -233,7 +234,27 @@ This section describes how to obtain certificates for Zowe Service or how to est
 ](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-security.html#certificate-management-in-zowe-api-mediation-layer). 
 
 
-You need to specify `keyStore` and `trustStore` parameter in configuration of your service [`zowe-rest-api-sample-spring/config/local/application.yml`](/zowe-rest-api-sample-spring/config/local/application.yml). For further details on keystore and truststore look at [TrustStore and KeyStore](/zowe-rest-api-sample-spring/docs/https-setup.md#TrustStore-and-KeyStore) section. There are 4 scenarios based on situation you are in. How to decide which option is right for me? So, do you have a certificate for your service?
+You need to specify `keyStore` and `trustStore` parameter in configuration of your service [`zowe-rest-api-sample-spring/config/local/application.yml`](/zowe-rest-api-sample-spring/config/local/application.yml). For further details on keystore and truststore look at [TrustStore and KeyStore](/zowe-rest-api-sample-spring/docs/https-setup.md#TrustStore-and-KeyStore) section. 
+
+
+### Content of TrustStore with Respect to Zowe API Mediation Layer
+Truststore repository of your service contains certificates or root certificate authorities (CA) of servers which service is communicating with. Because service registers itself to Zowe API Mediation Layer via Discovery service at least Discovery service's certificate in your service truststore is needed so our service can validate that communication was not tampered.
+
+Moreover the certificate of Discovery service is signed with Zowe internal CA, therefore we can put either Zowe internal CA in truststore or a certificate of Discovery service. If Zowe internal CA is presented in your service truststore, no further certificates of other services, that your service call, have to be added to truststore in future, provided they all are signed by Zowe internal CA.
+
+If Discovery service certificate is signed by a public CA even then a root certificate of public CA has to be imported into truststore because `trustStore` parameter overrides default Java truststore `cacerts` that contains public CA.
+
+The bottom line the truststore has to contain at least record with certificate of Discovery service or a root certificate.
+
+Command to create a truststore `truststore.p12` repository and import a certificate `ca.cer`.
+```sh
+keytool -importcert -keystore truststore.p12 -trustcacerts -alias rootca -storepass password -file ca.cer -storetype PKCS12 --noprompt
+```
+**NOTE**: Other option is to copy truststore from Zowe instance, that contains all needed certificates. Location of Zowe truststore is  `<zowe_install_dir>/1.7.1/components/api-mediation/keystore/localhost/localhost.truststore.p12` (this is path valid for Zowe 1.7.1)
+
+
+
+There are 4 scenarios based on situation you are in. How to decide which option is right for me? So, do you have a certificate for your service?
  * Yes, I have a certificate, go for [Add a Service with an Existing Certificate to Zowe API Mediation Layer](#Add-a-Service-with-an-Existing-Certificate-to-Zowe-API-Mediation-Layer)
  * No, I don't have a certificate, don't worry there are some options left :-)
    * Does your service run on the same host like Zowe API Mediation layer and does you service have access to Zowe API Mediation layer truststore and keystore? If yes, go for [Sharing keystore with Zowe instance](#Sharing-keystore-with-Zowe-instance).
@@ -244,12 +265,12 @@ You need to specify `keyStore` and `trustStore` parameter in configuration of yo
 ### Sharing keystore with Zowe instance
 In this scenario your Service needs to have access to Zowe installation folder and has to run on the same host like Zowe API Mediation layer.
 
-Set  `keyStore` and `trustStore` parameters to `localhost.keystore.p12` and `localhost.truststore.p12` of Zowe API Mediation layer. These files can be found in 
+Set  `keyStore` and `trustStore` parameters to `localhost.keystore.p12` and `localhost.truststore.p12` of Zowe API Mediation layer in `application.yml`. These files can be found in 
 `<zowe_install_dir>/1.7.1/components/api-mediation/keystore/localhost` (this is path valid for Zowe 1.7.1)
 
 ### Add a Service with an Existing Certificate to Zowe API Mediation Layer
 In this scenario you already have a signed certificate for your service and you would like to establish trust between your service and Zowe API Mediation layer. 
- 1) create a new `truststore.p12` and `keystore.p12` using [instructions](/zowe-rest-api-sample-spring/docs/https-setup.md#TrustStore-and-KeyStore), update  `keyStore` and `trustStore` parameters.
+ 1) create a new `truststore.p12` and `keystore.p12` using [instructions](/zowe-rest-api-sample-spring/docs/https-setup.md#TrustStore-and-KeyStore), update  `keyStore` and `trustStore` parameters in `application.yml`.
  1) See a section [Add a service with an existing certificate to API ML on z/OS](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-security.html#add-a-service-with-an-existing-certificate-to-api-ml-on-z-os) in Zowe documentation.
 
 
@@ -258,7 +279,7 @@ In this scenario you don't have a certificate for your service yet and you do tr
 
 1) perform steps in a section [Generate a keystore and truststore for a new service on z/OS](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-security.html#generate-a-keystore-and-truststore-for-a-new-service-on-z-os)
 2) transfer `service.keystore.p12` and `service.truststore.p12` from z/OS
-3) update  `keyStore` and `trustStore` parameters
+3) update  `keyStore` and `trustStore` parameters in `application.yml`
 
 ### Generate a Keystore and Certificate Signing Request on Your Machine
 In this scenario you don't have a certificate for your service yet and you don't want to disclose private key, therefore you want to generate your own key pair.
@@ -281,4 +302,4 @@ In this scenario you don't have a certificate for your service yet and you don't
             * `local_ca` folder can be found in `<zowe_install_dir>/1.7.1/components/api-mediation/keystore/` (this is path valid for Zowe 1.7.1)
         1) Using a 3rd party publicly trusted Certificate Authority. In this case you have to follow a process of CA
    1) create truststore repository using [Content of KeyStore](/zowe-rest-api-sample-spring/docs/https-setup.md#Content-of-KeyStore)
-   1) update  `keyStore` and `trustStore` parameters
+   1) update  `keyStore` and `trustStore` parameters in `application.yml`
