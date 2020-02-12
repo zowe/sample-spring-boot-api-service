@@ -73,7 +73,7 @@ jobs:
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
       - store_artifacts:
-          path: zowe-rest-api-sample-spring/build/pom.xml
+          path: ~/code/zowe-rest-api-sample-spring/build/pom.xml
           destination: zowe-rest-api-sample-spring/pom.xml
       - save_cache:
           paths:
