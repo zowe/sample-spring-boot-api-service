@@ -40,6 +40,7 @@ import java.util.Optional;
 public class ZoweAuthenticationUtility {
 
     public String basicAuthenticationPrefix = "Basic";
+    public String bearerAuthenticationPrefix = "Bearer";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
 
     private ZoweAuthenticationUtility.TokenProperties tokenProperties;
@@ -78,12 +79,16 @@ public class ZoweAuthenticationUtility {
      * @return the decoded credentials in {@link LoginRequest}
      */
     public LoginRequest mapBase64Credentials(String base64Credentials) {
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
-        int i = credentials.indexOf(':');
-        if (i > 0) {
-            return new LoginRequest(credentials.substring(0, i), credentials.substring(i + 1));
+        try {
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
+            int i = credentials.indexOf(':');
+            if (i > 0) {
+                return new LoginRequest(credentials.substring(0, i), credentials.substring(i + 1));
+            }
+        } catch (
+            Exception e) {
+            log.debug("Conversion problem with the credentials {}", base64Credentials);
         }
-
         return null;
     }
 

@@ -10,10 +10,7 @@
 package org.zowe.commons.spring.token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,9 +18,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.login.LoginFilter;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
@@ -44,7 +42,6 @@ public class LoginFilterTest {
     private MockHttpServletRequest httpServletRequest;
     private MockHttpServletResponse httpServletResponse;
     private LoginFilter loginFilter;
-    private final ObjectMapper mapper = new ObjectMapper();
     private ZoweAuthenticationUtility authConfigurationProperties = new ZoweAuthenticationUtility();
 
     @Mock
@@ -56,6 +53,9 @@ public class LoginFilterTest {
     @Mock
     ZosAuthenticationProvider authenticationProvider;
 
+    @Mock
+    ZoweAuthenticationFailureHandler failureHandler;
+
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
@@ -64,7 +64,7 @@ public class LoginFilterTest {
         loginFilter = new LoginFilter("TEST_ENDPOINT",
             authConfigurationProperties,
             authenticationManager,
-            tokenService);
+            tokenService, failureHandler);
     }
 
     @Ignore
@@ -103,10 +103,10 @@ public class LoginFilterTest {
         httpServletRequest.setContent(EMPTY_JSON.getBytes());
         httpServletResponse = new MockHttpServletResponse();
 
-        exception.expect(AuthenticationCredentialsNotFoundException.class);
-        exception.expectMessage("Username or password not provided.");
+        Authentication authentication =
+            loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
 
-        loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
+        Assert.assertNull(authentication);
     }
 
     @Test
@@ -115,10 +115,10 @@ public class LoginFilterTest {
         httpServletRequest.setMethod(HttpMethod.POST);
         httpServletResponse = new MockHttpServletResponse();
 
-        exception.expect(AuthenticationCredentialsNotFoundException.class);
-        exception.expectMessage("Login object has wrong format.");
+        Authentication authentication =
+            loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
 
-        loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
+        Assert.assertNull(authentication);
     }
 
     @Test
@@ -128,9 +128,9 @@ public class LoginFilterTest {
         httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, INVALID_AUTH_HEADER);
         httpServletResponse = new MockHttpServletResponse();
 
-        exception.expect(AuthenticationCredentialsNotFoundException.class);
-        exception.expectMessage("Login object has wrong format.");
+        Authentication authentication =
+            loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
 
-        loginFilter.attemptAuthentication(httpServletRequest, httpServletResponse);
+        Assert.assertNull(authentication);
     }
 }

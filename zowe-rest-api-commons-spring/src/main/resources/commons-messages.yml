@@ -97,5 +97,5 @@ messages:
   - key: org.zowe.commons.rest.invalidToken
     number: ZWEAS417
     type: ERROR
-    text: "The token provided is not a valid one."
+    text: "The format of token provided in request is incorrect."
     action: "Kindly login again to provide a valid token."

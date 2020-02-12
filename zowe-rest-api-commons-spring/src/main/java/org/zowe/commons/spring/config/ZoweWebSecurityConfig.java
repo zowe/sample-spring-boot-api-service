@@ -79,7 +79,7 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             loginEndpoint,
             authConfigurationProperties,
             authenticationManager,
-            tokenService);
+            tokenService, tokenFailureHandler);
     }
 
     /**

@@ -15,9 +15,12 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.token.TokenService;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -34,12 +37,15 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private final ZoweAuthenticationUtility authConfigurationProperties;
     private final TokenService tokenService;
 
+    private final ZoweAuthenticationFailureHandler failureHandler;
+
     public LoginFilter(String authEndpoint,
                        ZoweAuthenticationUtility authConfigurationProperties,
-                       AuthenticationManager authenticationManager, TokenService tokenService) {
+                       AuthenticationManager authenticationManager, TokenService tokenService, ZoweAuthenticationFailureHandler failureHandler) {
         super(authEndpoint);
         this.authConfigurationProperties = authConfigurationProperties;
         this.tokenService = tokenService;
+        this.failureHandler = failureHandler;
         this.setAuthenticationManager(authenticationManager);
     }
 
@@ -52,17 +58,19 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Optional<LoginRequest> optionalLoginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request);
-        LoginRequest loginRequest = optionalLoginRequest.orElseGet(() -> authConfigurationProperties.getCredentialsFromBody(request));
+        UsernamePasswordAuthenticationToken auth = null;
+        try {
+            Optional<LoginRequest> optionalLoginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request);
+            LoginRequest loginRequest = optionalLoginRequest.orElseGet(() -> authConfigurationProperties.getCredentialsFromBody(request));
+            if (StringUtils.isBlank(loginRequest.getUsername()) || StringUtils.isBlank(loginRequest.getPassword())) {
+                throw new AuthenticationCredentialsNotFoundException("Username or password not provided.");
+            }
+            auth = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
-        if (StringUtils.isBlank(loginRequest.getUsername()) || StringUtils.isBlank(loginRequest.getPassword())) {
-            throw new AuthenticationCredentialsNotFoundException("Username or password not provided.");
+            tokenService.login(loginRequest, request);
+        } catch (RuntimeException authenticationException) {
+            failureHandler.handleException(authenticationException, response);
         }
-        UsernamePasswordAuthenticationToken auth =
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-
-        tokenService.login(loginRequest, request);
-
         return auth;
     }
 
