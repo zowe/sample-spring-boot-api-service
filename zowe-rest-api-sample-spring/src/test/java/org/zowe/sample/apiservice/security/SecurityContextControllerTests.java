@@ -68,7 +68,7 @@ public class SecurityContextControllerTests {
     public void failsWithInvalidAuthentication() throws Exception {
         String invalidToken = "eyJhbGciOiJIUzUxMiJ9.fyryerytuytry.KILjk1gpVxLY1wrr8";
         mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization",
-            invalidToken)).andDo(print()).andExpect(status().isExpectationFailed());
+            invalidToken)).andDo(print()).andExpect(status().isUnauthorized());
     }
 
     @Test
