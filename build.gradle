@@ -11,6 +11,7 @@ buildscript {
 }
 
 apply from: 'gradle/sonar.gradle'
+apply from: 'gradle/generate-pom.gradle'
 
 allprojects {
     ext.getLastGitTag = { ->

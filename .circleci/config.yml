@@ -50,6 +50,8 @@ jobs:
       - store_artifacts:
           path: build/zowe-rest-api-sample-spring.jar
           destination: zowe-rest-api-sample-spring.jar
+      - store_artifacts:
+          path: pom.xml
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
           command: |
@@ -69,6 +71,8 @@ jobs:
       - store_artifacts: &store_sample_zip
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
+      - store_artifacts:
+          path: pom.xml
       - save_cache:
           paths:
             - ~/.gradle
