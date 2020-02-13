@@ -110,7 +110,7 @@ public class ServiceUnderTest {
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header("Authorization", zowebasicAuthHeader).
-                get(loginEndpoint).cookie("zoweSdkAuthenticationToken");
+                post(loginEndpoint).cookie("zoweSdkAuthenticationToken");
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return null;
