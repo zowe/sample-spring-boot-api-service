@@ -16,6 +16,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class WtoControllerIntegrationTests extends IntegrationTests {
+
+
     @Test
     public void returnsWtoMessage() throws Exception {
         given().header("Authorization", token).when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",

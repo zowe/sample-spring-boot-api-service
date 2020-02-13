@@ -13,11 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.sample.apiservice.TestUtils;
 
 import javax.servlet.http.Cookie;
@@ -33,8 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(WtoController.class)
 public class WtoControllerTests {
 
+    private ZoweAuthenticationUtility zoweAuthenticationUtility =
+        new ZoweAuthenticationUtility();
+
     @Autowired
     private MockMvc mvc;
+
+    @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
+    private String cookieTokenName;
 
     String token = null;
 
@@ -45,8 +53,8 @@ public class WtoControllerTests {
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {
-            token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("zoweSdkAuthenticationToken"))
+            token = zoweAuthenticationUtility.bearerAuthenticationPrefix + Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieTokenName))
                 .filter(cookie -> !cookie.getValue().isEmpty())
                 .findFirst().get().getValue();
         }

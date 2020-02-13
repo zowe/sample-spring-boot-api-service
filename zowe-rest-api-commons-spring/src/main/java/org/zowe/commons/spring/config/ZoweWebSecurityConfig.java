@@ -58,8 +58,8 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
 
             .and()
-            .addFilterBefore(new JWTAuthorizationFilter(tokenFailureHandler, authConfigurationProperties), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new CookieAuthorizationFilter(tokenFailureHandler, authConfigurationProperties), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new JWTAuthorizationFilter(tokenFailureHandler, authConfigurationProperties, tokenService), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new CookieAuthorizationFilter(tokenFailureHandler, authConfigurationProperties, tokenService), UsernamePasswordAuthenticationFilter.class);
     }
 
     /**

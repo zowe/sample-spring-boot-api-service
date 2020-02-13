@@ -9,6 +9,22 @@
  */
 package org.zowe.sample.apiservice.security;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
+import org.zowe.sample.apiservice.TestUtils;
+
+import javax.servlet.http.Cookie;
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,28 +32,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.zowe.sample.apiservice.TestUtils;
-
-import javax.servlet.http.Cookie;
-import java.util.Arrays;
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(SecurityContextController.class)
 public class SecurityContextControllerTests {
+
+    private ZoweAuthenticationUtility zoweAuthenticationUtility =
+        new ZoweAuthenticationUtility();
 
     @Autowired
     private MockMvc mvc;
 
     String token = null;
+
+    @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
+    private String cookieTokenName;
 
     @Before
     public void setup() throws Exception {
@@ -46,8 +54,8 @@ public class SecurityContextControllerTests {
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {
-            token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("zoweSdkAuthenticationToken"))
+            token = zoweAuthenticationUtility.bearerAuthenticationPrefix + Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieTokenName))
                 .filter(cookie -> !cookie.getValue().isEmpty())
                 .findFirst().get().getValue();
         }

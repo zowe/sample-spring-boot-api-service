@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 
 import java.util.Base64;
 import java.util.Map;
@@ -37,6 +38,9 @@ public class ServiceUnderTest {
     }
 
     private static ServiceUnderTest instance;
+
+    private ZoweAuthenticationUtility authConfigurationProperties
+        = new ZoweAuthenticationUtility();
 
     private final String profile;
 
@@ -73,7 +77,7 @@ public class ServiceUnderTest {
         this.healthEndpoint = env("TEST_HEALTH_ENDPOINT", "/actuator/health");
         this.loginEndpoint = env("TEST_LOGIN_ENDPOINT", "/api/v1/auth/login");
         this.waitMinutes = Integer.parseInt(env("TEST_WAIT_MINUTES", "1"));
-
+        this.authConfigurationProperties = getAuthConfigurationProperties();
         log.info("Service under test: {}", this.toString());
     }
 
@@ -97,7 +101,7 @@ public class ServiceUnderTest {
         String token = login();
         try {
             //TODO: Remove token as header as 'actuator/health' should not be blocked by spring security
-            return given().header("Authorization", token).when()
+            return given().header("Authorization", authConfigurationProperties.bearerAuthenticationPrefix + token).when()
                 .get(healthEndpoint).body().jsonPath().get("status").equals("UP");
         } catch (Exception e) {
             log.debug("Check has failed", e);
@@ -106,11 +110,11 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        String zowebasicAuthHeader = "Basic "
+        String zoweBasicAuthHeader = authConfigurationProperties.getBasicAuthenticationPrefix()
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
-            return given().header("Authorization", zowebasicAuthHeader).
-                post(loginEndpoint).cookie("zoweSdkAuthenticationToken");
+            return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).
+                post(loginEndpoint).cookie(authConfigurationProperties.getCookieTokenName());
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return null;

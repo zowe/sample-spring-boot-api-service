@@ -44,7 +44,7 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
                                 HttpServletRequest request,
                                 HttpServletResponse response) throws ServletException {
         try {
-            loginRequest = validateRequestAndExtractLoginRequest(loginRequest, request, response);
+            loginRequest = validateRequestAndExtractLoginRequest(loginRequest, request);
 
             UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
@@ -67,11 +67,11 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
      *
      * @param loginRequest
      * @param request
-     * @param response
      * @return
      * @throws ServletException
      */
-    private LoginRequest validateRequestAndExtractLoginRequest(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    private LoginRequest validateRequestAndExtractLoginRequest(LoginRequest loginRequest,
+                                                               HttpServletRequest request) throws ServletException {
         if ((Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).filter(
             header -> header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())))
             .isPresent()) {

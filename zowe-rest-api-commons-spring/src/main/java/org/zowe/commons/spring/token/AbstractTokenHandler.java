@@ -20,7 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.login.LoginRequest;
-import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,8 +34,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     private final ZoweAuthenticationFailureHandler failureHandler;
     private final ZoweAuthenticationUtility authConfigurationProperties;
-
-    ZosAuthenticationProvider zosAuthenticationProvider = new ZosAuthenticationProvider();
+    private final TokenService tokenService;
 
     /**
      * Extracts the token from the request
@@ -74,21 +72,12 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
             filterChain.doFilter(request, response);
             return;
-        } else if (header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())) {
-            LoginRequest loginRequest =
-                authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
-            UsernamePasswordAuthenticationToken authentication
-                = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-            zosAuthenticationProvider.authenticate(authentication);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
         } else {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
 
             if (authenticationToken.isPresent()) {
                 try {
-                    UsernamePasswordAuthenticationToken authentication = getAuthentication(request).get();
-
+                    UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     filterChain.doFilter(request, response);
                 } catch (AuthenticationException authenticationException) {
@@ -102,18 +91,29 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
     }
 
-    private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(authConfigurationProperties.getTokenProperties().getRequestHeader());
-        if (token != null) {
+    private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
+                                                                            HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        String username = null;
+        String header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
 
-            String username = Jwts.parser()
-                .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        if (header != null) {
+            if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
+                header = header.replaceFirst(authConfigurationProperties.getBearerAuthenticationPrefix(), "").trim();
 
-            if (username != null) {
-                return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                username = Jwts.parser()
+                    .setSigningKey(authConfigurationProperties.getSecretKey())
+                    .parseClaimsJws(header)
+                    .getBody()
+                    .getSubject();
+                if (username != null) {
+                    return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                }
+
+            } else if (header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())) {
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+                tokenService.login(loginRequest, request, httpServletResponse);
+
+                return Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             }
             return null;
         }

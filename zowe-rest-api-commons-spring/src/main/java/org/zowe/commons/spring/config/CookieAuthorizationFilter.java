@@ -12,6 +12,7 @@ package org.zowe.commons.spring.config;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.zowe.commons.spring.token.AbstractTokenHandler;
 import org.zowe.commons.spring.token.TokenAuthentication;
+import org.zowe.commons.spring.token.TokenService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +23,9 @@ public class CookieAuthorizationFilter extends AbstractTokenHandler {
     private final ZoweAuthenticationUtility authConfigurationProperties;
 
     public CookieAuthorizationFilter(ZoweAuthenticationFailureHandler failureHandler,
-                                     ZoweAuthenticationUtility authConfigurationProperties) {
-        super(failureHandler, authConfigurationProperties);
+                                     ZoweAuthenticationUtility authConfigurationProperties,
+                                     TokenService tokenService) {
+        super(failureHandler, authConfigurationProperties, tokenService);
         this.authConfigurationProperties = authConfigurationProperties;
     }
 
@@ -41,8 +43,7 @@ public class CookieAuthorizationFilter extends AbstractTokenHandler {
         }
 
         return Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals(
-                authConfigurationProperties.getCookieProperties().getCookieName()))
+            .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
             .filter(cookie -> !cookie.getValue().isEmpty())
             .findFirst()
             .map(cookie -> new TokenAuthentication(cookie.getValue()));

@@ -10,15 +10,18 @@
 package org.zowe.sample.apiservice.test;
 
 import org.junit.Before;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 
 public class IntegrationTests {
     protected ServiceUnderTest serviceUnderTest = ServiceUnderTest.getInstance();
     protected String token = null;
+    ZoweAuthenticationUtility authConfigurationProperties
+        = new ZoweAuthenticationUtility();
 
     @Before
     public void setup() {
         serviceUnderTest.waitUntilIsReady();
-        this.token = serviceUnderTest.login();
+        this.token = authConfigurationProperties.bearerAuthenticationPrefix + serviceUnderTest.login();
 
     }
 }
