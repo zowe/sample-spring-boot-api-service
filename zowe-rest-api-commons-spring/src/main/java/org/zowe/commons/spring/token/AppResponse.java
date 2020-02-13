@@ -12,12 +12,16 @@ package org.zowe.commons.spring.token;
 import lombok.Data;
 
 @Data
-public class TokenResponse {
+public class AppResponse {
 
-    private String jwtToken;
+    private String status;
+    private int statusCode;
+    private String message;
 
-    public TokenResponse(String status) {
-        this.jwtToken = status;
+    public AppResponse(String status, int statusCode, String message) {
+        this.status = status;
+        this.statusCode = statusCode;
+        this.message = message;
     }
 
 }

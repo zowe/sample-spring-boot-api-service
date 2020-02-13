@@ -30,6 +30,15 @@ public class JWTAuthorizationFilter extends AbstractTokenHandler {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())
+            || request.getRequestURI().equalsIgnoreCase("/actuator/health")) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     protected Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request) {
         return Optional.of(
             new TokenAuthentication(request.getHeader(

@@ -30,8 +30,7 @@ import java.util.Locale;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,8 +48,8 @@ public class GreetingControllerTests {
 
     @Before
     public void setup() throws Exception {
-        MvcResult loginResult = this.mvc.perform(get("/api/v1/auth/login").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andReturn();
+        MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
+            header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isOk()).andReturn();
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {

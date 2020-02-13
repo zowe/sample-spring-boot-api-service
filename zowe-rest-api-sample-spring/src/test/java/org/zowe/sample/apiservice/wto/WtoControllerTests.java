@@ -9,11 +9,6 @@
  */
 package org.zowe.sample.apiservice.wto;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +23,12 @@ import org.zowe.sample.apiservice.TestUtils;
 import javax.servlet.http.Cookie;
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @WebMvcTest(WtoController.class)
 public class WtoControllerTests {
@@ -39,8 +40,8 @@ public class WtoControllerTests {
 
     @Before
     public void setup() throws Exception {
-        MvcResult loginResult = this.mvc.perform(get("/api/v1/auth/login").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andReturn();
+        MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
+            header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isOk()).andReturn();
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {

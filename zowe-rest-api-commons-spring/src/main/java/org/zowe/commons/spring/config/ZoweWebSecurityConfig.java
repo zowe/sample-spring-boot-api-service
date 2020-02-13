@@ -11,8 +11,6 @@ package org.zowe.commons.spring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.zowe.commons.spring.login.LoginFilter;
 import org.zowe.commons.spring.token.TokenService;
 
 @Configuration
@@ -57,29 +54,12 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             //Login endpoint
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.POST, authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
-
-            // endpoint protection
-            .and()
-            .authorizeRequests()
-            .antMatchers("/actuator/**", "/actuator/info").permitAll()
+            .antMatchers(authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
+            .anyRequest().authenticated()
 
             .and()
-            .addFilterBefore(loginFilter(authConfigurationProperties.getServiceLoginEndpoint(), authenticationManager()), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JWTAuthorizationFilter(tokenFailureHandler, authConfigurationProperties), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new CookieAuthorizationFilter(tokenFailureHandler, authConfigurationProperties), UsernamePasswordAuthenticationFilter.class);
-    }
-
-    /**
-     * Processes /login requests
-     */
-    private LoginFilter loginFilter(String loginEndpoint,
-                                    AuthenticationManager authenticationManager) {
-        return new LoginFilter(
-            loginEndpoint,
-            authConfigurationProperties,
-            authenticationManager,
-            tokenService, tokenFailureHandler);
     }
 
     /**

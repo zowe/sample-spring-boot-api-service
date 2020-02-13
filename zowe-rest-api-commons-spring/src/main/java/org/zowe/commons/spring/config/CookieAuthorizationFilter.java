@@ -33,6 +33,7 @@ public class CookieAuthorizationFilter extends AbstractTokenHandler {
      * @param request the http request
      * @return
      */
+    @Override
     public Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
