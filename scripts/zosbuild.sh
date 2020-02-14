@@ -34,6 +34,7 @@ zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-ap
 cd ..
 
 echo "Checking if build is needed"
+pwd
 ./gradlew :zowe-rest-api-commons-spring:zosbuild :zowe-rest-api-sample-spring:zosbuild
 if [ $? -eq 0 ]; then
   exit 0
