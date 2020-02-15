@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache: &keys
           keys:
-            - v2-zowe-sdk-{{ .Branch }}
-            - v2-zowe-sdk-master
+            - v3-zowe-sdk-{{ .Branch }}
+            - v3-zowe-sdk-master
       - run: &build_jarpatcher
           name: Building JAR Patcher using Gradle
           command: ./gradlew :jarpatcher:build
@@ -29,8 +29,11 @@ jobs:
       - run: &zosbuild
           name: Building Native z/OS Code
           command: |
-            npm uninstall zowe-api-dev
+            echo "==="
+            pwd
+            npm uninstall @zowedev/zowe-api-dev
             npm install
+            sudo npm install -g ./build/zowedev-zowe-api-dev.tgz
             source .circleci/river.env
             npm run zosbuild
       - run: &build
@@ -83,7 +86,7 @@ jobs:
             - ~/code/zowe-api-dev/node_modules
             - ~/code/zowe-rest-api-sample-spring/.gradle
             - ~/code/gradle/wrapper/gradle-wrapper.jar
-          key: v2-zowe-sdk-{{ .Branch }}-{{ epoch }}
+          key: v3-zowe-sdk-{{ .Branch }}-{{ epoch }}
   publish_all:
     docker:
       - image: circleci/openjdk:8-jdk-node

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 PLATFORM_OS=${PLATFORM_OS:-"linux"}
 PLATFORM_ARCH=${PLATFORM_ARCH:-"amd64"}
 TAG=${TAG:-`git describe --tags --abbrev=0`}
