@@ -122,7 +122,7 @@ export function trimProfileName(profileName: string): string {
 
 export function getDefaultProfile(profileType: string) {
     const profiles = zoweSync(`profiles list ${profileType}-profiles --show-contents`, { logOutput: false }).data as [
-        { name: string; profile: { user: string } }
+        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean } }
     ];
     let defaultProfile = profiles[0];
     for (const profile of profiles) {
