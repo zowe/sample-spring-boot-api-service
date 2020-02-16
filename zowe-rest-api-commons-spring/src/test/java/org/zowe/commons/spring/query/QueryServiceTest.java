@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class QueryServiceTest {
 
-    //TODO: change the real objects into mock objects
     private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.HS512;
     private static final String USER = "zowe";
     private static final String SECRET_KEY = "8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb";
@@ -47,7 +46,8 @@ public class QueryServiceTest {
 
         MockitoAnnotations.initMocks(this);
 
-        when(zoweAuthenticationUtility.getSecretKey()).thenReturn("8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb");
+        when(zoweAuthenticationUtility.getBearerAuthenticationPrefix()).thenReturn("Bearer");
+        when(zoweAuthenticationUtility.getSecretKey()).thenReturn(SECRET_KEY);
     }
 
     private String createExpiredJwtToken(String secretKey) {
@@ -60,7 +60,7 @@ public class QueryServiceTest {
     }
 
     private String createJwtToken(String secretKey) {
-        long expiredTimeMillis = System.currentTimeMillis() + 1000;
+        long expiredTimeMillis = System.currentTimeMillis() + 10000;
 
         return Jwts.builder()
             .setSubject(USER)
@@ -71,7 +71,8 @@ public class QueryServiceTest {
 
     @Test
     public void shouldValidateCorrectToken() {
-        Claims claims = queryService.getClaims(createJwtToken(SECRET_KEY));
+        String token = createJwtToken(SECRET_KEY);
+        Claims claims = queryService.getClaims(token);
         assertEquals("zowe", claims.getSubject());
     }
 
@@ -86,5 +87,6 @@ public class QueryServiceTest {
         String token = createExpiredJwtToken(SECRET_KEY);
         Claims claims = queryService.getClaims(token);
     }
+
 }
 

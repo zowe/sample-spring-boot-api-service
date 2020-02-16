@@ -23,10 +23,12 @@ import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -93,8 +95,17 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
                                                                             HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        String header = null;
         String username = null;
-        String header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
+
+        Cookie[] cookies = request.getCookies();
+        Optional<String> optionalCookie = Arrays.stream(cookies)
+            .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
+            .filter(cookie -> !cookie.getValue().isEmpty())
+            .findFirst()
+            .map(Cookie::getValue);
+
+        header = optionalCookie.orElseGet(() -> request.getHeader(authConfigurationProperties.getAuthorizationHeader()));
 
         if (header != null) {
             if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
@@ -114,6 +125,15 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 tokenService.login(loginRequest, request, httpServletResponse);
 
                 return Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
+            } else { //cookies
+                username = Jwts.parser()
+                    .setSigningKey(authConfigurationProperties.getSecretKey())
+                    .parseClaimsJws(header)
+                    .getBody()
+                    .getSubject();
+                if (username != null) {
+                    return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                }
             }
             return null;
         }
