@@ -24,16 +24,8 @@ logging:
 server:
     port: 10080
     ssl:
-        keyAlias: localhost
-        keyPassword: password
-        keyStore: zowe-rest-api-sample-spring/config/local/keystore.p12
-        keyStorePassword: password
-        keyStoreType: PKCS12
-        trustStore: zowe-rest-api-sample-spring/config/local/truststore.p12
-        trustStorePassword: password
-        trustStoreType: PKCS12
         verifySslCertificatesOfServices: true
-        enabled: true
+        enabled: false
         protocol: TLSv1.2
         enabledProtocols: TLSv1.2
         ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
@@ -46,8 +38,7 @@ zowe.commons.security.saf:
 
 zowe.commons.security.token:
     cookieTokenName: "zoweSdkAuthenticationToken"
-    #In Milliseconds
-    expiration: "8400000"
+    expiration: "86400000"
     secretKeyToGenJWTs: "8Zz5tw0Ionm3XPZZfN0NOml3z9FM"
     authorization: "Authorization"
 

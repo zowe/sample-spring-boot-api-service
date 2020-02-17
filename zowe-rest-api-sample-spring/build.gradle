@@ -48,13 +48,13 @@ integrationTest {
 }
 
 def commonsProject = { ->
-    try {
-        return project(':zowe-rest-api-commons-spring')
-    } catch (ignored) {
-        // See docs/versioning.md for more details
-        return "org.zowe:zowe-rest-api-commons-spring:0.0.0-SNAPSHOT"
+        try {
+            return project(':zowe-rest-api-commons-spring')
+        } catch (ignored) {
+            // See docs/versioning.md for more details
+            return "org.zowe:zowe-rest-api-commons-spring:0.0.0-SNAPSHOT"
+        }
     }
-}
 
 dependencies {
     implementation commonsProject()
