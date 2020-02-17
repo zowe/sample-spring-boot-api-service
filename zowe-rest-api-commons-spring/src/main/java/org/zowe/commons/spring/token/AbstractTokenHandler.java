@@ -48,8 +48,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())
-            || request.getRequestURI().equalsIgnoreCase("/actuator/health")) {
+        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
             return true;
         }
         return false;

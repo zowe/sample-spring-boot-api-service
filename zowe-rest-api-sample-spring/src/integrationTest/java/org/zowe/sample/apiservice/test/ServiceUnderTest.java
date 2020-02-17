@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
+import org.springframework.http.MediaType;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 
 import java.util.Base64;
@@ -49,7 +50,6 @@ public class ServiceUnderTest {
     private final int port;
     private final String userId;
 
-
     @ToString.Exclude
     private final String password;
 
@@ -77,7 +77,6 @@ public class ServiceUnderTest {
         this.healthEndpoint = env("TEST_HEALTH_ENDPOINT", "/actuator/health");
         this.loginEndpoint = env("TEST_LOGIN_ENDPOINT", "/api/v1/auth/login");
         this.waitMinutes = Integer.parseInt(env("TEST_WAIT_MINUTES", "1"));
-        this.authConfigurationProperties = getAuthConfigurationProperties();
         log.info("Service under test: {}", this.toString());
     }
 
@@ -114,7 +113,8 @@ public class ServiceUnderTest {
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).
-                post(loginEndpoint).cookie(authConfigurationProperties.getCookieTokenName());
+                contentType(MediaType.APPLICATION_JSON.toString()).
+                post(loginEndpoint).cookie("zoweSdkAuthenticationToken");
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return null;
