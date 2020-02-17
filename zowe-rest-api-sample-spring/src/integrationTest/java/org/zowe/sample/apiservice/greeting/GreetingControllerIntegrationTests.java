@@ -17,9 +17,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class GreetingControllerIntegrationTests extends IntegrationTests {
 
+
     @Test
     public void returnsGreeting() throws Exception {
-        given().header("Authorization", token).when()
+        given().header("Authorization", "Bearer" + token).when()
             .get("/api/v1/greeting").
             then().statusCode(200).body("content", equalTo("Hello, world!"));
     }

@@ -1,12 +1,24 @@
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright Contributors to the Zowe Project.
+ */
 package org.zowe.commons.spring.query;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zowe.commons.error.TokenExpireException;
+import org.zowe.commons.error.TokenNotValidException;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
-import org.zowe.commons.spring.query.exceptions.TokenExpireException;
-import org.zowe.commons.spring.query.exceptions.TokenNotValidException;
 import org.zowe.commons.spring.token.QueryResponse;
 
 import javax.servlet.http.Cookie;
@@ -24,6 +36,10 @@ public class QueryService {
     @Autowired
     ZoweAuthenticationUtility zoweAuthenticationUtility;
 
+    public void setZoweAuthenticationUtility(ZoweAuthenticationUtility zoweAuthenticationUtility) {
+        this.zoweAuthenticationUtility = zoweAuthenticationUtility;
+    }
+
     /**
      * Check the validity of the token that is gained from the request object
      *
@@ -35,7 +51,7 @@ public class QueryService {
 
         Cookie[] cookies = request.getCookies();
         Optional<String> optionalCookie = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals(zoweAuthenticationUtility.getCookieProperties().getCookieName()))
+            .filter(cookie -> cookie.getName().equals(zoweAuthenticationUtility.getCookieTokenName()))
             .filter(cookie -> !cookie.getValue().isEmpty())
             .findFirst()
             .map(Cookie::getValue);
@@ -43,7 +59,7 @@ public class QueryService {
         if (optionalCookie.isPresent()) {
             return String.valueOf(optionalCookie);
         } else {
-            return request.getHeader(zoweAuthenticationUtility.getTokenProperties().getRequestHeader());
+            return request.getHeader(zoweAuthenticationUtility.getAuthorizationHeader());
         }
     }
 
@@ -71,8 +87,10 @@ public class QueryService {
      */
     public Claims getClaims(String jwtToken) {
         try {
+            //get rid fo the bearer keyword
+            jwtToken = jwtToken.replaceFirst(zoweAuthenticationUtility.getBearerAuthenticationPrefix(), "").trim();
             return Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(zoweAuthenticationUtility.getTokenProperties().getSecretKeyToGenJWTs()))
+                .setSigningKey(DatatypeConverter.parseBase64Binary(zoweAuthenticationUtility.getSecretKey()))
                 .parseClaimsJws(jwtToken).getBody();
         } catch (ExpiredJwtException e) {
             log.debug("Token with id '{}' for user '{}' is expired.", e.getClaims().getId(), e.getClaims().getSubject());
@@ -89,17 +107,12 @@ public class QueryService {
     /**
      * Https isn't working with the standard methods for some reason
      * this is a method that we're using for testing
-     * @param token
+     *
+     * @param jwtToken
      * @return
      */
-    public QueryResponse queryHttps(String token) {
-        Claims claims = null;
-        try {
-            claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(zoweAuthenticationUtility.getTokenProperties().getSecretKeyToGenJWTs()))
-                .parseClaimsJws(token).getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public QueryResponse queryHttps(String jwtToken) {
+        Claims claims = getClaims(jwtToken);
         if (claims != null) {
             return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
         }

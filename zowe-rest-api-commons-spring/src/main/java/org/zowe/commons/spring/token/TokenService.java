@@ -14,11 +14,14 @@ import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface TokenService {
 
-    ResponseEntity login(LoginRequest loginRequest, HttpServletRequest request) throws ServletException, IOException;
+    ResponseEntity login(LoginRequest loginRequest,
+                         HttpServletRequest request,
+                         HttpServletResponse response) throws ServletException, IOException;
     //TODO: query api
     //TODO: validateToken
 }

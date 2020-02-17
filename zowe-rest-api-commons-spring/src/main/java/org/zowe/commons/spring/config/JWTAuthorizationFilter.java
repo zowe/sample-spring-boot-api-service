@@ -12,6 +12,7 @@ package org.zowe.commons.spring.config;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.zowe.commons.spring.token.AbstractTokenHandler;
 import org.zowe.commons.spring.token.TokenAuthentication;
+import org.zowe.commons.spring.token.TokenService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -24,15 +25,15 @@ public class JWTAuthorizationFilter extends AbstractTokenHandler {
     private final ZoweAuthenticationUtility authConfigurationProperties;
 
     public JWTAuthorizationFilter(ZoweAuthenticationFailureHandler failureHandler,
-                                  ZoweAuthenticationUtility authConfigurationProperties) {
-        super(failureHandler, authConfigurationProperties);
+                                  ZoweAuthenticationUtility authConfigurationProperties,
+                                  TokenService tokenService) {
+        super(failureHandler, authConfigurationProperties, tokenService);
         this.authConfigurationProperties = authConfigurationProperties;
     }
 
     @Override
     protected Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request) {
         return Optional.of(
-            new TokenAuthentication(request.getHeader(
-                authConfigurationProperties.getTokenProperties().getRequestHeader())));
+            new TokenAuthentication(request.getHeader(authConfigurationProperties.getAuthorizationHeader())));
     }
 }

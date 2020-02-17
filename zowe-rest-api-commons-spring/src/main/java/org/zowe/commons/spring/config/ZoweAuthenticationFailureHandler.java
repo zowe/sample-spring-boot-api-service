@@ -26,6 +26,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.zowe.commons.error.CommonsErrorService;
 import org.zowe.commons.error.ErrorService;
 import org.zowe.commons.rest.response.ApiMessage;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,8 @@ public class ZoweAuthenticationFailureHandler {
         } else if (ex instanceof NullPointerException) {
             handleUnauthorizedException(ex, httpServletResponse);
         } else if (ex instanceof ResourceAccessException) {
+            handleResourceAccessException(httpServletResponse);
+        } else if (ex instanceof ZosAuthenticationException) {
             handleUnauthorizedException(ex, httpServletResponse);
         } else {
             throw ex;
@@ -77,7 +80,7 @@ public class ZoweAuthenticationFailureHandler {
 
     private void handleInvalidTokenException(HttpServletResponse response) throws ServletException {
         ApiMessage message = localizedMessage("org.zowe.commons.rest.invalidToken");
-        writeErrorResponse(message, HttpStatus.EXPECTATION_FAILED, response);
+        writeErrorResponse(message, HttpStatus.UNAUTHORIZED, response);
     }
 
     private void handleUnauthorizedException(Exception exception, HttpServletResponse response) throws ServletException {
@@ -89,7 +92,7 @@ public class ZoweAuthenticationFailureHandler {
 
     private void handleExpiredTokenException(HttpServletResponse response) throws ServletException {
         ApiMessage message = localizedMessage("org.zowe.commons.rest.expiredToken");
-        writeErrorResponse(message, HttpStatus.NOT_ACCEPTABLE, response);
+        writeErrorResponse(message, HttpStatus.UNAUTHORIZED, response);
     }
 
     private void handleResourceAccessException(HttpServletResponse response) throws ServletException {

@@ -36,6 +36,12 @@ zowe.commons.security.saf:
     serviceResourceClass: "ZOWE"
     serviceResourceNamePrefix: "SAMPLE."
 
+zowe.commons.security.token:
+    cookieTokenName: "zoweSdkAuthenticationToken"
+    expiration: "86400000"
+    secretKeyToGenJWTs: "8Zz5tw0Ionm3XPZZfN0NOml3z9FM"
+    authorization: "Authorization"
+
 zowe.sample.authentication: Press **Authorize** and use `zowe` as the username and `zowe` as the password
 
 apiml:

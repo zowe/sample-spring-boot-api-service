@@ -9,44 +9,53 @@
  */
 package org.zowe.sample.apiservice.security;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.sample.apiservice.TestUtils;
 
 import javax.servlet.http.Cookie;
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @WebMvcTest(SecurityContextController.class)
 public class SecurityContextControllerTests {
+
+    private ZoweAuthenticationUtility zoweAuthenticationUtility =
+        new ZoweAuthenticationUtility();
 
     @Autowired
     private MockMvc mvc;
 
     String token = null;
 
+    @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
+    private String cookieTokenName;
+
     @Before
     public void setup() throws Exception {
-        MvcResult loginResult = this.mvc.perform(get("/api/v1/auth/login").header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andReturn();
+        MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
+            header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isOk()).andReturn();
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {
-            token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("zoweSdkAuthenticationToken"))
+            token = zoweAuthenticationUtility.bearerAuthenticationPrefix + Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieTokenName))
                 .filter(cookie -> !cookie.getValue().isEmpty())
                 .findFirst().get().getValue();
         }
@@ -68,7 +77,7 @@ public class SecurityContextControllerTests {
     public void failsWithInvalidAuthentication() throws Exception {
         String invalidToken = "eyJhbGciOiJIUzUxMiJ9.fyryerytuytry.KILjk1gpVxLY1wrr8";
         mvc.perform(get("/api/v1/securityTest/authenticatedUser").header("Authorization",
-            invalidToken)).andDo(print()).andExpect(status().isExpectationFailed());
+            invalidToken)).andDo(print()).andExpect(status().isUnauthorized());
     }
 
     @Test

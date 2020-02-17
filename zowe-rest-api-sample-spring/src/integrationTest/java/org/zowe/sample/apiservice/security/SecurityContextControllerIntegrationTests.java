@@ -38,7 +38,7 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
     @Test
     public void failsWithInvalidAuthentication() throws Exception {
         String invalidToken = "eyJhbGciOiJIUzUxMiJ9.fyryerytuytry.KILjk1gpVxLY1wrr8";
-        given().header("Authorization", invalidToken).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(417);
+        given().header("Authorization", invalidToken).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(401);
     }
 
     //TODO: Identify how we can expire a token

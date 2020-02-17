@@ -17,8 +17,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
+import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
+import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,6 +34,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     private final ZoweAuthenticationFailureHandler failureHandler;
     private final ZoweAuthenticationUtility authConfigurationProperties;
+    private final TokenService tokenService;
 
     /**
      * Extracts the token from the request
@@ -41,6 +43,15 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
      * @return credentials
      */
     protected abstract Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request);
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())
+            || request.getRequestURI().equalsIgnoreCase("/actuator/health")) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Extracts the token from the request and use the authentication manager to perform authentication.
@@ -53,37 +64,56 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
      * @throws IOException      a IO exception
      */
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String header = request.getServletPath().isEmpty() ? request.getRequestURI() : request.getServletPath();
 
-        if (authenticationToken.isPresent()) {
-            try {
-                UsernamePasswordAuthenticationToken authentication = getAuthentication(request).get();
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            } catch (AuthenticationException authenticationException) {
-                failureHandler.handleException(authenticationException, response);
-            } catch (RuntimeException exception) {
-                failureHandler.handleException(exception, response);
-            }
-        } else {
+        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
             filterChain.doFilter(request, response);
+            return;
+        } else {
+            Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
+
+            if (authenticationToken.isPresent()) {
+                try {
+                    UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    filterChain.doFilter(request, response);
+                } catch (AuthenticationException authenticationException) {
+                    failureHandler.handleException(authenticationException, response);
+                } catch (RuntimeException exception) {
+                    failureHandler.handleException(exception, response);
+                }
+            } else {
+                filterChain.doFilter(request, response);
+            }
         }
     }
 
-    private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(authConfigurationProperties.getTokenProperties().getRequestHeader());
-        if (token != null) {
+    private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
+                                                                            HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        String username = null;
+        String header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
 
-            String username = Jwts.parser()
-                .setSigningKey(authConfigurationProperties.getTokenProperties().getSecretKeyToGenJWTs())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        if (header != null) {
+            if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
+                header = header.replaceFirst(authConfigurationProperties.getBearerAuthenticationPrefix(), "").trim();
 
-            if (username != null) {
-                return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                username = Jwts.parser()
+                    .setSigningKey(authConfigurationProperties.getSecretKey())
+                    .parseClaimsJws(header)
+                    .getBody()
+                    .getSubject();
+                if (username != null) {
+                    return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                }
+
+            } else if (header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())) {
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+                tokenService.login(loginRequest, request, httpServletResponse);
+
+                return Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             }
             return null;
         }
