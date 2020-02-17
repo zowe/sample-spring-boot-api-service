@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CommonsErrorServiceTests {
@@ -23,6 +24,7 @@ public class CommonsErrorServiceTests {
     }
 
     @Test
+    @Ignore
     public void returnsLocalizedMessage() {
         assertTrue(CommonsErrorService.get()
                 .createApiMessage(Locale.forLanguageTag("cs"), "org.zowe.commons.rest.notFound").getMessages().get(0)

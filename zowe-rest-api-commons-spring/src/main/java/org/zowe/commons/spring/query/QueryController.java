@@ -34,16 +34,11 @@ public class QueryController {
 
     @GetMapping("/query")
     public QueryResponse queryResponseController(HttpServletRequest request) {
-        //Check if request is sent via HTTP or HTTPS .. The way the request is handled is different in the two cases
-        if (request.isSecure()) {
-            return queryService.queryHttps(request.getHeader(zoweAuthenticationUtility.getAuthorizationHeader()));
-        } else {
-            try {
-                queryResponse = queryService.query(request);
-            } catch (Exception e) {
-                log.debug("Error with the http request {}.", e.getMessage());
-            }
-            return queryResponse;
+        try {
+            queryResponse = queryService.query(request);
+        } catch (Exception e) {
+            log.debug("Error with the http request {}.", e.getMessage());
         }
+        return queryResponse;
     }
 }

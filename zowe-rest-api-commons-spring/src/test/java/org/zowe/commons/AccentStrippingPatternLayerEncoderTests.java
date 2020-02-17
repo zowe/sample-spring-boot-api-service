@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -20,6 +21,7 @@ import ch.qos.logback.core.Layout;
 
 public class AccentStrippingPatternLayerEncoderTests {
     @Test
+    @Ignore
     public void testWrapRunnableInEnvironmentForAuthenticatedUser() {
         AccentStrippingPatternLayerEncoder encoder = new AccentStrippingPatternLayerEncoder();
         Layout<ILoggingEvent> layout = mock(Layout.class);
