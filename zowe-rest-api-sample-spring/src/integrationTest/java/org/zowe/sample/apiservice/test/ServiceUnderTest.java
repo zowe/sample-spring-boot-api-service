@@ -10,11 +10,11 @@
 package org.zowe.sample.apiservice.test;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
-import org.springframework.http.MediaType;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 
 import java.util.Base64;
@@ -55,6 +55,8 @@ public class ServiceUnderTest {
 
     private final String healthEndpoint;
 
+    private final String cookieName;
+
     private final String loginEndpoint;
 
     private final int waitMinutes;
@@ -76,6 +78,7 @@ public class ServiceUnderTest {
         this.password = env("TEST_PASSWORD", VALID_PASSWORD);
         this.healthEndpoint = env("TEST_HEALTH_ENDPOINT", "/actuator/health");
         this.loginEndpoint = env("TEST_LOGIN_ENDPOINT", "/api/v1/auth/login");
+        this.cookieName = env("TEST_COOKIE_NAME", "zoweSdkAuthenticationToken");
         this.waitMinutes = Integer.parseInt(env("TEST_WAIT_MINUTES", "1"));
         log.info("Service under test: {}", this.toString());
     }
@@ -113,8 +116,8 @@ public class ServiceUnderTest {
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).
-                contentType(MediaType.APPLICATION_JSON.toString()).
-                post(loginEndpoint).cookie("zoweSdkAuthenticationToken");
+                contentType(ContentType.JSON).
+                post(loginEndpoint).cookie(cookieName);
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return null;
