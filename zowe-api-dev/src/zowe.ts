@@ -13,6 +13,32 @@ export interface IZoweResult {
     data: {};
 }
 
+export interface IZoweProfile {
+    name: string;
+    profile: {
+        user: string,
+        account: string,
+        password: string,
+        host: string,
+        port: number,
+        rejectUnauthorized: boolean
+    }
+}
+
+export interface IZoweTsoProfile {
+    name: string;
+    profile: {
+        user: string,
+        account: string,
+        characterSet: string,
+        codePage: string,
+        columns: number,
+        logonProcedure: string,
+        regionSize: number,
+        rows: number
+    }
+}
+
 export interface IZoweOptions {
     direct?: boolean;
     logOutput?: boolean;
@@ -58,12 +84,14 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
         debug(error);
         let result: IZoweResult;
         try {
-            if (error.stdout) {
-                result = JSON.parse(error.stdout);
-            }
-            else {
-                result = { success: false, exitCode: -1, message: "empty JSON response from Zowe CLI", stderr: "", stdout: "", data: {} };
-            }
+            result = error.stdout ? JSON.parse(error.stdout) : {
+                data: {},
+                exitCode: -1,
+                message: "empty JSON response from Zowe CLI",
+                stderr: "",
+                stdout: "",
+                success: false
+            };
             debug(result);
         } catch (error2) {
             throw error;
@@ -121,9 +149,8 @@ export function trimProfileName(profileName: string): string {
 }
 
 export function getDefaultProfile(profileType: string) {
-    const profiles = zoweSync(`profiles list ${profileType}-profiles --show-contents`, { logOutput: false }).data as [
-        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean } }
-    ];
+    const response = zoweSync(`profiles list ${profileType}-profiles --show-contents`, {logOutput: false});
+    const profiles = (profileType.toLowerCase() === 'tso"') ? response.data as [IZoweTsoProfile] : response.data as [IZoweProfile];
     let defaultProfile = profiles[0];
     for (const profile of profiles) {
         if (profile.name.indexOf('(default)') > -1) {
