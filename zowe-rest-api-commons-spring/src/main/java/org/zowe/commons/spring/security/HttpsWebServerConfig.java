@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.config;
+package org.zowe.commons.spring.security;
 
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class WebServerSecurityConfig {
+public class HttpsWebServerConfig {
 
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainerCustomizer() {

@@ -17,6 +17,7 @@ git clone https://github.com/zowe/sample-spring-boot-api-service
 cd sample-spring-boot-api-service
 ./gradlew :jarpatcher:build
 cd zowe-api-dev
+npm install
 npm pack
 npm link
 ```

@@ -7,12 +7,12 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.apidoc;
+package org.zowe.commons.apiml;
 
-public final class ApiDocConstants {
-    public static final String DOC_SCHEME_BASIC_AUTH = "basicAuth";
+import com.ca.mfaas.eurekaservice.client.config.ApiMediationServiceConfig;
 
-    private ApiDocConstants() {
-        // Utility class
-    }
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties("apiml.service")
+public class ApiMediationServiceConfigBean extends ApiMediationServiceConfig {
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 if [ -z "$ZOS_TARGET_DIR" ]
 then
@@ -28,21 +29,24 @@ echo "Initializing zFS"
 zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR --zosHlq $ZOS_HLQ --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
 zowe-api-dev zfs -p "$ZOS_ZFSADM_PARAM"
 
-echo "Initializing profile for sample"
+echo "Initializing profiles"
 cd zowe-rest-api-sample-spring
-zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-sample-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.SAMPLE --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
 cd ..
 
 echo "Checking if build is needed"
-./gradlew :zowe-rest-api-commons-spring:zosbuild :zowe-rest-api-sample-spring:zosbuild
+set +e
+./gradlew :zowe-rest-api-commons-spring:zosbuild :zowe-rest-api-sample-spring:zosbuild > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-  exit 0
+    exit 0
 fi
+set -e
+
+cd zowe-rest-api-commons-spring
+zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-commons-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.COMMONS --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
+cd ..
 
 echo "Building native code in zowe-rest-api-commons-spring"
-cd zowe-rest-api-commons-spring
-zowe-api-dev init --zosTargetDir $ZOS_TARGET_DIR/b$CIRCLE_BUILD_NUM/zowe-rest-api-sample-spring --zosHlq $ZOS_HLQ.B$CIRCLE_BUILD_NUM.SAMPLE --account $ZOS_ACCOUNT_NUMBER --javaHome=$ZOS_JAVA_HOME --javaLoadlib $ZOS_JAVA_LOADLIB --force
-cd ..
 ./gradlew :zowe-rest-api-commons-spring:zosbuild
 
 echo "Building native code in zowe-rest-api-sample-spring"

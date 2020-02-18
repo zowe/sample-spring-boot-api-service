@@ -13,8 +13,9 @@ export default class Start extends Command {
     static description = "start the API service on z/OS";
 
     static flags = {
+        debugPort: flags.integer({ char: "d", description: "Enable remote debugging with the specified port", default: 0 }),
         job: flags.boolean({ char: "j", description: "Submit the Java application in a job" }),
-        debugPort: flags.integer({ char: "d", description: "Enable remote debugging with the specified port", default: 0 })
+        killPrevious: flags.boolean({ char: "k", description: "Kill all jobs with the same job name" })
     };
 
     async run() {
@@ -30,9 +31,26 @@ export default class Start extends Command {
             const template = Handlebars.compile(readFileSync(projectConfig.jobTemplatePath).toString(), {
                 strict: true
             });
+
+            if (f.killPrevious) {
+                const jobName = parseJobName(userConfig.jobcard);
+                const jobList = zoweSync(`jobs list jobs --prefix ${jobName} --owner \\*`, {logOutput: false});
+                debug(jobList);
+                if (jobList) {
+                    const jobs = jobList.data as IJob[];
+                    for (const job of jobs) {
+                        if (["ACTIVE", "INPUT"].includes(job.status)) {
+                            this.log(`Canceling job ${job.jobname} (${job.jobid})`);
+                            zoweSync(`jobs cancel job ${job.jobid}`);
+                        }
+                    }
+                }
+            }
+
             const jcl = template({ user: userConfig, project: projectConfig, debugPort: f.debugPort });
             debug(jcl);
             writeFileSync(projectConfig.jobPath, jcl);
+
             this.log(`Submitting job ${projectConfig.jobPath}`);
             const result = zoweSync(`jobs submit lf ${projectConfig.jobPath}`);
             debug(result);
@@ -59,4 +77,8 @@ export default class Start extends Command {
             execSshCommandWithDefaultEnv(startCommand, userConfig.zosTargetDir, {}, { direct: true });
         }
     }
+}
+
+function parseJobName(jobCard: string[]) {
+    return jobCard[0].split(" ")[0].substr(2);
 }

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 ./gradlew :zowe-rest-api-commons-spring:saveVersion :zowe-rest-api-commons-spring:publishToMavenLocal
 VERSION=$(cat zowe-rest-api-commons-spring/.version)
 RE="org\.zowe:zowe-rest-api-commons-spring:[0-9]\.[0-9]\.[0-9]\(-SNAPSHOT\)\{0,1\}"
