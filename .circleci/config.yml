@@ -50,10 +50,6 @@ jobs:
           name: Building Standalone Sample
           command: |
             scripts/build-sample.sh
-      - store_test_results:
-          path: zowe-rest-api-commons-spring/build/test-results
-      - store_test_results:
-          path: zowe-rest-api-sample-spring/build/test-results
       - store_artifacts:
           path: build/zowe-rest-api-sample-spring.jar
           destination: zowe-rest-api-sample-spring.jar
@@ -72,6 +68,10 @@ jobs:
           command: |
             source .circleci/river.env
             npm run zos-integration-tests
+      - store_test_results:
+            path: zowe-rest-api-commons-spring/build/test-results
+      - store_test_results:
+            path: zowe-rest-api-sample-spring/build/test-results
       - run: &zos_cleanup
           name: Cleanup on z/OS
           when: always
