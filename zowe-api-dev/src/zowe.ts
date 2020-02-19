@@ -58,12 +58,14 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
         debug(error);
         let result: IZoweResult;
         try {
-            if (error.stdout) {
-                result = JSON.parse(error.stdout);
-            }
-            else {
-                result = { success: false, exitCode: -1, message: "empty JSON response from Zowe CLI", stderr: "", stdout: "", data: {} };
-            }
+            result = error.stdout ? JSON.parse(error.stdout) : {
+                data: {},
+                exitCode: -1,
+                message: "empty JSON response from Zowe CLI",
+                stderr: "",
+                stdout: "",
+                success: false
+            };
             debug(result);
         } catch (error2) {
             throw error;
@@ -122,7 +124,7 @@ export function trimProfileName(profileName: string): string {
 
 export function getDefaultProfile(profileType: string) {
     const profiles = zoweSync(`profiles list ${profileType}-profiles --show-contents`, { logOutput: false }).data as [
-        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean } }
+        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean, account: string } }
     ];
     let defaultProfile = profiles[0];
     for (const profile of profiles) {
