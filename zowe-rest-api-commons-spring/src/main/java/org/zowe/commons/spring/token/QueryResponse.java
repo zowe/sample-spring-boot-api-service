@@ -9,6 +9,7 @@
  */
 package org.zowe.commons.spring.token;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,12 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueryResponse {
+    @ApiModelProperty(value = "User ID of the user who is logged in.")
     private String userId;
+
+    @ApiModelProperty(value = "Time when the token was generated.")
     private Date creation;
+
+    @ApiModelProperty(value = "Expiration Time of the token.")
     private Date expiration;
 }
