@@ -36,15 +36,19 @@ public class AuthorizationFilter extends AbstractTokenHandler {
     @Override
     protected Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        Optional<AbstractAuthenticationToken> authToken = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
-            .filter(cookie -> !cookie.getValue().isEmpty())
-            .findFirst()
-            .map(cookie -> new TokenAuthentication(cookie.getValue()));
+        if (cookies != null) {
+            Optional<AbstractAuthenticationToken> authToken = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
+                .filter(cookie -> !cookie.getValue().isEmpty())
+                .findFirst()
+                .map(cookie -> new TokenAuthentication(cookie.getValue()));
 
-        //return the token from the authorization header if cookies aren't present
-        return authToken.map(Optional::of).orElseGet(() -> Optional.of(
-            new TokenAuthentication(request.getHeader(authConfigurationProperties.getAuthorizationHeader()))));
+            //return the token from the authorization header if cookies aren't present
+            return authToken.map(Optional::of).orElseGet(() -> Optional.of(
+                new TokenAuthentication(request.getHeader(authConfigurationProperties.getAuthorizationHeader()))));
+        } else {
+            return Optional.of(new TokenAuthentication(request.getHeader(authConfigurationProperties.getAuthorizationHeader())));
+        }
     }
 }
 

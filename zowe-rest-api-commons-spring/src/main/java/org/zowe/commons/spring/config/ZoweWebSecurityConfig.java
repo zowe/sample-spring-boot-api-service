@@ -11,7 +11,6 @@ package org.zowe.commons.spring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -19,11 +18,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.zowe.commons.spring.token.TokenService;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 @Configuration
 public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final ZoweAuthenticationUtility authConfigurationProperties;
     private final ZoweAuthenticationFailureHandler tokenFailureHandler;
+
+    @Autowired
+    ZosAuthenticationProvider authenticationProvider;
 
     @Autowired
     TokenService tokenService;
@@ -39,7 +42,7 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //CSRF configuration
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**")
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**", "/swagger-resources/configuration/security")
 
             .and()
             .headers()
@@ -51,7 +54,10 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-            //Login endpoint
+            .and()
+            .authorizeRequests()
+            .antMatchers("/swagger-ui.html").authenticated().and().httpBasic()
+
             .and()
             .authorizeRequests()
             .antMatchers(authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
@@ -69,6 +75,6 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider((AuthenticationProvider) tokenService);
+        auth.authenticationProvider(authenticationProvider);
     }
 }

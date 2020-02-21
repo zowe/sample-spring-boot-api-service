@@ -48,8 +48,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())
-            || request.getRequestURI().equalsIgnoreCase("/actuator/health")) {
+        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
             return true;
         }
         return false;
@@ -70,8 +69,11 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String header = request.getServletPath().isEmpty() ? request.getRequestURI() : request.getServletPath();
-
-        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
+        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
+            header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
+            header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||
+            header.startsWith("/apiDocs") || header.startsWith("/favicon")
+        ) {
             filterChain.doFilter(request, response);
             return;
         } else {
@@ -99,13 +101,17 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         String username = null;
 
         Cookie[] cookies = request.getCookies();
-        Optional<String> optionalCookie = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
-            .filter(cookie -> !cookie.getValue().isEmpty())
-            .findFirst()
-            .map(Cookie::getValue);
+        if (cookies != null) {
+            Optional<String> optionalCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
+                .filter(cookie -> !cookie.getValue().isEmpty())
+                .findFirst()
+                .map(Cookie::getValue);
 
-        header = optionalCookie.orElseGet(() -> request.getHeader(authConfigurationProperties.getAuthorizationHeader()));
+            header = optionalCookie.orElseGet(() -> request.getHeader(authConfigurationProperties.getAuthorizationHeader()));
+        } else {
+            header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
+        }
 
         if (header != null) {
             if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
@@ -125,7 +131,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 tokenService.login(loginRequest, request, httpServletResponse);
 
                 return Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
-            } else { //cookies
+            } else {
+                //cookies
                 username = Jwts.parser()
                     .setSigningKey(authConfigurationProperties.getSecretKey())
                     .parseClaimsJws(header)

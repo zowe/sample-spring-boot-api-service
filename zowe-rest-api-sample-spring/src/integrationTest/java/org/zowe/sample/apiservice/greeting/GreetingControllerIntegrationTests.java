@@ -1,9 +1,9 @@
 /*
  * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
+ * Apache License, Version 2.0 which accompanies this distribution, and is available at
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright Contributors to the Zowe Project.
  */
@@ -17,10 +17,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class GreetingControllerIntegrationTests extends IntegrationTests {
 
-
     @Test
     public void returnsGreeting() throws Exception {
-        given().header("Authorization", "Bearer" + token).when()
+        given().header("Authorization", token).when()
             .get("/api/v1/greeting").
             then().statusCode(200).body("content", equalTo("Hello, world!"));
     }

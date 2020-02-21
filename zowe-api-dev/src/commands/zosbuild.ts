@@ -1,20 +1,26 @@
 import { Command, flags } from "@oclif/command";
+import { execSync } from "child_process";
 import { existsSync, lstatSync, readdirSync } from "fs";
 import * as logSymbols from "log-symbols";
+import { dirname } from "path";
 import { readConfiguration } from "../config";
 import { isFileSame, saveFileToOld } from '../files';
-import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, zoweSync } from "../zowe";
+import { execSshCommandWithDefaultEnv, execSshCommandWithDefaultEnvCwd, getDefaultProfile, zoweSync } from "../zowe";
 
 export default class ZosBuild extends Command {
     static description = "build z/OS source on z/OS UNIX";
 
     static flags = {
+        curl: flags.boolean({ char: "c", description: "uses curl to download build artifacts" }),
         force: flags.boolean({ char: "f", description: "forces full upload and build even if there is no change" }),
     };
 
     async run() {
         const f = this.parse(ZosBuild);
         const [userConfig, projectConfig] = readConfiguration(this);
+        if (!projectConfig.zosSourcesDir) {
+            this.error("There is no directory with z/OS sources defined in `zowe-api.json`. Are in the correct directory?")
+        }
         const zosDir = `${userConfig.zosTargetDir}/${projectConfig.zosSourcesDir}`;
         const uploadedFiles = uploadDir(projectConfig.zosSourcesDir, zosDir, userConfig.zoweProfileName, this, f.flags.force);
         if (uploadedFiles) {
@@ -26,7 +32,17 @@ export default class ZosBuild extends Command {
             execSshCommandWithDefaultEnv(projectConfig.buildCommand, zosDir, env);
             for (const [zosFile, targetFile] of Object.entries(projectConfig.buildFiles)) {
                 this.log(`Downloading ${zosDir}/${zosFile} to ${targetFile}`);
-                zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`);
+                if (f.flags.curl) {
+                    const zosmfProfile = getDefaultProfile("zosmf");
+                    const p = zosmfProfile.profile;
+                    const targetDir = dirname(targetFile);
+                    const curlCommand = `curl${p.rejectUnauthorized?"":" -k"} --user ${p.user}:${p.password} --tlsv1.2 -H \"X-IBM-Data-Type: binary\" \"https://${p.host}:${p.port}/zosmf/restfiles/fs${zosDir}/${zosFile}.pax\" > ${targetFile}.pax; tar -xvf ${targetFile}.pax -C ${targetDir}; rm ${targetFile}.pax`;
+                    this.log(`Executing: ${curlCommand}`);
+                    execSync(curlCommand);
+                }
+                else {
+                    zoweSync(`files download uss-file ${zosDir}/${zosFile} --binary -f ${targetFile}`);
+                }
             }
             this.log(logSymbols.success, "z/OS build completed");
         }

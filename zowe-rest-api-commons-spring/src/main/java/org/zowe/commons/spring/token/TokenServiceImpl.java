@@ -12,6 +12,7 @@ package org.zowe.commons.spring.token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -30,9 +31,12 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TokenServiceImpl extends ZosAuthenticationProvider implements TokenService {
+public class TokenServiceImpl implements TokenService {
     private final ZoweAuthenticationUtility authConfigurationProperties;
     private final ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
+
+    @Autowired
+    ZosAuthenticationProvider zosAuthenticationProvider;
 
     /**
      * Calls authentication manager to validate the username and password
@@ -49,7 +53,7 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
             UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
-            authenticate(authentication);
+            zosAuthenticationProvider.authenticate(authentication);
 
             String token = authConfigurationProperties.createToken(authentication);
             authConfigurationProperties.setCookie(token, response);

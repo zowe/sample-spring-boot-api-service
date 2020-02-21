@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 DSN="$ZOS_USERID.ZOWE.SDKLOCKS"
 DSN_MEMBER="$DSN(P${TEST_PORT})"
 

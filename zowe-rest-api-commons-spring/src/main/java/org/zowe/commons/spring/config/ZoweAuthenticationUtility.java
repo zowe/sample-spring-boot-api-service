@@ -39,15 +39,13 @@ public class ZoweAuthenticationUtility {
     public String basicAuthenticationPrefix = "Basic ";
     public String bearerAuthenticationPrefix = "Bearer ";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
+    private String authorizationHeader = "Authorization";
 
     @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
     private String cookieTokenName;
 
     @Value("${zowe.commons.security.token.expiration:86400000}")
     private int expiration;
-
-    @Value("${zowe.commons.security.token.authorization:Authorization}")
-    private String authorizationHeader;
 
     @Value("${zowe.commons.security.token.secretKeyToGenJWTs:8Zz5tw0Ionm3XPZZfN0NOml3z9FM}")
     private String secretKey;

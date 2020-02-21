@@ -1,4 +1,4 @@
-# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [![codecov](https://codecov.io/gh/zowe/sample-spring-boot-api-service/branch/master/graph/badge.svg?token=UeytGN5vV5)](https://codecov.io/gh/zowe/sample-spring-boot-api-service) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=zowe_sample-spring-boot-api-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=zowe_sample-spring-boot-api-service)
+# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service)
 
 This project provides:
 
@@ -24,3 +24,7 @@ Follow the instructions at [Zowe Sample API Service](zowe-rest-api-sample-spring
 - [Building SDK](docs/building.md)
 - [Building z/OS native code](docs/zos-native-code.md)
 - [Releasing](docs/releasing.md)
+
+## License
+
+The subproject with the sample application `zowe-rest-api-sample-spring` is licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0). The rest of this repository is licensed under [Eclipse Public License - v 2.0](https://www.eclipse.org/legal/epl-2.0/).
