@@ -36,8 +36,8 @@ import java.util.Optional;
 @Slf4j
 public class ZoweAuthenticationUtility {
 
-    public String basicAuthenticationPrefix = "Basic ";
-    public String bearerAuthenticationPrefix = "Bearer ";
+    public final static String basicAuthenticationPrefix = "Basic ";
+    public final static String bearerAuthenticationPrefix = "Bearer ";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
     private String authorizationHeader = "Authorization";
 
@@ -80,9 +80,9 @@ public class ZoweAuthenticationUtility {
         return Optional.ofNullable(
             request.getHeader(HttpHeaders.AUTHORIZATION)
         ).filter(
-            header -> header.startsWith(getBasicAuthenticationPrefix())
+            header -> header.startsWith(basicAuthenticationPrefix)
         ).map(
-            header -> header.replaceFirst(getBasicAuthenticationPrefix(), "").trim()
+            header -> header.replaceFirst(basicAuthenticationPrefix, "").trim()
         )
             .filter(base64Credentials -> !base64Credentials.isEmpty())
             .map(this::mapBase64Credentials);

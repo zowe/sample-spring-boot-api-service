@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,10 +82,11 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
             if (authenticationToken.isPresent()) {
                 try {
-                    if (Optional.ofNullable(getAuthentication(request, response)).isPresent()) {
-                        UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    UsernamePasswordAuthenticationToken authentication = null;
+                    if (getAuthentication(request, response).isPresent()) {
+                        authentication = getAuthentication(request, response).get();
                     }
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                     filterChain.doFilter(request, response);
                 } catch (AuthenticationException authenticationException) {
                     failureHandler.handleException(authenticationException, response);
@@ -102,6 +104,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         String header = null;
         String username = null;
 
+        Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = null;
+
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             Optional<String> optionalCookie = Arrays.stream(cookies)
@@ -116,8 +120,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
 
         if (header != null) {
-            if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
-                header = header.replaceFirst(authConfigurationProperties.getBearerAuthenticationPrefix(), "").trim();
+            if (header.startsWith(ZoweAuthenticationUtility.bearerAuthenticationPrefix)) {
+                header = header.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
 
                 username = Jwts.parser()
                     .setSigningKey(authConfigurationProperties.getSecretKey())
@@ -125,16 +129,14 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    return Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
 
-            } else if (header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())) {
-                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).isPresent() ?
-                    authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get() :
-                    null;
+            } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
                 tokenService.login(loginRequest, request, httpServletResponse);
 
-                return Optional.of(new UsernamePasswordAuthenticationToken(loginRequest != null ? loginRequest.getUsername() : null, null, new ArrayList<>()));
+                usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             } else {
                 //cookies
                 username = Jwts.parser()
@@ -143,10 +145,10 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    return Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
             }
-            return Optional.empty();
+            return usernamePasswordAuthenticationToken;
         }
         return Optional.empty();
     }

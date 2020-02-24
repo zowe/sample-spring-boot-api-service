@@ -46,7 +46,6 @@ public class QueryServiceTest {
 
         MockitoAnnotations.initMocks(this);
 
-        when(zoweAuthenticationUtility.getBearerAuthenticationPrefix()).thenReturn("Bearer");
         when(zoweAuthenticationUtility.getSecretKey()).thenReturn(SECRET_KEY);
     }
 

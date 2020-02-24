@@ -48,8 +48,8 @@ public class TokenServiceImpl implements TokenService {
                                 HttpServletRequest request,
                                 HttpServletResponse response) throws ServletException {
         try {
-            loginRequest = validateRequestAndExtractLoginRequest(loginRequest, request);
 
+            loginRequest = validateRequestAndExtractLoginRequest(loginRequest, request);
             UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -76,12 +76,13 @@ public class TokenServiceImpl implements TokenService {
      */
     private LoginRequest validateRequestAndExtractLoginRequest(LoginRequest loginRequest,
                                                                HttpServletRequest request) throws ServletException {
-        if ((Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).filter(
-            header -> header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())))
+        Optional<String> authHeader = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION));
+        if ((authHeader.filter(
+            header -> header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)))
             .isPresent()) {
-            loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).isPresent() ?
-                authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get() :
-                null;
+            if (authConfigurationProperties.getCredentialFromAuthorizationHeader(request).isPresent()) {
+                loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            }
         } else if (loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()) {
             throw new AuthenticationCredentialsNotFoundException("Credentials Not found");
         }

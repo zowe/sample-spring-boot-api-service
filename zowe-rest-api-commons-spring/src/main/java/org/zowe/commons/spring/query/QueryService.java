@@ -31,7 +31,6 @@ import java.util.Optional;
 @Service
 public class QueryService {
 
-
     @Autowired
     ZoweAuthenticationUtility zoweAuthenticationUtility;
 
@@ -83,7 +82,7 @@ public class QueryService {
      */
     public Claims getClaims(String jwtToken) {
         try {
-            jwtToken = jwtToken.replaceFirst(zoweAuthenticationUtility.getBearerAuthenticationPrefix(), "").trim();
+            jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
             return Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(zoweAuthenticationUtility.getSecretKey()))
                 .parseClaimsJws(jwtToken).getBody();
