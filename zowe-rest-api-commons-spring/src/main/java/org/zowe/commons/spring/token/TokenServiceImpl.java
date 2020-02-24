@@ -81,7 +81,9 @@ public class TokenServiceImpl implements TokenService {
         if ((authHeader.filter(
             header -> header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)))
             .isPresent()) {
-            loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(null);
+            if (authConfigurationProperties.getCredentialFromAuthorizationHeader(request).isPresent()) {
+                loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            }
         } else if (loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()) {
             throw new AuthenticationCredentialsNotFoundException("Credentials Not found");
         }
