@@ -112,7 +112,7 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        String zoweBasicAuthHeader = authConfigurationProperties.getBasicAuthenticationPrefix()
+        String zoweBasicAuthHeader = ZoweAuthenticationUtility.basicAuthenticationPrefix
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).

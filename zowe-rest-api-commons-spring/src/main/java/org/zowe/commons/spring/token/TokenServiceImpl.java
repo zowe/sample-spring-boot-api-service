@@ -36,6 +36,7 @@ public class TokenServiceImpl implements TokenService {
     private final ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
 
     @Autowired
+    private
     ZosAuthenticationProvider zosAuthenticationProvider;
 
     /**

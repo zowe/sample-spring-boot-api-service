@@ -1,13 +1,13 @@
 /*
  * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
+ * Apache License, Version 2.0 which accompanies this distribution, and is available at
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.commons.spring.config;
+package org.zowe.sample.apiservice.apidoc;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,7 @@ import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 @Configuration
 @EnableSwagger2
-public class ZoweSwaggerConfig implements WebMvcConfigurer {
+public class SwaggerConfig implements WebMvcConfigurer {
 
 
     @Value("${apiml.service.apiInfo[0].title}")

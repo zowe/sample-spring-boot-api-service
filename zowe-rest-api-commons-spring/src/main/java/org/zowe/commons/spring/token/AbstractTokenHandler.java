@@ -13,8 +13,8 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
@@ -26,7 +26,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,19 +78,17 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             return;
         } else {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
-
             if (authenticationToken.isPresent()) {
                 try {
-                    UsernamePasswordAuthenticationToken authentication = null;
                     if (getAuthentication(request, response).isPresent()) {
-                        authentication = getAuthentication(request, response).get();
+                        UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        filterChain.doFilter(request, response);
+                    } else {
+                        throw new InsufficientAuthenticationException("Authentication failed");
                     }
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(request, response);
-                } catch (AuthenticationException authenticationException) {
+                } catch (RuntimeException authenticationException) {
                     failureHandler.handleException(authenticationException, response);
-                } catch (RuntimeException exception) {
-                    failureHandler.handleException(exception, response);
                 }
             } else {
                 filterChain.doFilter(request, response);
@@ -104,7 +101,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         String header = null;
         String username = null;
 
-        Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = null;
+        Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = Optional.empty();
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -129,14 +126,14 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
 
             } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
                 LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
                 tokenService.login(loginRequest, request, httpServletResponse);
 
-                usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
+                usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             } else {
                 //cookies
                 username = Jwts.parser()
@@ -145,7 +142,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    usernamePasswordAuthenticationToken = Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
             }
             return usernamePasswordAuthenticationToken;
