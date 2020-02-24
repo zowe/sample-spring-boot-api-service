@@ -79,7 +79,9 @@ public class TokenServiceImpl implements TokenService {
         if ((Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).filter(
             header -> header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())))
             .isPresent()) {
-            loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            if (authConfigurationProperties.getCredentialFromAuthorizationHeader(request).isPresent()) {
+                loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            }
         } else if (loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()) {
             throw new AuthenticationCredentialsNotFoundException("Credentials Not found");
         }
