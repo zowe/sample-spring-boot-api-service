@@ -49,8 +49,13 @@ public class ZoweSwaggerConfig implements WebMvcConfigurer {
         List<SecurityScheme> schemes = new ArrayList<>();
         schemes.add(new BasicAuth(DOC_SCHEME_BASIC_AUTH));
 
-        return new Docket(DocumentationType.SWAGGER_2).groupName("v1").select().apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.ant("/api/v1/**")).build().apiInfo(apiInfo()).securitySchemes(schemes)
+        return new Docket(DocumentationType.SWAGGER_2)
+            .useDefaultResponseMessages(false)
+            .groupName("v1").select()
+            .apis(RequestHandlerSelectors.any())
+            .paths(PathSelectors.ant("/api/v1/**"))
+            .build().apiInfo(apiInfo())
+            .securitySchemes(schemes)
             .pathProvider(new BasePathProvider("/api/v1"));
     }
 
