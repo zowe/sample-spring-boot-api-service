@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -80,9 +81,9 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
             if (authenticationToken.isPresent()) {
                 try {
-                    if (getAuthentication(request, response).isPresent()) {
-                        UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    Optional<UsernamePasswordAuthenticationToken> authentication = getAuthentication(request, response);
+                    if (authentication.isPresent()) {
+                        SecurityContextHolder.getContext().setAuthentication(authentication.get());
                         filterChain.doFilter(request, response);
                     } else {
                         throw new InsufficientAuthenticationException("Authentication failed");
@@ -130,7 +131,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 }
 
             } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
-                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(null);
                 tokenService.login(loginRequest, request, httpServletResponse);
 
                 usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
