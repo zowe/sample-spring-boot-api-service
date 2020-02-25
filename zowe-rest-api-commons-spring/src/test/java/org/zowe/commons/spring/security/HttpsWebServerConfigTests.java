@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.config;
+package org.zowe.commons.spring.security;
 
 import static org.mockito.Mockito.withSettings;
 
@@ -22,11 +22,11 @@ import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 
-public class WebServerSecurityConfigTests {
+public class HttpsWebServerConfigTests {
 
     @Test
     public void servletContainerCustomizerForcesServerCipherSuitesOrder() {
-        WebServerSecurityConfig webServerSecurityConfig = new WebServerSecurityConfig();
+        HttpsWebServerConfig webServerSecurityConfig = new HttpsWebServerConfig();
         WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainerCustomizer = webServerSecurityConfig
                 .servletContainerCustomizer();
 

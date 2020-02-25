@@ -9,30 +9,42 @@
  */
 package org.zowe.commons.spring.token;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
-import org.zowe.commons.spring.login.LoginRequest;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TokenServiceImpl extends ZosAuthenticationProvider implements TokenService {
-    private final ZoweAuthenticationUtility authConfigurationProperties;
+public class TokenServiceImpl implements TokenService {
     private final ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
+
+    @Autowired
+    ZoweAuthenticationUtility zoweAuthenticationUtility;
+
+    public void setZoweAuthenticationUtility(ZoweAuthenticationUtility zoweAuthenticationUtility) {
+        this.zoweAuthenticationUtility = zoweAuthenticationUtility;
+    }
+
+    @Autowired
+    private
+    ZosAuthenticationProvider zosAuthenticationProvider;
 
     /**
      * Calls authentication manager to validate the username and password
@@ -40,25 +52,23 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
      * @return the authenticated token
      */
     @Override
-    public ResponseEntity login(LoginRequest loginRequest,
-                                HttpServletRequest request,
-                                HttpServletResponse response) throws ServletException {
+    public String login(LoginRequest loginRequest,
+                        HttpServletRequest request,
+                        HttpServletResponse response) throws ServletException {
+        String token = null;
         try {
             loginRequest = validateRequestAndExtractLoginRequest(loginRequest, request);
-
             UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
-            authenticate(authentication);
+            zosAuthenticationProvider.authenticate(authentication);
 
-            String token = authConfigurationProperties.createToken(authentication);
-            authConfigurationProperties.setCookie(token, response);
+            token = zoweAuthenticationUtility.createToken(authentication);
+            zoweAuthenticationUtility.setCookie(token, response);
         } catch (RuntimeException exception) {
             zoweAuthenticationFailureHandler.handleException(exception, response);
         }
-        return ResponseEntity
-            .status(HttpStatus.SC_OK)
-            .body(new AppResponse("OK", HttpStatus.SC_OK, "User is authenticated"));
+        return token;
     }
 
     /**
@@ -72,14 +82,58 @@ public class TokenServiceImpl extends ZosAuthenticationProvider implements Token
      */
     private LoginRequest validateRequestAndExtractLoginRequest(LoginRequest loginRequest,
                                                                HttpServletRequest request) throws ServletException {
-        if ((Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).filter(
-            header -> header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())))
+        Optional<String> authHeader = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION));
+        if ((authHeader.filter(
+            header -> header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)))
             .isPresent()) {
-            loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            loginRequest = zoweAuthenticationUtility.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
         } else if (loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()) {
             throw new AuthenticationCredentialsNotFoundException("Credentials Not found");
         }
-
         return loginRequest;
     }
+
+    /**
+     * Check the validity of the token that is gained from the request object
+     *
+     * @param request - the HttpServletRequest from the client
+     * @return String - extracts the token from the HttpServletRequest
+     */
+    public String extractToken(HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+        Optional<String> optionalCookie = Arrays.stream(cookies)
+            .filter(cookie -> cookie.getName().equals(zoweAuthenticationUtility.getCookieTokenName()))
+            .filter(cookie -> !cookie.getValue().isEmpty())
+            .findFirst()
+            .map(Cookie::getValue);
+
+        return optionalCookie.orElseGet(() -> request.getHeader(zoweAuthenticationUtility.getAuthorizationHeader()));
+    }
+
+    /**
+     * Generate a QueryResponse object from the claims that are extracted from the token
+     *
+     * @param request the HttpServletRequest
+     * @return returns a Query response object that contains the user, token issuing time, and token expiration time
+     */
+    public QueryResponse query(HttpServletRequest request) {
+        String jwtToken = extractToken(request);
+        if (StringUtils.isEmpty(jwtToken)) {
+            Claims claims = zoweAuthenticationUtility.getClaims(jwtToken);
+            return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
+        }
+        return null;
+    }
+
+    @Override
+    public boolean validateToken(String jwtToken) {
+        if (Optional.ofNullable(zoweAuthenticationUtility.getClaims(jwtToken)).isPresent())
+            return true;
+        else
+            return false;
+    }
+
 }
+
+

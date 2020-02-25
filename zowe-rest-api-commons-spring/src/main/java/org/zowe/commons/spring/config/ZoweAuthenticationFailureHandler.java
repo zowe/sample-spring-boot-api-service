@@ -74,7 +74,7 @@ public class ZoweAuthenticationFailureHandler {
         } else if (ex instanceof ZosAuthenticationException) {
             handleUnauthorizedException(ex, httpServletResponse);
         } else {
-            throw ex;
+            throw new InsufficientAuthenticationException("Authentication failed");
         }
     }
 

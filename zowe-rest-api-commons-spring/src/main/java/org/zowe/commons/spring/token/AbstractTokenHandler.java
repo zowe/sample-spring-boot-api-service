@@ -13,13 +13,12 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
-import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -48,8 +47,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())
-            || request.getRequestURI().equalsIgnoreCase("/actuator/health")) {
+        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
             return true;
         }
         return false;
@@ -70,22 +68,26 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String header = request.getServletPath().isEmpty() ? request.getRequestURI() : request.getServletPath();
-
-        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
+        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
+            header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
+            header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||
+            header.startsWith("/apiDocs") || header.startsWith("/favicon")
+        ) {
             filterChain.doFilter(request, response);
             return;
         } else {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
-
             if (authenticationToken.isPresent()) {
                 try {
-                    UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(request, response);
-                } catch (AuthenticationException authenticationException) {
+                    Optional<UsernamePasswordAuthenticationToken> authentication = getAuthentication(request, response);
+                    if (authentication.isPresent()) {
+                        SecurityContextHolder.getContext().setAuthentication(authentication.get());
+                        filterChain.doFilter(request, response);
+                    } else {
+                        throw new InsufficientAuthenticationException("Authentication failed");
+                    }
+                } catch (RuntimeException authenticationException) {
                     failureHandler.handleException(authenticationException, response);
-                } catch (RuntimeException exception) {
-                    failureHandler.handleException(exception, response);
                 }
             } else {
                 filterChain.doFilter(request, response);
@@ -97,6 +99,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                                                                             HttpServletResponse httpServletResponse) throws ServletException, IOException {
         String header = null;
         String username = null;
+
+        Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = Optional.empty();
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -112,8 +116,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
 
         if (header != null) {
-            if (header.startsWith(authConfigurationProperties.getBearerAuthenticationPrefix())) {
-                header = header.replaceFirst(authConfigurationProperties.getBearerAuthenticationPrefix(), "").trim();
+            if (header.startsWith(ZoweAuthenticationUtility.bearerAuthenticationPrefix)) {
+                header = header.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
 
                 username = Jwts.parser()
                     .setSigningKey(authConfigurationProperties.getSecretKey())
@@ -121,26 +125,27 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
 
-            } else if (header.startsWith(authConfigurationProperties.getBasicAuthenticationPrefix())) {
-                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+            } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
                 tokenService.login(loginRequest, request, httpServletResponse);
 
-                return Optional.ofNullable(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
-            } else { //cookies
+                usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
+            } else {
+                //cookies
                 username = Jwts.parser()
                     .setSigningKey(authConfigurationProperties.getSecretKey())
                     .parseClaimsJws(header)
                     .getBody()
                     .getSubject();
                 if (username != null) {
-                    return Optional.ofNullable(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                    usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
             }
-            return null;
+            return usernamePasswordAuthenticationToken;
         }
-        return null;
+        return Optional.empty();
     }
 }

@@ -7,7 +7,7 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
-package org.zowe.sample.apiservice.apidoc;
+package org.zowe.commons.apidoc;
 
 import springfox.documentation.spring.web.paths.AbstractPathProvider;
 

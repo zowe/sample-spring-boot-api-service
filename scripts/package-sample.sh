@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 ./gradlew clean
 rm -rf zowe-rest-api-sample-spring/.gradle
 rm -rf zowe-rest-api-sample-spring/bin

@@ -1,15 +1,16 @@
 /*
  * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License v2.0 which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-v20.html
+ * Apache License, Version 2.0 which accompanies this distribution, and is available at
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright Contributors to the Zowe Project.
  */
 package org.zowe.sample.apiservice.test;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +50,12 @@ public class ServiceUnderTest {
     private final int port;
     private final String userId;
 
-
     @ToString.Exclude
     private final String password;
 
     private final String healthEndpoint;
+
+    private final String cookieName;
 
     private final String loginEndpoint;
 
@@ -76,8 +78,8 @@ public class ServiceUnderTest {
         this.password = env("TEST_PASSWORD", VALID_PASSWORD);
         this.healthEndpoint = env("TEST_HEALTH_ENDPOINT", "/actuator/health");
         this.loginEndpoint = env("TEST_LOGIN_ENDPOINT", "/api/v1/auth/login");
+        this.cookieName = env("TEST_COOKIE_NAME", "zoweSdkAuthenticationToken");
         this.waitMinutes = Integer.parseInt(env("TEST_WAIT_MINUTES", "1"));
-        this.authConfigurationProperties = getAuthConfigurationProperties();
         log.info("Service under test: {}", this.toString());
     }
 
@@ -110,11 +112,12 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        String zoweBasicAuthHeader = authConfigurationProperties.getBasicAuthenticationPrefix()
+        String zoweBasicAuthHeader = ZoweAuthenticationUtility.basicAuthenticationPrefix
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).
-                post(loginEndpoint).cookie(authConfigurationProperties.getCookieTokenName());
+                contentType(ContentType.JSON).
+                post(loginEndpoint).cookie(cookieName);
         } catch (Exception e) {
             log.debug("Check has failed", e);
             return null;

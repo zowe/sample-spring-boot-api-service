@@ -9,19 +9,22 @@
  */
 package org.zowe.commons.spring.token;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AppResponse {
-
+    @ApiModelProperty(value = "Http Status of the response")
     private String status;
-    private int statusCode;
-    private String message;
 
-    public AppResponse(String status, int statusCode, String message) {
-        this.status = status;
-        this.statusCode = statusCode;
-        this.message = message;
-    }
+    @ApiModelProperty(value = "Http Status code of the response")
+    private int statusCode;
+
+    @ApiModelProperty(value = "Successful message for the scenario")
+    private String message;
 
 }

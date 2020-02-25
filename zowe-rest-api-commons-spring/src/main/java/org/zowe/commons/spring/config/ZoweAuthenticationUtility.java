@@ -9,19 +9,21 @@
  */
 package org.zowe.commons.spring.config;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.zowe.commons.spring.login.LoginRequest;
+import org.zowe.commons.error.TokenExpireException;
+import org.zowe.commons.error.TokenNotValidException;
+import org.zowe.commons.spring.token.LoginRequest;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
@@ -36,18 +38,16 @@ import java.util.Optional;
 @Slf4j
 public class ZoweAuthenticationUtility {
 
-    public String basicAuthenticationPrefix = "Basic ";
-    public String bearerAuthenticationPrefix = "Bearer ";
+    public final static String basicAuthenticationPrefix = "Basic ";
+    public final static String bearerAuthenticationPrefix = "Bearer ";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
+    private String authorizationHeader = "Authorization";
 
     @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
     private String cookieTokenName;
 
     @Value("${zowe.commons.security.token.expiration:86400000}")
     private int expiration;
-
-    @Value("${zowe.commons.security.token.authorization:Authorization}")
-    private String authorizationHeader;
 
     @Value("${zowe.commons.security.token.secretKeyToGenJWTs:8Zz5tw0Ionm3XPZZfN0NOml3z9FM}")
     private String secretKey;
@@ -82,9 +82,9 @@ public class ZoweAuthenticationUtility {
         return Optional.ofNullable(
             request.getHeader(HttpHeaders.AUTHORIZATION)
         ).filter(
-            header -> header.startsWith(getBasicAuthenticationPrefix())
+            header -> header.startsWith(basicAuthenticationPrefix)
         ).map(
-            header -> header.replaceFirst(getBasicAuthenticationPrefix(), "").trim()
+            header -> header.replaceFirst(basicAuthenticationPrefix, "").trim()
         )
             .filter(base64Credentials -> !base64Credentials.isEmpty())
             .map(this::mapBase64Credentials);
@@ -122,5 +122,29 @@ public class ZoweAuthenticationUtility {
         tokenCookie.setSecure(true);
 
         response.addCookie(tokenCookie);
+    }
+
+    /**
+     * Get the Claims from the Token String in the authentication header/cookie
+     *
+     * @param jwtToken the token either form the authentication header or the cookie
+     * @return extracts the claims from the token and returns it
+     */
+    public Claims getClaims(String jwtToken) {
+        try {
+            jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
+            return Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+                .parseClaimsJws(jwtToken).getBody();
+        } catch (ExpiredJwtException e) {
+            log.debug("Token with id '{}' for user '{}' is expired.", e.getClaims().getId(), e.getClaims().getSubject());
+            throw new TokenExpireException("Token is Expired.");
+        } catch (JwtException e) {
+            log.debug("Token is not valid due to: {}.", e.getMessage());
+            throw new TokenNotValidException("Token is not valid.");
+        } catch (Exception e) {
+            log.debug("Token is not valid due to: {}.", e.getMessage());
+            throw new TokenNotValidException("An internal error occurred while validating the token therefore the token is no longer valid.");
+        }
     }
 }
