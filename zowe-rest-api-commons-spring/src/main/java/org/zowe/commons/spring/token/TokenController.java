@@ -58,7 +58,7 @@ public class TokenController {
         }
     }
 
-    @GetMapping("/query")
+    @GetMapping("/api/v1/auth/query")
     @ApiOperation(value = "This API is used to return details of JWT token like Username, Issued Time and Expiration Time.", nickname = "query", authorizations = {
         @Authorization(value = DOC_SCHEME_BASIC_AUTH)})
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful Validation", response = QueryResponse.class),

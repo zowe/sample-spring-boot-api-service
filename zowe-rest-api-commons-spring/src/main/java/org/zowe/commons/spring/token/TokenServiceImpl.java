@@ -119,7 +119,7 @@ public class TokenServiceImpl implements TokenService {
      */
     public QueryResponse query(HttpServletRequest request) {
         String jwtToken = extractToken(request);
-        if (StringUtils.isEmpty(jwtToken)) {
+        if (!StringUtils.isEmpty(jwtToken)) {
             Claims claims = zoweAuthenticationUtility.getClaims(jwtToken);
             return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
         }
