@@ -9,6 +9,7 @@
  */
 package org.zowe.commons.spring.token;
 
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
-import org.zowe.commons.spring.login.LoginRequest;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 import javax.servlet.ServletException;
@@ -31,6 +31,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TokenServiceImplTest {
+
+    private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.HS512;
+    private static final String USER = "zowe";
+    private static final String SECRET_KEY = "8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb";
 
     @InjectMocks
     TokenServiceImpl tokenService;
@@ -47,13 +51,12 @@ public class TokenServiceImplTest {
     @Mock
     ZoweAuthenticationUtility authConfigurationProperties;
 
-    LoginRequest loginRequest = new LoginRequest("zowe", "zowe");
+    private LoginRequest loginRequest = new LoginRequest("zowe", "zowe");
 
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+    private UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
     @Before
     public void initMocks() {
-
         MockitoAnnotations.initMocks(this);
         when(zosAuthenticationProvider.authenticate(authenticationToken)).thenReturn(authenticationToken);
     }
@@ -67,6 +70,8 @@ public class TokenServiceImplTest {
     public void verifyLoginWithBasic() throws ServletException {
         when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic "
             + Base64.getEncoder().encodeToString(("zowe" + ":" + "zowe").getBytes()));
+        when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).
+            thenReturn(java.util.Optional.ofNullable(loginRequest));
 
         tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
     }

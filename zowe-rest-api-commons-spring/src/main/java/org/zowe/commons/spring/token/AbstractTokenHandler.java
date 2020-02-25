@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
-import org.zowe.commons.spring.login.LoginRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -80,9 +79,9 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
             if (authenticationToken.isPresent()) {
                 try {
-                    if (getAuthentication(request, response).isPresent()) {
-                        UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response).get();
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    Optional<UsernamePasswordAuthenticationToken> authentication = getAuthentication(request, response);
+                    if (authentication.isPresent()) {
+                        SecurityContextHolder.getContext().setAuthentication(authentication.get());
                         filterChain.doFilter(request, response);
                     } else {
                         throw new InsufficientAuthenticationException("Authentication failed");
@@ -130,7 +129,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 }
 
             } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
-                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).get();
+                LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
                 tokenService.login(loginRequest, request, httpServletResponse);
 
                 usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
