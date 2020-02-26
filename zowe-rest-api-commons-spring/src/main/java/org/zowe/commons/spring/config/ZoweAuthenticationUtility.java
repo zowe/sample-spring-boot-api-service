@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.zowe.commons.error.TokenNotValidException;
 import org.zowe.commons.spring.token.LoginRequest;
 import org.zowe.commons.spring.token.QueryResponse;
 
@@ -137,15 +136,10 @@ public class ZoweAuthenticationUtility {
      * @return extracts the claims from the token and returns it
      */
     public QueryResponse getClaims(String jwtToken) {
-        try {
-            jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
-            Claims claims = Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
-                .parseClaimsJws(jwtToken).getBody();
-            return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
-        } catch (Exception e) {
-            log.debug("Token is not valid due to: {}.", e.getMessage());
-            throw new TokenNotValidException("An internal error occurred while validating the token therefore the token is no longer valid.");
-        }
+        jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
+        Claims claims = Jwts.parser()
+            .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+            .parseClaimsJws(jwtToken).getBody();
+        return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
     }
 }
