@@ -9,8 +9,6 @@
  */
 package org.zowe.commons.spring.token;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +18,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
-import javax.management.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Base64;
-import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -63,9 +60,10 @@ public class TokenServiceImplTest {
         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
     @Before
-    public void initMocks() throws IOException {
+    public void initMocks() {
         MockitoAnnotations.initMocks(this);
         when(zosAuthenticationProvider.authenticate(authenticationToken)).thenReturn(authenticationToken);
+        ReflectionTestUtils.setField(authConfigurationProperties, "secretKey", "secretKey");
     }
 
     @Test
@@ -79,6 +77,22 @@ public class TokenServiceImplTest {
             + Base64.getEncoder().encodeToString(("zowe" + ":" + "zowe").getBytes()));
         when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenCallRealMethod().
             thenReturn(java.util.Optional.ofNullable(loginRequest));
+        when(authConfigurationProperties.mapBase64Credentials(any())).thenCallRealMethod().
+            thenReturn(loginRequest);
+        when(authConfigurationProperties.createToken(any())).thenCallRealMethod().
+            thenReturn("token");
+        authConfigurationProperties.setCookie("token", httpServletResponse);
+
+        tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
+    }
+
+    @Test
+    public void verifyLoginWithInvalidBasic() throws ServletException {
+        when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic "
+            + Base64.getEncoder().encodeToString(("zowe" + ":").getBytes()));
+        when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenCallRealMethod().
+            thenReturn(java.util.Optional.ofNullable(loginRequest));
+        when(authConfigurationProperties.mapBase64Credentials(any())).thenCallRealMethod().thenReturn(loginRequest);
 
         tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
     }
@@ -111,22 +125,4 @@ public class TokenServiceImplTest {
         tokenService.query(httpServletRequest);
     }
 
-    @Test(expected = Exception.class)
-    public void expiredTokenQueryApi() throws ServletException {
-        String token = Jwts.builder()
-            .setSubject("zowe")
-            .setExpiration(new Date(System.currentTimeMillis() + 10000))
-            .signWith(SignatureAlgorithm.HS512, "secretKey")
-            .compact();
-
-        Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", token);
-        Cookie[] cookies = new Cookie[1];
-        cookies[0] = tokenCookie;
-
-        when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().
-            thenReturn(new QueryResponse());
-        when(authConfigurationProperties.getCookieTokenName()).thenReturn("zoweSdkAuthenticationToken");
-        when(httpServletRequest.getCookies()).thenReturn(cookies);
-        tokenService.query(httpServletRequest);
-    }
 }
