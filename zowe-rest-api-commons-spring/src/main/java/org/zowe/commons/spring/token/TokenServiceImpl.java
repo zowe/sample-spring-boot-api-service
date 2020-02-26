@@ -9,7 +9,7 @@
  */
 package org.zowe.commons.spring.token;
 
-import io.jsonwebtoken.Claims;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +31,17 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Data
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
-    private final ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
 
     @Autowired
     ZoweAuthenticationUtility zoweAuthenticationUtility;
 
-    public void setZoweAuthenticationUtility(ZoweAuthenticationUtility zoweAuthenticationUtility) {
-        this.zoweAuthenticationUtility = zoweAuthenticationUtility;
-    }
+    @Autowired
+    ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
 
     @Autowired
-    private
     ZosAuthenticationProvider zosAuthenticationProvider;
 
     /**
@@ -99,11 +97,12 @@ public class TokenServiceImpl implements TokenService {
      * @param request - the HttpServletRequest from the client
      * @return String - extracts the token from the HttpServletRequest
      */
-    public String extractToken(HttpServletRequest request) {
+    private String extractToken(HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
+        String cookieName = zoweAuthenticationUtility.getCookieTokenName();
         Optional<String> optionalCookie = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals(zoweAuthenticationUtility.getCookieTokenName()))
+            .filter(cookie -> cookie.getName().equals(cookieName))
             .filter(cookie -> !cookie.getValue().isEmpty())
             .findFirst()
             .map(Cookie::getValue);
@@ -120,8 +119,7 @@ public class TokenServiceImpl implements TokenService {
     public QueryResponse query(HttpServletRequest request) {
         String jwtToken = extractToken(request);
         if (!StringUtils.isEmpty(jwtToken)) {
-            Claims claims = zoweAuthenticationUtility.getClaims(jwtToken);
-            return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
+            return zoweAuthenticationUtility.getClaims(jwtToken);
         }
         return null;
     }

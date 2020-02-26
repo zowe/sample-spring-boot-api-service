@@ -37,13 +37,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ZoweAuthenticationFailureHandler {
 
-    private final ErrorService errorService = CommonsErrorService.get();
-
     private static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-    protected final ObjectMapper mapper;
-
     private ApiMessage localizedMessage(String key) {
+        ErrorService errorService = CommonsErrorService.get();
         return errorService.createApiMessage(LocaleContextHolder.getLocale(), key);
     }
 
@@ -53,8 +50,8 @@ public class ZoweAuthenticationFailureHandler {
      * @param ex Exception to be handled
      * @throws ServletException Fallback exception if exception cannot be handled
      */
-    public void handleException(RuntimeException ex,
-                                HttpServletResponse httpServletResponse) throws ServletException {
+    public boolean handleException(RuntimeException ex,
+                                   HttpServletResponse httpServletResponse) throws ServletException {
         if (ex instanceof SignatureException) {
             handleInvalidTokenException(httpServletResponse);
         } else if (ex instanceof ExpiredJwtException) {
@@ -76,6 +73,7 @@ public class ZoweAuthenticationFailureHandler {
         } else {
             throw new InsufficientAuthenticationException("Authentication failed");
         }
+        return false;
     }
 
     private void handleInvalidTokenException(HttpServletResponse response) throws ServletException {
@@ -84,9 +82,9 @@ public class ZoweAuthenticationFailureHandler {
     }
 
     private void handleUnauthorizedException(Exception exception, HttpServletResponse response) throws ServletException {
+        ErrorService errorService = CommonsErrorService.get();
         ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(),
-            "org.zowe.commons.rest.unauthorized",
-            exception.getMessage());
+            "org.zowe.commons.rest.unauthorized", exception.getMessage());
         writeErrorResponse(message, HttpStatus.UNAUTHORIZED, response);
     }
 
@@ -100,7 +98,8 @@ public class ZoweAuthenticationFailureHandler {
         writeErrorResponse(message, HttpStatus.FORBIDDEN, response);
     }
 
-    protected void writeErrorResponse(ApiMessage message, HttpStatus status, HttpServletResponse response) throws ServletException {
+    private void writeErrorResponse(ApiMessage message, HttpStatus status, HttpServletResponse response) throws ServletException {
+        ObjectMapper mapper = new ObjectMapper();
         response.setStatus(status.value());
         response.setContentType(CONTENT_TYPE);
         try {

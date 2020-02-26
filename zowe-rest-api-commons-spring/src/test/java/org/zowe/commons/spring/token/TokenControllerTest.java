@@ -45,6 +45,11 @@ public class TokenControllerTest {
     }
 
     @Test
+    public void unauthorizedLogin() throws Exception {
+        tokenController.login(new LoginRequest("zowe", "dsfds"), httpServletRequest, httpServletResponse);
+    }
+
+    @Test
     public void testVerifyLogin() throws Exception {
         when(tokenService.query(httpServletRequest)).thenReturn(new QueryResponse("user", new Date(), new Date()));
 

@@ -9,16 +9,19 @@
  */
 package org.zowe.commons.spring.config;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.zowe.commons.error.TokenExpireException;
 import org.zowe.commons.error.TokenNotValidException;
 import org.zowe.commons.spring.token.LoginRequest;
+import org.zowe.commons.spring.token.QueryResponse;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +54,9 @@ public class ZoweAuthenticationUtility {
 
     @Value("${zowe.commons.security.token.secretKeyToGenJWTs:8Zz5tw0Ionm3XPZZfN0NOml3z9FM}")
     private String secretKey;
+
+    @Autowired
+    ZoweAuthenticationFailureHandler zoweAuthenticationFailureHandler;
 
     /**
      * Decode the encoded credentials
@@ -130,18 +136,13 @@ public class ZoweAuthenticationUtility {
      * @param jwtToken the token either form the authentication header or the cookie
      * @return extracts the claims from the token and returns it
      */
-    public Claims getClaims(String jwtToken) {
+    public QueryResponse getClaims(String jwtToken) {
         try {
             jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
                 .parseClaimsJws(jwtToken).getBody();
-        } catch (ExpiredJwtException e) {
-            log.debug("Token with id '{}' for user '{}' is expired.", e.getClaims().getId(), e.getClaims().getSubject());
-            throw new TokenExpireException("Token is Expired.");
-        } catch (JwtException e) {
-            log.debug("Token is not valid due to: {}.", e.getMessage());
-            throw new TokenNotValidException("Token is not valid.");
+            return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
         } catch (Exception e) {
             log.debug("Token is not valid due to: {}.", e.getMessage());
             throw new TokenNotValidException("An internal error occurred while validating the token therefore the token is no longer valid.");
