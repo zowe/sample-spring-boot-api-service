@@ -59,12 +59,19 @@ public class TokenServiceImplTest {
     @InjectMocks
     TokenServiceImpl tokenService;
 
+    String token = null;
     private LoginRequest loginRequest = new LoginRequest("zowe", "zowe");
     private UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
     @Before
     public void initMocks() {
+        token = Jwts.builder()
+            .setSubject("zowe")
+            .signWith(SignatureAlgorithm.HS512, "secretKey")
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .compact();
+
         MockitoAnnotations.initMocks(this);
         when(zosAuthenticationProvider.authenticate(authenticationToken)).thenReturn(authenticationToken);
         ReflectionTestUtils.setField(authConfigurationProperties, "secretKey", "secretKey");
@@ -124,12 +131,6 @@ public class TokenServiceImplTest {
 
     @Test
     public void verifyQuery() throws ServletException {
-        String token = Jwts.builder()
-            .setSubject("zowe")
-            .signWith(SignatureAlgorithm.HS512, "secretKey")
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .compact();
-
         Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", token);
         tokenCookie.setComment("Zowe SDK security token");
         tokenCookie.setPath("/");
@@ -142,6 +143,31 @@ public class TokenServiceImplTest {
         when(httpServletRequest.getCookies()).thenReturn(cookies);
 
         tokenService.query(httpServletRequest);
+    }
+
+    @Test
+    public void verifyInvalidTokenInQueryAPI() {
+        Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", token);
+        tokenCookie.setComment("Zowe SDK security token");
+        tokenCookie.setPath("/");
+
+        Cookie[] cookies = new Cookie[1];
+        cookies[0] = tokenCookie;
+
+        when(httpServletRequest.getCookies()).thenReturn(cookies);
+
+        tokenService.query(httpServletRequest);
+    }
+
+    @Test
+    public void validateToken() {
+        when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
+        tokenService.validateToken(token);
+    }
+
+    @Test
+    public void validateInvalidToken() {
+        tokenService.validateToken("token");
     }
 
 }
