@@ -72,9 +72,9 @@ public class AuthorizationFilterTest {
         assertNotNull(authorizationFilter.extractContent(httpServletRequest));
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void checkWhenCookieNull() {
-        cookies[0] = null;
+        cookies[0] = new Cookie("cookieName", "");
         when(httpServletRequest.getCookies()).thenReturn(cookies);
         assertNotNull(authorizationFilter.extractContent(httpServletRequest));
     }
