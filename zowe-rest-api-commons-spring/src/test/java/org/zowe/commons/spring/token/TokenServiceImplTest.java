@@ -11,6 +11,7 @@ package org.zowe.commons.spring.token;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,7 +81,9 @@ public class TokenServiceImplTest {
 
     @Test
     public void verifyLogin() throws ServletException {
-        tokenService.login(loginRequest, httpServletRequest, httpServletResponse);
+        when(authConfigurationProperties.createToken(authenticationToken)).thenCallRealMethod().
+            thenReturn("token");
+        Assert.assertNotNull(tokenService.login(loginRequest, httpServletRequest, httpServletResponse));
     }
 
     @Test
@@ -97,7 +100,7 @@ public class TokenServiceImplTest {
         Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
         (authConfigurationProperties).setCookie("token", httpServletResponse);
 
-        tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
+        Assert.assertNotNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
     @Test
@@ -112,21 +115,21 @@ public class TokenServiceImplTest {
         Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
         (authConfigurationProperties).setCookie("token", httpServletResponse);
 
-        tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
+        Assert.assertNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
     @Test
     public void throwZosAuthenticationException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
         when(httpServletResponse.getWriter()).thenReturn(new PrintWriter("writer"));
-        tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
+        Assert.assertNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
     @Test
     public void throwAuthenticationCredsNotFoundException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
         when(httpServletResponse.getWriter()).thenReturn(new PrintWriter("writer"));
-        tokenService.login(any(), httpServletRequest, httpServletResponse);
+        Assert.assertNull(tokenService.login(any(), httpServletRequest, httpServletResponse));
     }
 
     @Test
@@ -142,7 +145,7 @@ public class TokenServiceImplTest {
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         when(httpServletRequest.getCookies()).thenReturn(cookies);
 
-        tokenService.query(httpServletRequest);
+        Assert.assertNotNull(tokenService.query(httpServletRequest));
     }
 
     @Test
@@ -156,18 +159,18 @@ public class TokenServiceImplTest {
 
         when(httpServletRequest.getCookies()).thenReturn(cookies);
 
-        tokenService.query(httpServletRequest);
+        Assert.assertNull(tokenService.query(httpServletRequest));
     }
 
     @Test
     public void validateToken() {
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
-        tokenService.validateToken(token);
+        Assert.assertTrue(tokenService.validateToken(token));
     }
 
     @Test
     public void validateInvalidToken() {
-        tokenService.validateToken("token");
+        Assert.assertFalse(tokenService.validateToken("token"));
     }
 
 }

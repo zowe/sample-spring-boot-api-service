@@ -9,6 +9,7 @@
  */
 package org.zowe.commons.spring.config;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 
@@ -54,7 +54,7 @@ public class ZoweWebSecurityConfigTest {
     public void configure() throws Exception {
         when(authConfigurationProperties.getServiceLoginEndpoint()).thenReturn("/login");
         zoweWebSecurityConfig.configure(http);
-        // Note that this might depend on your concrete app!
 
+        Assert.assertNotNull(http);
     }
 }

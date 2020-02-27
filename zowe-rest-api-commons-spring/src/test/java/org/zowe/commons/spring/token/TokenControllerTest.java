@@ -9,6 +9,7 @@
  */
 package org.zowe.commons.spring.token;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,19 +42,19 @@ public class TokenControllerTest {
         when(tokenService.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse)).
             thenReturn("token");
 
-        tokenController.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse);
+        Assert.assertNotNull(tokenController.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse));
     }
 
     @Test
     public void unauthorizedLogin() throws Exception {
-        tokenController.login(new LoginRequest("zowe", "dsfds"), httpServletRequest, httpServletResponse);
+        Assert.assertNotNull(tokenController.login(new LoginRequest("zowe", "dsfds"), httpServletRequest, httpServletResponse));
     }
 
     @Test
     public void testVerifyLogin() throws Exception {
         when(tokenService.query(httpServletRequest)).thenReturn(new QueryResponse("user", new Date(), new Date()));
 
-        tokenController.queryResponseController(httpServletRequest);
+        Assert.assertNotNull(tokenController.queryResponseController(httpServletRequest));
     }
 
     @Test
