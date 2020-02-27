@@ -39,9 +39,14 @@ public class ZoweAuthenticationFailureHandler {
 
     private static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
-    private ApiMessage localizedMessage(String key) {
+    protected ApiMessage localizedMessage(String key) {
         ErrorService errorService = CommonsErrorService.get();
         return errorService.createApiMessage(LocaleContextHolder.getLocale(), key);
+    }
+
+    protected ApiMessage localizedMessage(String key, String message) {
+        ErrorService errorService = CommonsErrorService.get();
+        return errorService.createApiMessage(LocaleContextHolder.getLocale(), key, message);
     }
 
     /**
@@ -93,8 +98,9 @@ public class ZoweAuthenticationFailureHandler {
         writeErrorResponse(message, HttpStatus.UNAUTHORIZED, response);
     }
 
+    //org.zowe.commons.rest.forbidden has a %s string in the text .. so it needs an additional argument in the method call
     private void handleResourceAccessException(HttpServletResponse response) throws ServletException {
-        ApiMessage message = localizedMessage("org.zowe.commons.rest.forbidden");
+        ApiMessage message = localizedMessage("org.zowe.commons.rest.forbidden", "");
         writeErrorResponse(message, HttpStatus.FORBIDDEN, response);
     }
 
