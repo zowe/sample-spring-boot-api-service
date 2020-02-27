@@ -9,36 +9,22 @@
  */
 package org.zowe.commons.spring.token;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import java.util.Collections;
 
+@Data
 @EqualsAndHashCode(callSuper = false)
 public class TokenAuthentication extends AbstractAuthenticationToken {
-    private final String username;
-    private final String token;
+    private final String principal;
+    private final String credentials;
 
     public TokenAuthentication(String token) {
         super(Collections.emptyList());
-        this.username = null;
-        this.token = token;
-    }
-
-    /**
-     * @return the token that prove the username is correct
-     */
-    @Override
-    public String getCredentials() {
-        return token;
-    }
-
-    /**
-     * @return the username being authenticated
-     */
-    @Override
-    public String getPrincipal() {
-        return username;
+        this.principal = null;
+        this.credentials = token;
     }
 }
 

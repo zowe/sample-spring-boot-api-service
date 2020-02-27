@@ -11,18 +11,14 @@ package org.zowe.commons.spring.config;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.zowe.commons.spring.token.TokenService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
@@ -42,10 +38,11 @@ public class AuthorizationFilterTest {
     @Mock
     HttpServletRequest httpServletRequest;
 
+    Cookie[] cookies = new Cookie[1];
 
     private Cookie[] createCookie() {
 
-        Cookie[] cookies = new Cookie[1];
+        cookies = new Cookie[1];
 
         Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", createJwtToken());
         tokenCookie.setComment("Zowe SDK security token");
@@ -75,8 +72,15 @@ public class AuthorizationFilterTest {
         assertNotNull(authorizationFilter.extractContent(httpServletRequest));
     }
 
+    @Test(expected = Exception.class)
+    public void checkWhenCookieNull() {
+        cookies[0] = null;
+        when(httpServletRequest.getCookies()).thenReturn(cookies);
+        assertNotNull(authorizationFilter.extractContent(httpServletRequest));
+    }
+
     @Test
-    public void checkWhenCookieIsNotProvided(){
+    public void checkWhenCookiesIsNull() {
         when(httpServletRequest.getCookies()).thenReturn(null);
         assertNotNull(authorizationFilter.extractContent(httpServletRequest));
     }
