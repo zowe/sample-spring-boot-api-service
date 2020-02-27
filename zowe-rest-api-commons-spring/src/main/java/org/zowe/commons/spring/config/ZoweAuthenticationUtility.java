@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.zowe.commons.spring.token.LoginRequest;
@@ -64,17 +65,13 @@ public class ZoweAuthenticationUtility {
      * @return the decoded credentials in {@link LoginRequest}
      */
     public LoginRequest mapBase64Credentials(String base64Credentials) {
-        try {
-            String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
-            int i = credentials.indexOf(':');
-            if (i > 0) {
-                return new LoginRequest(credentials.substring(0, i), credentials.substring(i + 1));
-            }
-        } catch (
-            Exception e) {
-            log.debug("Conversion problem with the credentials {}", base64Credentials);
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
+        int i = credentials.indexOf(':');
+        if (i > 0) {
+            return new LoginRequest(credentials.substring(0, i), credentials.substring(i + 1));
+        } else {
+            throw new AuthenticationCredentialsNotFoundException("Password is not provided");
         }
-        return null;
     }
 
     /**

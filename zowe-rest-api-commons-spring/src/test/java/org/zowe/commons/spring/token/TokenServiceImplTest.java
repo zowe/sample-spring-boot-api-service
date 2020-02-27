@@ -9,11 +9,14 @@
  */
 package org.zowe.commons.spring.token;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Base64;
+import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -64,6 +68,7 @@ public class TokenServiceImplTest {
         MockitoAnnotations.initMocks(this);
         when(zosAuthenticationProvider.authenticate(authenticationToken)).thenReturn(authenticationToken);
         ReflectionTestUtils.setField(authConfigurationProperties, "secretKey", "secretKey");
+        ReflectionTestUtils.setField(authConfigurationProperties, "cookieTokenName", "zoweSdkAuthenticationToken");
     }
 
     @Test
@@ -73,26 +78,32 @@ public class TokenServiceImplTest {
 
     @Test
     public void verifyLoginWithBasic() throws ServletException {
+        ReflectionTestUtils.setField(authConfigurationProperties, "cookieTokenName", "zoweSdkAuthenticationToken");
         when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic "
             + Base64.getEncoder().encodeToString(("zowe" + ":" + "zowe").getBytes()));
         when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenCallRealMethod().
             thenReturn(java.util.Optional.ofNullable(loginRequest));
         when(authConfigurationProperties.mapBase64Credentials(any())).thenCallRealMethod().
             thenReturn(loginRequest);
-        when(authConfigurationProperties.createToken(any())).thenCallRealMethod().
+        when(authConfigurationProperties.createToken(authenticationToken)).thenCallRealMethod().
             thenReturn("token");
-        authConfigurationProperties.setCookie("token", httpServletResponse);
+        Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
+        (authConfigurationProperties).setCookie("token", httpServletResponse);
 
         tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
     }
 
     @Test
-    public void verifyLoginWithInvalidBasic() throws ServletException {
+    public void verifyLoginWithNoPassword() throws ServletException {
+        ReflectionTestUtils.setField(authConfigurationProperties, "cookieTokenName", "zoweSdkAuthenticationToken");
         when(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic "
-            + Base64.getEncoder().encodeToString(("zowe" + ":").getBytes()));
+            + Base64.getEncoder().encodeToString(("&").getBytes()));
         when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenCallRealMethod().
             thenReturn(java.util.Optional.ofNullable(loginRequest));
-        when(authConfigurationProperties.mapBase64Credentials(any())).thenCallRealMethod().thenReturn(loginRequest);
+        when(authConfigurationProperties.mapBase64Credentials(any())).thenCallRealMethod().
+            thenReturn(null);
+        Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
+        (authConfigurationProperties).setCookie("token", httpServletResponse);
 
         tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse);
     }
@@ -113,13 +124,21 @@ public class TokenServiceImplTest {
 
     @Test
     public void verifyQuery() throws ServletException {
-        Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", "token");
+        String token = Jwts.builder()
+            .setSubject("zowe")
+            .signWith(SignatureAlgorithm.HS512, "secretKey")
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .compact();
+
+        Cookie tokenCookie = new Cookie("zoweSdkAuthenticationToken", token);
         tokenCookie.setComment("Zowe SDK security token");
         tokenCookie.setPath("/");
 
         Cookie[] cookies = new Cookie[1];
         cookies[0] = tokenCookie;
 
+        when(authConfigurationProperties.getCookieTokenName()).thenCallRealMethod().thenReturn("zoweSdkAuthenticationToken");
+        when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         when(httpServletRequest.getCookies()).thenReturn(cookies);
 
         tokenService.query(httpServletRequest);
