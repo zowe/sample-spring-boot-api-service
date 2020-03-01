@@ -56,6 +56,8 @@ public class AuthorizationFilterTest {
     @Mock
     private FilterChain filterChain;
 
+    Cookie[] cookies = new Cookie[1];
+
     @Mock
     private TokenService tokenService;
 
@@ -90,6 +92,13 @@ public class AuthorizationFilterTest {
     @Test
     public void checkIfCookieIsProperlyRead() {
         when(httpServletRequest.getCookies()).thenReturn(createCookie());
+        assertNotNull(authorizationFilter.extractContent(httpServletRequest));
+    }
+
+    @Test
+    public void checkWhenCookieNull() {
+        cookies[0] = new Cookie("cookieName", "");
+        when(httpServletRequest.getCookies()).thenReturn(cookies);
         assertNotNull(authorizationFilter.extractContent(httpServletRequest));
     }
 
