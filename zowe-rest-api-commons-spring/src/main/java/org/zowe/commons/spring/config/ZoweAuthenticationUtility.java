@@ -41,8 +41,8 @@ import java.util.Optional;
 @Slf4j
 public class ZoweAuthenticationUtility {
 
-    public final static String basicAuthenticationPrefix = "Basic ";
-    public final static String bearerAuthenticationPrefix = "Bearer ";
+    public static final String BASIC_AUTHENTICATION_PREFIX = "Basic ";
+    public static final String BEARER_AUTHENTICATION_PREFIX = "Bearer ";
     private String serviceLoginEndpoint = "/api/v1/auth/login";
     private String authorizationHeader = "Authorization";
 
@@ -84,9 +84,9 @@ public class ZoweAuthenticationUtility {
         return Optional.ofNullable(
             request.getHeader(HttpHeaders.AUTHORIZATION)
         ).filter(
-            header -> header.startsWith(basicAuthenticationPrefix)
+            header -> header.startsWith(BASIC_AUTHENTICATION_PREFIX)
         ).map(
-            header -> header.replaceFirst(basicAuthenticationPrefix, "").trim()
+            header -> header.replaceFirst(BASIC_AUTHENTICATION_PREFIX, "").trim()
         )
             .filter(base64Credentials -> !base64Credentials.isEmpty())
             .map(this::mapBase64Credentials);
@@ -133,7 +133,7 @@ public class ZoweAuthenticationUtility {
      * @return extracts the claims from the token and returns it
      */
     public QueryResponse getClaims(String jwtToken) {
-        jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
+        jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX, "").trim();
         Claims claims = Jwts.parser()
             .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
             .parseClaimsJws(jwtToken).getBody();

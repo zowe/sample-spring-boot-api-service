@@ -61,6 +61,6 @@ public class TokenControllerTest {
     public void catchException() throws Exception {
         when(tokenService.query(httpServletRequest)).thenThrow(new RuntimeException());
 
-        tokenController.queryResponseController(httpServletRequest);
+        Assert.assertNull(tokenController.queryResponseController(httpServletRequest));
     }
 }

@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -126,6 +125,7 @@ public class AuthorizationFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/auth/login");
         when(authConfigurationProperties.getServiceLoginEndpoint()).thenReturn("/api/v1/auth/login");
         authorizationFilter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+        assertNotEquals(authorizationFilter.extractContent(httpServletRequest), abstractAuthenticationToken);
     }
 
     @Test
@@ -135,8 +135,9 @@ public class AuthorizationFilterTest {
         when(authConfigurationProperties.getServiceLoginEndpoint()).thenReturn("/api/v1/auth/login");
         when(authorizationFilter.extractContent(httpServletRequest)).thenReturn(abstractAuthenticationToken);
         Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken("zowe", null, new ArrayList<>()));
-        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn("Bearer "+createJwtToken());
+        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn("Bearer " + createJwtToken());
         authorizationFilter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+        assertTrue(authorizationFilter.extractContent(httpServletRequest).isPresent());
     }
 
     @Test(expected = NullPointerException.class)
@@ -169,17 +170,17 @@ public class AuthorizationFilterTest {
 
     @Test
     public void testGetAuthenticationWithCookieAuthentication() throws ServletException, IOException {
-        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn( createJwtToken());
+        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(createJwtToken());
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
 
     }
 
     @Test
     public void testGetAuthenticationWithBasicAuthentication() throws ServletException, IOException {
-        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn("Basic "+createJwtToken());
-        LoginRequest loginRequest =new LoginRequest("zowe","zowe");
-        when( authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenReturn(Optional.of(loginRequest));
-        when(tokenService.login(loginRequest,httpServletRequest,httpServletResponse)).thenReturn("");
+        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn("Basic " + createJwtToken());
+        LoginRequest loginRequest = new LoginRequest("zowe", "zowe");
+        when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenReturn(Optional.of(loginRequest));
+        when(tokenService.login(loginRequest, httpServletRequest, httpServletResponse)).thenReturn("");
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
 
     }

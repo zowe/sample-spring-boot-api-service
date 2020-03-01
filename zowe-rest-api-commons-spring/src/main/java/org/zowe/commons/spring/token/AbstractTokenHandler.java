@@ -112,15 +112,15 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
 
         if (header != null) {
-            if (header.startsWith(ZoweAuthenticationUtility.bearerAuthenticationPrefix)) {
-                header = header.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
+            if (header.startsWith(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX)) {
+                header = header.replaceFirst(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX, "").trim();
 
                 username = getSubject(header);
                 if (username != null) {
                     usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
 
-            } else if (header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)) {
+            } else if (header.startsWith(ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX)) {
                 LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
                 tokenService.login(loginRequest, request, httpServletResponse);
 

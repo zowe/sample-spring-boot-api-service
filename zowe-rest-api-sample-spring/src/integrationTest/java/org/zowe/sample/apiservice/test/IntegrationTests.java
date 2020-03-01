@@ -21,7 +21,7 @@ public class IntegrationTests {
     @Before
     public void setup() {
         serviceUnderTest.waitUntilIsReady();
-        this.token = authConfigurationProperties.bearerAuthenticationPrefix + serviceUnderTest.login();
+        this.token = authConfigurationProperties.BEARER_AUTHENTICATION_PREFIX + serviceUnderTest.login();
 
     }
 }

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,7 @@ public class ZoweAuthenticationFailureHandlerTest {
     private HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
 
     private ExpiredJwtException expiredJwtException = mock(ExpiredJwtException.class);
+
     private ZosAuthenticationException zosAuthenticationException = mock(ZosAuthenticationException.class);
 
     @Before
@@ -51,42 +53,14 @@ public class ZoweAuthenticationFailureHandlerTest {
 
     @Test
     public void checkSignatureException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new SignatureException(""), httpServletResponse);
-    }
-
-    @Test
-    public void checkInsufficientAuthenticationException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new InsufficientAuthenticationException(""), httpServletResponse);
-    }
-
-    @Test
-    public void checkBadCredentialsException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new BadCredentialsException(""), httpServletResponse);
-    }
-
-    @Test
-    public void checkAuthenticationCredentialNotFoundException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new AuthenticationCredentialsNotFoundException(""), httpServletResponse);
-    }
-
-    @Test
-    public void checkNullPointerException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new NullPointerException(""), httpServletResponse);
-    }
-
-    @Test
-    public void checkExpiredJwtException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(expiredJwtException, httpServletResponse);
-    }
-
-    @Test
-    public void checkZosAuthenticationException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(zosAuthenticationException, httpServletResponse);
-    }
-
-    @Test
-    public void checkResourceAccessException() throws ServletException {
-        zoweAuthenticationFailureHandler.handleException(new ResourceAccessException(""), httpServletResponse);
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new SignatureException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new InsufficientAuthenticationException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new BadCredentialsException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new AuthenticationCredentialsNotFoundException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new NullPointerException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(expiredJwtException, httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(zosAuthenticationException, httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new ResourceAccessException(""), httpServletResponse));
     }
 
     @Test(expected = InsufficientAuthenticationException.class)

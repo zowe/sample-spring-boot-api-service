@@ -79,10 +79,10 @@ public class TokenServiceImpl implements TokenService {
      * @throws ServletException
      */
     private LoginRequest validateRequestAndExtractLoginRequest(LoginRequest loginRequest,
-                                                               HttpServletRequest request) throws ServletException {
+                                                               HttpServletRequest request) {
         Optional<String> authHeader = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION));
         if ((authHeader.filter(
-            header -> header.startsWith(ZoweAuthenticationUtility.basicAuthenticationPrefix)))
+            header -> header.startsWith(ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX)))
             .isPresent()) {
             loginRequest = zoweAuthenticationUtility.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
         } else if (loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()) {
@@ -126,10 +126,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public boolean validateToken(String jwtToken) {
-        if (Optional.ofNullable(zoweAuthenticationUtility.getClaims(jwtToken)).isPresent())
-            return true;
-        else
-            return false;
+        return Optional.ofNullable(zoweAuthenticationUtility.getClaims(jwtToken)).isPresent();
     }
 
 }

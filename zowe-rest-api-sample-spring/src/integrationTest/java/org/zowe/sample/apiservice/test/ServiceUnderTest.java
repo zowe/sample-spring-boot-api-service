@@ -103,7 +103,7 @@ public class ServiceUnderTest {
         String token = login();
         try {
             //TODO: Remove token as header as 'actuator/health' should not be blocked by spring security
-            return given().header("Authorization", authConfigurationProperties.bearerAuthenticationPrefix + token).when()
+            return given().header("Authorization", authConfigurationProperties.BEARER_AUTHENTICATION_PREFIX + token).when()
                 .get(healthEndpoint).body().jsonPath().get("status").equals("UP");
         } catch (Exception e) {
             log.debug("Check has failed", e);
@@ -112,7 +112,7 @@ public class ServiceUnderTest {
     }
 
     public String login() {
-        String zoweBasicAuthHeader = ZoweAuthenticationUtility.basicAuthenticationPrefix
+        String zoweBasicAuthHeader = ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX
             + Base64.getEncoder().encodeToString((userId + ":" + password).getBytes());
         try {
             return given().header(authConfigurationProperties.getAuthorizationHeader(), zoweBasicAuthHeader).

@@ -53,7 +53,7 @@ public class WtoControllerTests {
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {
-            token = zoweAuthenticationUtility.bearerAuthenticationPrefix + Arrays.stream(cookies)
+            token = zoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX + Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(cookieTokenName))
                 .filter(cookie -> !cookie.getValue().isEmpty())
                 .findFirst().get().getValue();
