@@ -46,11 +46,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
     protected abstract Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request);
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        if (request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint())) {
-            return true;
-        }
-        return false;
+    public boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint());
     }
 
     /**
@@ -64,9 +61,9 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
      * @throws IOException      a IO exception
      */
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(@NonNull HttpServletRequest request,
+                                 @NonNull HttpServletResponse response,
+                                 @NonNull FilterChain filterChain) throws ServletException, IOException {
         String header = request.getServletPath().isEmpty() ? request.getRequestURI() : request.getServletPath();
         if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
             header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
@@ -74,7 +71,6 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             header.startsWith("/apiDocs") || header.startsWith("/favicon")
         ) {
             filterChain.doFilter(request, response);
-            return;
         } else {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
             if (authenticationToken.isPresent()) {
@@ -95,8 +91,8 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
     }
 
-    private Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
-                                                                            HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    public Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
+                                                                           HttpServletResponse httpServletResponse) throws ServletException, IOException {
         String header = null;
         String username = null;
 
@@ -119,11 +115,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             if (header.startsWith(ZoweAuthenticationUtility.bearerAuthenticationPrefix)) {
                 header = header.replaceFirst(ZoweAuthenticationUtility.bearerAuthenticationPrefix, "").trim();
 
-                username = Jwts.parser()
-                    .setSigningKey(authConfigurationProperties.getSecretKey())
-                    .parseClaimsJws(header)
-                    .getBody()
-                    .getSubject();
+                username = getSubject(header);
                 if (username != null) {
                     usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
@@ -135,11 +127,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             } else {
                 //cookies
-                username = Jwts.parser()
-                    .setSigningKey(authConfigurationProperties.getSecretKey())
-                    .parseClaimsJws(header)
-                    .getBody()
-                    .getSubject();
+                username = getSubject(header);
                 if (username != null) {
                     usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
@@ -147,5 +135,13 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             return usernamePasswordAuthenticationToken;
         }
         return Optional.empty();
+    }
+
+    public String getSubject(String header) {
+        return Jwts.parser()
+            .setSigningKey(authConfigurationProperties.getSecretKey())
+            .parseClaimsJws(header)
+            .getBody()
+            .getSubject();
     }
 }
