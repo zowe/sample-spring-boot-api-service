@@ -41,20 +41,14 @@ public class TokenController {
     @PostMapping(value = "/api/v1/auth/login", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "This API is used to return JWT token after successful login.", nickname = "login", authorizations = {
         @Authorization(value = DOC_SCHEME_BASIC_AUTH)})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "User is authenticated", response = AppResponse.class),
-        @ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource", response = ApiMessage.class)})
-    public ResponseEntity login(@Validated(LoginRequest.class) @RequestBody(required = false) LoginRequest loginRequest,
-                                HttpServletRequest request,
-                                HttpServletResponse response) throws ServletException, IOException {
+    @ApiResponses(value = {@ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource", response = ApiMessage.class)})
+    public void login(@Validated(LoginRequest.class) @RequestBody(required = false) LoginRequest loginRequest,
+                      HttpServletRequest request,
+                      HttpServletResponse response) throws ServletException, IOException {
         if (Optional.ofNullable(tokenService.login(loginRequest, request, response)).isPresent()) {
-            return ResponseEntity
-                .status(HttpStatus.SC_OK)
-                .body(new AppResponse("OK", HttpStatus.SC_OK, "User is authenticated"));
+            response.setStatus(HttpStatus.SC_NO_CONTENT);
         } else {
-            return ResponseEntity
-                .status(HttpStatus.SC_UNAUTHORIZED)
-                .body(new AppResponse("Unauthorized", HttpStatus.SC_UNAUTHORIZED, "User is not authenticated"));
-
+            response.setStatus(HttpStatus.SC_UNAUTHORIZED);
         }
     }
 

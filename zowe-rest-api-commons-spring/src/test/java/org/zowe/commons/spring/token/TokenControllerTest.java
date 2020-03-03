@@ -41,13 +41,16 @@ public class TokenControllerTest {
     public void verifyLogin() throws Exception {
         when(tokenService.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse)).
             thenReturn("token");
+        tokenController.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse);
 
-        Assert.assertNotNull(tokenController.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse));
+        Assert.assertEquals(204, httpServletResponse.getStatus());
     }
 
     @Test
     public void unauthorizedLogin() throws Exception {
-        Assert.assertNotNull(tokenController.login(new LoginRequest("zowe", "dsfds"), httpServletRequest, httpServletResponse));
+        tokenController.login(new LoginRequest("zowe", "dsfds"), httpServletRequest, httpServletResponse);
+
+        Assert.assertEquals(401, httpServletResponse.getStatus());
     }
 
     @Test

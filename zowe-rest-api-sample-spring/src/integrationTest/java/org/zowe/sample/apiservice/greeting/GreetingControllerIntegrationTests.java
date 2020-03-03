@@ -18,14 +18,14 @@ import static org.hamcrest.Matchers.equalTo;
 public class GreetingControllerIntegrationTests extends IntegrationTests {
 
     @Test
-    public void returnsGreeting() throws Exception {
+    public void returnsGreeting() {
         given().header("Authorization", token).when()
             .get("/api/v1/greeting").
             then().statusCode(200).body("content", equalTo("Hello, world!"));
     }
 
     @Test
-    public void failsWithoutAuthentication() throws Exception {
+    public void failsWithoutAuthentication() {
         given().auth().none().when().get("/api/v1/greeting").then().statusCode(401);
     }
 }

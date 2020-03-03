@@ -68,7 +68,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
             header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
             header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||
-            header.startsWith("/apiDocs") || header.startsWith("/favicon")
+            header.startsWith("/apiDocs") || header.startsWith("/favicon") || header.equalsIgnoreCase("/")
         ) {
             filterChain.doFilter(request, response);
         } else {

@@ -15,7 +15,9 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -38,6 +40,9 @@ import java.io.IOException;
 public class ZoweAuthenticationFailureHandler {
 
     private static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_UTF8_VALUE;
+
+    @Value("${apiml.service.title:service}")
+    private String serviceTitle;
 
     protected ApiMessage localizedMessage(String key) {
         ErrorService errorService = CommonsErrorService.get();
@@ -108,6 +113,8 @@ public class ZoweAuthenticationFailureHandler {
         ObjectMapper mapper = new ObjectMapper();
         response.setStatus(status.value());
         response.setContentType(CONTENT_TYPE);
+        response.setHeader(HttpHeaders.WWW_AUTHENTICATE,
+            String.format("Basic realm=\"%s\", charset=\"UTF-8\"", serviceTitle));
         try {
             mapper.writeValue(response.getWriter(), message);
         } catch (IOException e) {

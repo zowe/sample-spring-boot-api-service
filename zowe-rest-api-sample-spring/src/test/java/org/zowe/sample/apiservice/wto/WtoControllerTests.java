@@ -49,7 +49,7 @@ public class WtoControllerTests {
     @Before
     public void setup() throws Exception {
         MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
-            header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isOk()).andReturn();
+            header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isNoContent()).andReturn();
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (cookies != null) {

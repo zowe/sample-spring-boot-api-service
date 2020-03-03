@@ -42,7 +42,7 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //CSRF configuration
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**", "/swagger-resources/configuration/security")
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringAntMatchers("/api/**")
 
             .and()
             .headers()
@@ -56,11 +56,8 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
             .and()
             .authorizeRequests()
-            .antMatchers("/swagger-ui.html").authenticated().and().httpBasic()
-
-            .and()
-            .authorizeRequests()
-            .antMatchers(authConfigurationProperties.getServiceLoginEndpoint()).permitAll()
+            .antMatchers(authConfigurationProperties.getServiceLoginEndpoint(), "/swagger-ui.html", "/",
+                "/apiDocs/**", "/webjars/**", "/swagger-resources/**", "/favicon/**", "/api/v1/apiDocs/**").permitAll()
             .anyRequest().authenticated()
 
             .and()
