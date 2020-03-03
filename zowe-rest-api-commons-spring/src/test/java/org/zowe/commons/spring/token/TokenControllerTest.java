@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +32,7 @@ public class TokenControllerTest {
     @Mock
     TokenService tokenService;
 
-    @Mock
-    HttpServletResponse httpServletResponse;
+    MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
     @Mock
     HttpServletRequest httpServletRequest;
@@ -41,6 +41,7 @@ public class TokenControllerTest {
     public void verifyLogin() throws Exception {
         when(tokenService.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse)).
             thenReturn("token");
+
         tokenController.login(new LoginRequest("zowe", "zowe"), httpServletRequest, httpServletResponse);
 
         Assert.assertEquals(204, httpServletResponse.getStatus());
