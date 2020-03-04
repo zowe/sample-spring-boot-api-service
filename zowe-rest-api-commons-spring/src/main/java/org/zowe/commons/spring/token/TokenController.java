@@ -39,8 +39,7 @@ public class TokenController {
     QueryResponse queryResponse;
 
     @PostMapping(value = "/api/v1/auth/login", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "This API is used to return JWT token after successful login.", nickname = "login", authorizations = {
-        @Authorization(value = DOC_SCHEME_BASIC_AUTH)})
+    @ApiOperation(value = "This API is used to return JWT token after successful login.", nickname = "login")
     @ApiResponses(value = {@ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource", response = ApiMessage.class)})
     public void login(@Validated(LoginRequest.class) @RequestBody(required = false) LoginRequest loginRequest,
                       HttpServletRequest request,

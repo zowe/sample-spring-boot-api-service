@@ -57,7 +57,8 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers(authConfigurationProperties.getServiceLoginEndpoint(), "/swagger-ui.html", "/",
-                "/apiDocs/**", "/webjars/**", "/swagger-resources/**", "/favicon/**", "/api/v1/apiDocs/**").permitAll()
+                "/apiDocs/**", "/webjars/**", "/swagger-resources/**", "/favicon/**", "/api/v1/apiDocs/**", "/csrf",
+                "/api/*/apiDocs", "/actuator/info", "/actuator/health").permitAll()
             .anyRequest().authenticated()
 
             .and()

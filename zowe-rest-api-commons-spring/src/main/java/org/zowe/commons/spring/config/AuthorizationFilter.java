@@ -36,7 +36,10 @@ public class AuthorizationFilter extends AbstractTokenHandler {
     @Override
     protected Optional<AbstractAuthenticationToken> extractContent(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        if (null != request.getHeader(authConfigurationProperties.getAuthorizationHeader())
+            && request.getHeader(authConfigurationProperties.getAuthorizationHeader()).startsWith(ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX)) {
+            return Optional.of(new TokenAuthentication(request.getHeader(authConfigurationProperties.getAuthorizationHeader())));
+        } else if (null != cookies) {
             Optional<AbstractAuthenticationToken> authToken = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
                 .filter(cookie -> !cookie.getValue().isEmpty())

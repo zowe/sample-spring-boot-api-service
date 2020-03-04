@@ -65,11 +65,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                                  @NonNull HttpServletResponse response,
                                  @NonNull FilterChain filterChain) throws ServletException, IOException {
         String header = request.getServletPath().isEmpty() ? request.getRequestURI() : request.getServletPath();
-        if (header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
-            header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
-            header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||
-            header.startsWith("/apiDocs") || header.startsWith("/favicon") || header.equalsIgnoreCase("/")
-        ) {
+        if (listOfAllowedEndpoints(header)) {
             filterChain.doFilter(request, response);
         } else {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
@@ -91,6 +87,20 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         }
     }
 
+    /**
+     * List of endpoints which are public(swagger,csrf and login)
+     *
+     * @param header
+     * @return
+     */
+    private boolean listOfAllowedEndpoints(String header) {
+        return header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
+            header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
+            header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||
+            header.startsWith("/apiDocs") || header.startsWith("/favicon") || header.equalsIgnoreCase("/")
+            || header.startsWith("/csrf");
+    }
+
     public Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
                                                                            HttpServletResponse httpServletResponse) throws ServletException, IOException {
         String header = null;
@@ -99,7 +109,9 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = Optional.empty();
 
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        if (null != request.getHeader(authConfigurationProperties.getAuthorizationHeader())) {
+            header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
+        } else {
             Optional<String> optionalCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
                 .filter(cookie -> !cookie.getValue().isEmpty())
@@ -107,8 +119,6 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
                 .map(Cookie::getValue);
 
             header = optionalCookie.orElseGet(() -> request.getHeader(authConfigurationProperties.getAuthorizationHeader()));
-        } else {
-            header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
         }
 
         if (header != null) {
