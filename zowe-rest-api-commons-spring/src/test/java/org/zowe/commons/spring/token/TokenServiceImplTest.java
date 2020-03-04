@@ -31,6 +31,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Base64;
@@ -121,14 +123,18 @@ public class TokenServiceImplTest {
     @Test
     public void throwZosAuthenticationException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
-        when(httpServletResponse.getWriter()).thenReturn(new PrintWriter("writer"));
+        File f = File.createTempFile("test", null);
+        f.deleteOnExit();;
+        when(httpServletResponse.getWriter()).thenReturn(new PrintWriter(f.getAbsolutePath()));
         Assert.assertNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
     @Test
     public void throwAuthenticationCredsNotFoundException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
-        when(httpServletResponse.getWriter()).thenReturn(new PrintWriter("writer"));
+        File f = File.createTempFile("test", null);
+        f.deleteOnExit();;
+        when(httpServletResponse.getWriter()).thenReturn(new PrintWriter(f.getAbsolutePath()));
         Assert.assertNull(tokenService.login(any(), httpServletRequest, httpServletResponse));
     }
 
