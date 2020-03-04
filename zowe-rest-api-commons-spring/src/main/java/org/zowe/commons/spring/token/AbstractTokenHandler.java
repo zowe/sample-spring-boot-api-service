@@ -111,7 +111,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
         if (null != request.getHeader(authConfigurationProperties.getAuthorizationHeader())) {
             header = request.getHeader(authConfigurationProperties.getAuthorizationHeader());
-        } else {
+        } else if (null != cookies) {
             Optional<String> optionalCookie = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(authConfigurationProperties.getCookieTokenName()))
                 .filter(cookie -> !cookie.getValue().isEmpty())
