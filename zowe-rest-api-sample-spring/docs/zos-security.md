@@ -37,9 +37,37 @@ The are two possible types of API services for z/OS:
 
 ## Authentication
 
-Application need to support **HTTP Basic** authentication. While this is not supporting MFA, it provides the most simple way how to use the APIs. The access to the API service is done via HTTPS so the credentials are transferred securely. This level of support is enough for early versions of the REST API service that are being validation by customer before GA.
+Application now support stateless token-based authentication and **HTTP Basic**.
 
-The REST API service is protected by HTTP Basic authentication that is connected to `ZosAuthenticationProvider`.
+Now, user can login(/auth/login) either with **HTTP Basic** authentication OR as the request body(Object of LoginRequest.class) to get JWT token in the response header as cookie.
+ The access to the API service is done via HTTPS so the credentials are transferred securely. This level of support is enough for early versions of the REST API service that are being validated by customer before GA.
+In case of successful login you will get the token in the cookie as response header.
+
+Following is the API doc for login api:
+
+    Request URI: https://{{host}}:{{port}}/api/v1/auth/login
+	Request Type: POST
+	Request Headers: 
+		“Authorization”: “<Basic Auth>” OR
+	Request Body:	
+		{
+                “username”: “<valid user id>”,
+                “password”: “<valid password”
+        }
+	Response:
+		HTTP StatusCode: 204
+    Response Header: 
+	    “Set-Cookie”: “<cookieTokenName>: <token>; Path=/; Secure; HttpOnly”
+
+You can further customize the expiration time of JWT token or can change the cookie name for the token with service configuration in `application.yml` under key `zowe.commons.security.token`:
+
+    ```yaml
+    zowe.commons.security.token:
+        cookieTokenName: "zoweSdkAuthenticationToken"
+        expiration: "86400000"
+    ```    
+        
+The REST API service is protected by authentication with `ZosAuthenticationProvider`.
 
 If the Spring profile `zos` is active, then this provider uses `SafPlatformUser` class that uses reflection to
 call `com.ibm.os390.security.PlatformUser` class. This class is available in IBM® SDK for z/OS®, Java™ Technology Edition in `racf.jar`.
@@ -47,11 +75,9 @@ This JAR is not available in public repositories and cannot be added to this rep
 
 When you run it outside of z/OS without `zos` profile, a mock implementation `MockPlatformUser` is used. This accepts user ID `zowe` and password `zowe`.
 
-Applications should support stateless token-based authentication provided by [Zowe Authentication and Authorization Service](https://github.com/zowe/api-layer/wiki/Zowe-Authentication-and-Authorization-Service). This is not implemented yet.
-
 ### REST API Responses
 
-There three possible responses when authentication fails.
+Following are the possible responses when authentication fails.
 
 1. Credentials (user ID or password) were invalid. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`:
 
@@ -59,11 +85,15 @@ There three possible responses when authentication fails.
     {
         "messages": [
             {
-                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: Incorrect credentials",
-                "messageInstanceId": "6c921b84-1f4a-460c-9432-ecf0f1ea86e7",
-                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageType": "ERROR",
                 "messageNumber": "ZWEAS401",
-                "messageType": "ERROR"
+                "messageContent": "The request has not been applied because it lacks valid authentication credentials for the target resource: null",
+                "messageReason": "The accessed resource requires authentication. The request is missing valid authentication credentials.",
+                "messageAction": "Review the product documentation for more details about acceptable authentication. Verify that your credentials are valid and contact security administrator to obtain valid credentials.",
+                "messageKey": "org.zowe.commons.rest.unauthorized",
+                "messageInstanceId": "d0dc3294-36e2-491d-8bf5-d3967f34ed06",
+                "messageComponent": "org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler",
+                "messageSource": "5FT79Y2.Broadcom.net:10080:zowesample"
             }
         ]
     }
@@ -109,6 +139,44 @@ There three possible responses when authentication fails.
         ]
     }
     ```
+   
+4. The authentication failed because the token has an invalid format. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageType": "ERROR",
+                "messageNumber": "ZWEAS417",
+                "messageContent": "The format of token provided in request is incorrect.",
+                "messageAction": "Kindly login again to provide a valid token.",
+                "messageKey": "org.zowe.commons.rest.invalidToken",
+                "messageInstanceId": "30967f57-fb8b-4c4e-8bcb-164d4ea03c46",
+                "messageComponent": "org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler",
+                "messageSource": "5FT79Y2.Broadcom.net:10080:zowesample"
+            }
+        ]
+    }
+    ```
+   
+5. The authentication failed because the token has expired. Standard HTTP status code `401` is returned with more details in the body in the format of `ApiMessage`:
+
+    ```json
+    {
+        "messages": [
+            {
+                "messageType": "ERROR",
+                "messageNumber": "ZWEAS406",
+                "messageContent": "The token provided is expired now.",
+                "messageAction": "Kindly login again to provide a valid token.",
+                "messageKey": "org.zowe.commons.rest.expiredToken",
+                "messageInstanceId": "8bea2c2c-e712-448b-9641-2946605a67e4",
+                "messageComponent": "org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler",
+                "messageSource": "5FT79Y2.Broadcom.net:10080:zowesample"
+            }
+        ]
+    }
+    ```
 
 In all cases, `WWW-Authenticate` header is returned with the service name as the realm, for example:
 
@@ -138,17 +206,15 @@ public class MyController {
 }
 ```
 
-We would like to access it only when user has provided valid credentials. In the sample service, it can be done
-by adding following lines to the `SecurityConfiguration` class and its `configure(HttpSecurity http)` method:
-
+We would like to access this REST API endpoint when user has provided valid token in cookie OR as Authorization Bearer token OR as Basic Authorization. It is automatically been taken care by ZOWE SDK Security Configuration class `ZoweWebSecurityConfig`.
+Mo changes are required while creating a new REST API on top of ZOWE SDK. Zowe SDK will take care of it with the filter provided in Security Configuration class `ZoweWebSecurityConfig`.
 ```java
 // endpoint protection
 .and()
-.authorizeRequests()
-.antMatchers("/api/v1/my/endpoint").authenticated()
+.addFilterBefore(new AuthorizationFilter(tokenFailureHandler, authConfigurationProperties, tokenService), UsernamePasswordAuthenticationFilter.class);
 ```
 
-Once the the endpoint is protected, user needs to provide authentication. The way how the authentication can be provided is configured in the same class `SecurityConfiguration` in `configure(AuthenticationManagerBuilder auth)`. This class is a subclass of `WebSecurityConfigurerAdapter`.
+The way how the authentication can be provided is configured in the same class `ZoweWebSecurityConfig` in `configure(AuthenticationManagerBuilder auth)`. This class is a subclass of `WebSecurityConfigurerAdapter`.
 
 If you need you need to have the information about the authenticated user then you can add `org.springframework.security.core.Authentication` as a parameter to your endpoint method signature:
 

@@ -124,6 +124,16 @@
             "name": "zowe.commons.security.saf.applid",
             "type": "java.util.Map",
             "description": "The APPLID using for authentication"
+        },
+        {
+            "name": "zowe.commons.security.token.cookieTokenName",
+            "type": "java.util.String",
+            "description": "The cookie name which contains the value of token in the cookies as response header after successful login"
+        },
+        {
+            "name": "zowe.commons.security.token.expiration",
+            "type": "java.util.int",
+            "description": "The expiration time of token in milliseconds"
         }
     ]
 }
