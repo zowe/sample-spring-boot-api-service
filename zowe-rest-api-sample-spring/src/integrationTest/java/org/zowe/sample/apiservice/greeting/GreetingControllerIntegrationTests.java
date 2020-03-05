@@ -28,4 +28,6 @@ public class GreetingControllerIntegrationTests extends IntegrationTests {
     public void failsWithoutAuthentication() {
         given().auth().none().when().get("/api/v1/greeting").then().statusCode(401);
     }
+
+    //tests done here
 }
