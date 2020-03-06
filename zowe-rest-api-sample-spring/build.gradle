@@ -93,7 +93,7 @@ jacocoTestReport.dependsOn test
 check.dependsOn jacocoTestReport
 
 license {
-    header rootProject.file('.licence/Apache-2.0-licence-header.txt')
+    header rootProject.file('.licence/Apache-or-EPL-License-Header.txt')
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     excludes(["**/*.yml", "**/*.json", "**/*.sh", "**/*.txt", "**/*.p12", "**/*.xml", "**/*.jsp", "**/*.html", "**/*.jks", "**/*.so", "**/*.md"])
     mapping {
