@@ -31,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -77,14 +76,16 @@ public class TokenServiceImplTest {
 
         MockitoAnnotations.initMocks(this);
         when(zosAuthenticationProvider.authenticate(authenticationToken)).thenReturn(authenticationToken);
-        ReflectionTestUtils.setField(authConfigurationProperties, "secretKey", "secretKey");
         ReflectionTestUtils.setField(authConfigurationProperties, "cookieTokenName", "zoweSdkAuthenticationToken");
+        ReflectionTestUtils.setField(authConfigurationProperties, "keyStoreType", "PKCS12");
+        ReflectionTestUtils.setField(authConfigurationProperties, "keyAlias", "jwtsecret");
     }
 
     @Test
     public void verifyLogin() throws ServletException {
         when(authConfigurationProperties.createToken(authenticationToken)).thenCallRealMethod().
             thenReturn("token");
+        when(authConfigurationProperties.getJwtSecret()).thenReturn("token");
         Assert.assertNotNull(tokenService.login(loginRequest, httpServletRequest, httpServletResponse));
     }
 
@@ -101,7 +102,7 @@ public class TokenServiceImplTest {
             thenReturn("token");
         Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
         (authConfigurationProperties).setCookie("token", httpServletResponse);
-
+        when(authConfigurationProperties.getJwtSecret()).thenReturn("token");
         Assert.assertNotNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
@@ -124,7 +125,8 @@ public class TokenServiceImplTest {
     public void throwZosAuthenticationException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
         File f = File.createTempFile("test", null);
-        f.deleteOnExit();;
+        f.deleteOnExit();
+        ;
         when(httpServletResponse.getWriter()).thenReturn(new PrintWriter(f.getAbsolutePath()));
         Assert.assertNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
@@ -133,7 +135,8 @@ public class TokenServiceImplTest {
     public void throwAuthenticationCredsNotFoundException() throws ServletException, IOException {
         when(zoweAuthenticationFailureHandler.handleException(any(), any())).thenCallRealMethod().thenReturn(true);
         File f = File.createTempFile("test", null);
-        f.deleteOnExit();;
+        f.deleteOnExit();
+        ;
         when(httpServletResponse.getWriter()).thenReturn(new PrintWriter(f.getAbsolutePath()));
         Assert.assertNull(tokenService.login(any(), httpServletRequest, httpServletResponse));
     }
@@ -150,6 +153,7 @@ public class TokenServiceImplTest {
         when(authConfigurationProperties.getCookieTokenName()).thenCallRealMethod().thenReturn("zoweSdkAuthenticationToken");
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         when(httpServletRequest.getCookies()).thenReturn(cookies);
+        when(authConfigurationProperties.getJwtSecret()).thenReturn("secretKey");
 
         Assert.assertNotNull(tokenService.query(httpServletRequest));
     }
@@ -170,6 +174,7 @@ public class TokenServiceImplTest {
 
     @Test
     public void validateToken() {
+        when(authConfigurationProperties.getJwtSecret()).thenReturn("secretKey");
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         Assert.assertTrue(tokenService.validateToken(token));
     }

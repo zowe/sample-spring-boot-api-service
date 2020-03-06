@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,6 +33,7 @@ import java.util.Locale;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,8 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(GreetingController.class)
 public class GreetingControllerTests {
 
-    private ZoweAuthenticationUtility zoweAuthenticationUtility =
-        new ZoweAuthenticationUtility();
+    @Mock
+    private ZoweAuthenticationUtility zoweAuthenticationUtility;
 
     @Autowired
     private MockMvc mvc;
@@ -49,19 +51,40 @@ public class GreetingControllerTests {
     @Autowired
     private MessageSource messageSource;
 
+    @Value("${server.ssl.keyStoreType:PKCS12}")
+    private String keyStoreType;
+
+    @Value("${apiml.security.auth.jwtKeyAlias:jwtsecret}")
+    private String keyAlias;
+
     @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
     private String cookieTokenName;
+
+    @Value("${zowe.commons.security.token.expiration:86400000}")
+    private int expiration;
+
+    @Value("${server.ssl.keyStore:#{null}}")
+    private String keyStore;
+
+    @Value("${server.ssl.keyStorePassword:#{null}}")
+    private String keyStorePassword;
+
+    @Value("${server.ssl.keyPassword:#{null}}")
+    private String keyPassword;
 
     String token = null;
 
     @Before
     public void setup() throws Exception {
+
         MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
             header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isNoContent()).andReturn();
 
+        when(zoweAuthenticationUtility.getJwtSecret()).thenReturn("token");
+
         Cookie[] cookies = loginResult.getResponse().getCookies();
-        if (cookies != null) {
-            token = zoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX + Arrays.stream(cookies)
+        if (null != cookies) {
+            token = ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX + Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(cookieTokenName))
                 .filter(cookie -> !cookie.getValue().isEmpty())
                 .findFirst().get().getValue();

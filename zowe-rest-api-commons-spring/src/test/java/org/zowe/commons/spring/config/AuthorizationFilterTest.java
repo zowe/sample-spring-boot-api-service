@@ -109,7 +109,7 @@ public class AuthorizationFilterTest {
 
     @Before
     public void setup() {
-        when(authConfigurationProperties.getSecretKey()).thenReturn(SECRET_KEY);
+        when(authConfigurationProperties.getJwtSecret()).thenReturn(SECRET_KEY);
     }
 
     @Test

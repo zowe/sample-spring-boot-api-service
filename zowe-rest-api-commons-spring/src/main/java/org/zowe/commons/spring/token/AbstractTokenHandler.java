@@ -149,7 +149,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     public String getSubject(String header) {
         return Jwts.parser()
-            .setSigningKey(authConfigurationProperties.getSecretKey())
+            .setSigningKey(authConfigurationProperties.getJwtSecret())
             .parseClaimsJws(header)
             .getBody()
             .getSubject();
