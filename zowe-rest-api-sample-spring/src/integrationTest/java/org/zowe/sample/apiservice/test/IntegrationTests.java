@@ -15,6 +15,7 @@ import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 public class IntegrationTests {
     protected ServiceUnderTest serviceUnderTest = ServiceUnderTest.getInstance();
     protected String token = null;
+    protected String cookieName = null;
     ZoweAuthenticationUtility authConfigurationProperties
         = new ZoweAuthenticationUtility();
 
@@ -22,6 +23,6 @@ public class IntegrationTests {
     public void setup() {
         serviceUnderTest.waitUntilIsReady();
         this.token = authConfigurationProperties.BEARER_AUTHENTICATION_PREFIX + serviceUnderTest.login();
-
+        this.cookieName = serviceUnderTest.getCookieName();
     }
 }

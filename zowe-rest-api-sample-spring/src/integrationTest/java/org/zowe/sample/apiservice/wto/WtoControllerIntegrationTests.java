@@ -17,10 +17,15 @@ import static org.hamcrest.Matchers.*;
 
 public class WtoControllerIntegrationTests extends IntegrationTests {
 
+    @Test
+    public void returnsWtoMessage_Token() throws Exception {
+        given().header("Authorization", token).when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",
+            not(isEmptyOrNullString()));
+    }
 
     @Test
-    public void returnsWtoMessage() throws Exception {
-        given().header("Authorization", token).when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",
+    public void returnsWtoMessage_Cookie() throws Exception {
+        given().cookie(cookieName, token.split(" ")[1]).when().get("/api/v1/wto").then().statusCode(200).body("content", equalTo("Hello, world!")).body("message",
             not(isEmptyOrNullString()));
     }
 }

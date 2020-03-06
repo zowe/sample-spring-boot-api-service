@@ -22,10 +22,24 @@ import static org.zowe.sample.apiservice.test.ServiceUnderTest.LOCAL_PROFILE;
 public class SecurityContextControllerIntegrationTests extends IntegrationTests {
 
     @Test
-    public void switchesContextToAuthenticatedUserId() throws Exception {
+    public void switchesContextToAuthenticatedUserId_Token() throws Exception {
         serviceUnderTest.defaultRestAssuredSetup();
         Matcher<String> equalsToAuthenticatedUserID = equalToIgnoringCase(serviceUnderTest.getUserId());
         given().header("Authorization", token).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(200)
+            .body("afterSwitchUserName", equalsToAuthenticatedUserID)
+            .body("afterSwitchUserNameSpring", equalsToAuthenticatedUserID)
+            .body("authenticatedUserName", equalsToAuthenticatedUserID)
+            .body("accessToBpxServerServer", equalTo("true"))
+            .body("accessToUndefinedResource", equalTo("false"))
+            .body("accessToUndefinedResourceAllowMissingResource", equalTo("true"));
+
+    }
+
+    @Test
+    public void switchesContextToAuthenticatedUserId_Cookie() throws Exception {
+        serviceUnderTest.defaultRestAssuredSetup();
+        Matcher<String> equalsToAuthenticatedUserID = equalToIgnoringCase(serviceUnderTest.getUserId());
+        given().cookie(cookieName, token.split(" ")[1]).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(200)
             .body("afterSwitchUserName", equalsToAuthenticatedUserID)
             .body("afterSwitchUserNameSpring", equalsToAuthenticatedUserID)
             .body("authenticatedUserName", equalsToAuthenticatedUserID)

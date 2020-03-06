@@ -9,6 +9,7 @@
  */
 package org.zowe.sample.apiservice.greeting;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.zowe.sample.apiservice.test.IntegrationTests;
 
@@ -18,16 +19,27 @@ import static org.hamcrest.Matchers.equalTo;
 public class GreetingControllerIntegrationTests extends IntegrationTests {
 
     @Test
-    public void returnsGreeting() {
+    public void returnsGreetingUsingBearerToken() throws Exception {
         given().header("Authorization", token).when()
             .get("/api/v1/greeting").
             then().statusCode(200).body("content", equalTo("Hello, world!"));
     }
 
+    @Ignore
     @Test
-    public void failsWithoutAuthentication() {
-        given().auth().none().when().get("/api/v1/greeting").then().statusCode(401);
+    public void greetingFailsWithoutAuthenticationUsingEmptyToken() throws Exception {
+        given().header("Authorization", "").when().get("/api/v1/greeting").then().statusCode(401);
     }
 
-    //tests done here
+    @Test
+    public void greetingFailsWithoutAuthenticationUsingIncorrectToken() throws Exception {
+        given().header("Authorization", token+"Extra").when().get("/api/v1/greeting").then().statusCode(401);
+    }
+
+    @Test
+    public void returnsGreetingUsingCookie() throws Exception {
+        given().cookie(cookieName, token.split(" ")[1]).when()
+            .get("/api/v1/greeting").
+            then().statusCode(200).body("content", equalTo("Hello, world!"));
+    }
 }
