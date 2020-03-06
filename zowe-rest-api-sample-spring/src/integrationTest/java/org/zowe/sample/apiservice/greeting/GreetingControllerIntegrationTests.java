@@ -11,9 +11,12 @@ package org.zowe.sample.apiservice.greeting;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.zowe.sample.apiservice.test.IntegrationTests;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class GreetingControllerIntegrationTests extends IntegrationTests {
@@ -41,5 +44,16 @@ public class GreetingControllerIntegrationTests extends IntegrationTests {
         given().cookie(cookieName, token.split(" ")[1]).when()
             .get("/api/v1/greeting").
             then().statusCode(200).body("content", equalTo("Hello, world!"));
+    }
+
+    @Test
+    public void returnsGreetingUsingBasicauth() throws Exception {
+        when().get("/api/v1/greeting").then().statusCode(200).body("content", equalTo("Hello, world!"));
+    }
+
+    @Test
+    public void greetingFailsWithoutAuthenticationUsingBasicAuth() throws Exception {
+        given().auth().none().when().get("/api/v1/greeting").then().statusCode(401)
+            .headers(HttpHeaders.WWW_AUTHENTICATE, containsString("Basic realm=\"Zowe Sample API Service\""));
     }
 }
