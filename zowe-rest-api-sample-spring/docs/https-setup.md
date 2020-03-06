@@ -37,7 +37,7 @@ Keystore has to contain at least one record with alias matching `keyAlias` param
 
 ## Setup for localhost
 
-The default external configuration file for running on workstation [`zowe-rest-api-sample-spring/config/local/application.yml`](/zowe-rest-api-sample-spring//config/local/application.yml) uses the `https` profile.
+The default external configuration file for running on workstation [`zowe-rest-api-sample-spring/config/local/application.yml`](/zowe-rest-api-sample-spring/config/local/application.yml) uses the `https` profile.
 
 It uses the `keystore.p12` and `truststore.p12` in [`zowe-rest-api-sample-spring/config/local/`](/zowe-rest-api-sample-spring/config/local/).
 
