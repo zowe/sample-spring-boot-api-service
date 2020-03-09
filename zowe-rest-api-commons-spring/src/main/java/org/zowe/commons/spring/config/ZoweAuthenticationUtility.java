@@ -69,13 +69,13 @@ public class ZoweAuthenticationUtility {
     @Value("${zowe.commons.security.token.expiration:86400000}")
     private int expiration;
 
-    @Value("${server.ssl.keyStore:config/local/keystore.p12}")
+    @Value("${server.ssl.keyStore:#{null}}")
     private String keyStore;
 
-    @Value("${server.ssl.keyStorePassword:password}")
+    @Value("${server.ssl.keyStorePassword:#{null}}")
     private String keyStorePassword;
 
-    @Value("${server.ssl.keyPassword:password}")
+    @Value("${server.ssl.keyPassword:#{null}}")
     private String keyPassword;
 
     public static final String SAFKEYRING = "safkeyring";

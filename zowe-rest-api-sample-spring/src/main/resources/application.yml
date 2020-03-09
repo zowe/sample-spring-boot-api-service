@@ -24,9 +24,13 @@ logging:
 server:
     port: 10080
     ssl:
+        keyAlias: localhost
+        keyPassword: password
         keyStore: config/local/keystore.p12
+        keyStorePassword: password
         keyStoreType: PKCS12
         trustStore: config/local/truststore.p12
+        trustStorePassword: password
         trustStoreType: PKCS12
         verifySslCertificatesOfServices: true
         protocol: TLSv1.2
