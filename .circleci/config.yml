@@ -55,7 +55,10 @@ jobs:
           destination: zowe-rest-api-sample-spring.jar
       - store_artifacts:
           path: zowe-rest-api-sample-spring/build/pom.xml
-          destination: pom.xml
+          destination: zowe-rest-api-sample-spring/pom.xml
+      - store_artifacts:
+          path: zowe-rest-api-commons-spring/build/pom.xml
+          destination: zowe-rest-api-commons-spring/pom.xml
       - run: &integration_tests_sample
           name: Running Integration Tests of the Sample in the Build Container
           command: |
@@ -65,6 +68,10 @@ jobs:
           command: |
             source .circleci/river.env
             npm run zos-integration-tests
+      - store_test_results:
+            path: zowe-rest-api-commons-spring/build/test-results
+      - store_test_results:
+            path: zowe-rest-api-sample-spring/build/test-results
       - run: &zos_cleanup
           name: Cleanup on z/OS
           when: always

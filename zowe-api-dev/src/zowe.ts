@@ -1,3 +1,13 @@
+/*
+* This program and the accompanying materials are made available and may be used, at your option, under either:
+* * Eclipse Public License v2.0, available at https://www.eclipse.org/legal/epl-v20.html, OR
+* * Apache License, version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+*
+* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+*
+* Copyright Contributors to the Zowe Project.
+*/
+
 import { Command } from "@oclif/command";
 import { execSync } from "child_process";
 import * as Debug from "debug";
@@ -58,12 +68,14 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
         debug(error);
         let result: IZoweResult;
         try {
-            if (error.stdout) {
-                result = JSON.parse(error.stdout);
-            }
-            else {
-                result = { success: false, exitCode: -1, message: "empty JSON response from Zowe CLI", stderr: "", stdout: "", data: {} };
-            }
+            result = error.stdout ? JSON.parse(error.stdout) : {
+                data: {},
+                exitCode: -1,
+                message: "empty JSON response from Zowe CLI",
+                stderr: "",
+                stdout: "",
+                success: false
+            };
             debug(result);
         } catch (error2) {
             throw error;
@@ -122,7 +134,7 @@ export function trimProfileName(profileName: string): string {
 
 export function getDefaultProfile(profileType: string) {
     const profiles = zoweSync(`profiles list ${profileType}-profiles --show-contents`, { logOutput: false }).data as [
-        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean } }
+        { name: string; profile: { user: string, password: string, host: string, port: number, rejectUnauthorized: boolean, account: string } }
     ];
     let defaultProfile = profiles[0];
     for (const profile of profiles) {

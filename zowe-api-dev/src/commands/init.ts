@@ -1,3 +1,13 @@
+/*
+* This program and the accompanying materials are made available and may be used, at your option, under either:
+* * Eclipse Public License v2.0, available at https://www.eclipse.org/legal/epl-v20.html, OR
+* * Apache License, version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+*
+* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+*
+* Copyright Contributors to the Zowe Project.
+*/
+
 import { Command, flags } from "@oclif/command";
 import * as Debug from "debug";
 import { existsSync, writeFileSync } from "fs";
@@ -49,8 +59,17 @@ export default class Init extends Command {
         if (f.force || !existsSync(userConfigFilename)) {
             this.log(`Initializing user configuration file for ${projectConfig.name}`);
             this.log("Getting information about your Zowe profile");
-            const defaultProfile = getDefaultProfile("zosmf");
-            const userid = defaultProfile.profile.user.toUpperCase();
+            const defaultZosmfProfile = getDefaultProfile("zosmf");
+            if (f.account === "ACCT") {
+                const defaultTsoProfile = getDefaultProfile("tso");
+                const account = defaultTsoProfile.profile.account;
+                if (account) {
+                    f.account = account;
+                } else {
+                    this.log(logSymbols.warning, "Accounting information not found in your Zowe TSO profile. Please substitute 'ACCT' string with your accounting information in user-zowe-api.json manually.")
+                }
+            }
+            const userid = defaultZosmfProfile.profile.user.toUpperCase();
             this.log(`Your user ID is ${userid}`);
             const jobname = userid.substring(0, 7) + "Z";
             const data: IUserConfig = {
@@ -63,7 +82,7 @@ export default class Init extends Command {
                 ],
                 zosHlq: f.zosHlq || `${userid}.${projectConfig.defaultHlqSegment}`,
                 zosTargetDir: f.zosTargetDir || zosUnixHomeDir() + "/" + projectConfig.defaultDirName,
-                zoweProfileName: trimProfileName(defaultProfile.name)
+                zoweProfileName: trimProfileName(defaultZosmfProfile.name)
             };
             const config = JSON.stringify(data, null, 4);
             writeFileSync(userConfigFilename, config);
