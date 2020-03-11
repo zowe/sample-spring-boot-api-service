@@ -70,7 +70,9 @@ function uploadDir(dir: string, zosDir: string, profileName: string, command: Co
         files.forEach(file => {
             const sourceFile = `${dir}/${file}`;
             const targetFile = `${zosDir}/${file}`;
-            if (force || !isFileSame(sourceFile, targetFile, profileName)) {
+            if (lstatSync(sourceFile).isDirectory()) {
+                uploadedFiles += uploadDir(sourceFile, targetFile, profileName, command, force);
+            } else if (force || !isFileSame(sourceFile, targetFile, profileName)) {
                 uploadedFiles += 1;
                 if (uploadedFiles === 1) {
                     execSshCommandWithDefaultEnvCwd(`mkdir -p ${zosDir}`);
