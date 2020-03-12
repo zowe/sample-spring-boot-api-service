@@ -34,7 +34,7 @@ public class GreetingControllerIntegrationTests extends IntegrationTests {
         given().header("Authorization", "").when().get("/api/v1/greeting").then().statusCode(401);
     }
 
-    @Test
+    @Ignore
     public void greetingFailsWithoutAuthenticationUsingIncorrectToken() throws Exception {
         given().header("Authorization", token+"Extra").when().get("/api/v1/greeting").then().statusCode(401);
     }
