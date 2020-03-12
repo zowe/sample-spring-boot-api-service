@@ -11,6 +11,7 @@ package org.zowe.commons.spring.token;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
+import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -65,12 +67,14 @@ public class TokenServiceImplTest {
     private LoginRequest loginRequest = new LoginRequest("zowe", "zowe");
     private UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+    SecretKey key;
 
     @Before
     public void initMocks() {
+        key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         token = Jwts.builder()
             .setSubject("zowe")
-            .signWith(SignatureAlgorithm.HS512, "secretKey")
+            .signWith(key)
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .compact();
 
@@ -85,7 +89,7 @@ public class TokenServiceImplTest {
     public void verifyLogin() throws ServletException {
         when(authConfigurationProperties.createToken(authenticationToken)).thenCallRealMethod().
             thenReturn("token");
-        when(authConfigurationProperties.getJwtSecret()).thenReturn("token");
+        when(authConfigurationProperties.getJwtSecret()).thenReturn(key);
         Assert.assertNotNull(tokenService.login(loginRequest, httpServletRequest, httpServletResponse));
     }
 
@@ -102,7 +106,7 @@ public class TokenServiceImplTest {
             thenReturn("token");
         Mockito.doCallRealMethod().when(authConfigurationProperties).setCookie("token", httpServletResponse);
         (authConfigurationProperties).setCookie("token", httpServletResponse);
-        when(authConfigurationProperties.getJwtSecret()).thenReturn("token");
+        when(authConfigurationProperties.getJwtSecret()).thenReturn(key);
         Assert.assertNotNull(tokenService.login(new LoginRequest("", ""), httpServletRequest, httpServletResponse));
     }
 
@@ -153,7 +157,7 @@ public class TokenServiceImplTest {
         when(authConfigurationProperties.getCookieTokenName()).thenCallRealMethod().thenReturn("zoweSdkAuthenticationToken");
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         when(httpServletRequest.getCookies()).thenReturn(cookies);
-        when(authConfigurationProperties.getJwtSecret()).thenReturn("secretKey");
+        when(authConfigurationProperties.getJwtSecret()).thenReturn(key);
 
         Assert.assertNotNull(tokenService.query(httpServletRequest));
     }
@@ -174,7 +178,7 @@ public class TokenServiceImplTest {
 
     @Test
     public void validateToken() {
-        when(authConfigurationProperties.getJwtSecret()).thenReturn("secretKey");
+        when(authConfigurationProperties.getJwtSecret()).thenReturn(key);
         when(authConfigurationProperties.getClaims(token)).thenCallRealMethod().thenReturn(new QueryResponse());
         Assert.assertTrue(tokenService.validateToken(token));
     }

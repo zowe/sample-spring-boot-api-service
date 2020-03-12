@@ -13,7 +13,6 @@ import com.ca.mfaas.security.HttpsConfig;
 import com.ca.mfaas.security.HttpsConfigError;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import org.zowe.commons.spring.token.QueryResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -129,7 +127,7 @@ public class ZoweAuthenticationUtility {
         return Jwts.builder()
             .setSubject(authentication.getName())
             .setExpiration(new Date(now + Integer.valueOf(expiration)))
-            .signWith(SignatureAlgorithm.HS512, getJwtSecret())
+            .signWith(getJwtSecret())
             .setIssuedAt(new Date(now))
             .compact();
     }
@@ -159,9 +157,10 @@ public class ZoweAuthenticationUtility {
      */
     public QueryResponse getClaims(String jwtToken) {
         jwtToken = jwtToken.replaceFirst(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX, "").trim();
-        Claims claims = Jwts.parser()
-            .setSigningKey(DatatypeConverter.parseBase64Binary(getJwtSecret()))
-            .parseClaimsJws(jwtToken).getBody();
+        Claims claims = (Claims) Jwts.parserBuilder()
+            .setSigningKey(getJwtSecret())
+            .build()
+            .parse(jwtToken).getBody();
         return new QueryResponse(claims.getSubject(), claims.getIssuedAt(), claims.getExpiration());
     }
 
@@ -234,12 +233,6 @@ public class ZoweAuthenticationUtility {
         return key;
     }
 
-    public String getJwtSecret() {
-        HttpsConfig config = HttpsConfig.builder().keyStore(keyStore).keyPassword(keyPassword)
-            .keyStorePassword(keyStorePassword).keyStoreType(keyStoreType).build();
-        return readSecret(config);
-    }
-
     /**
      * Loads keystore or key ring, if keystore URL starts with {@value #SAFKEYRING}, from specified location
      *
@@ -263,6 +256,12 @@ public class ZoweAuthenticationUtility {
         }
         ks.load(inputStream, config.getKeyStorePassword() == null ? null : config.getKeyStorePassword().toCharArray());
         return ks;
+    }
+
+    public Key getJwtSecret() {
+        HttpsConfig config = HttpsConfig.builder().keyStore(keyStore).keyPassword(keyPassword)
+            .keyStorePassword(keyStorePassword).keyStoreType(keyStoreType).build();
+        return loadKey(config);
     }
 
     /**

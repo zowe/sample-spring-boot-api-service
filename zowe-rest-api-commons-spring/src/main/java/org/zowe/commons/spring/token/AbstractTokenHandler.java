@@ -13,12 +13,14 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.zowe.commons.spring.config.ZoweAuthenticationFailureHandler;
 import org.zowe.commons.spring.config.ZoweAuthenticationUtility;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,7 +37,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
 
     private final ZoweAuthenticationFailureHandler failureHandler;
     private final ZoweAuthenticationUtility authConfigurationProperties;
-    private final TokenService tokenService;
+    private final ZosAuthenticationProvider authenticationManager;
 
     /**
      * Extracts the token from the request
@@ -125,19 +127,21 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             if (header.startsWith(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX)) {
                 header = header.replaceFirst(ZoweAuthenticationUtility.BEARER_AUTHENTICATION_PREFIX, "").trim();
 
-                username = getSubject(header);
+                username = authConfigurationProperties.getClaims(header).getUserId();
                 if (username != null) {
                     usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
 
             } else if (header.startsWith(ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX)) {
                 LoginRequest loginRequest = authConfigurationProperties.getCredentialFromAuthorizationHeader(request).orElse(new LoginRequest());
-                tokenService.login(loginRequest, request, httpServletResponse);
+                UsernamePasswordAuthenticationToken authentication
+                    = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
 
+                authenticationManager.authenticate(authentication);
                 usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null, new ArrayList<>()));
             } else {
                 //cookies
-                username = getSubject(header);
+                username = authConfigurationProperties.getClaims(header).getUserId();
                 if (username != null) {
                     usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
                 }
@@ -145,13 +149,5 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             return usernamePasswordAuthenticationToken;
         }
         return Optional.empty();
-    }
-
-    public String getSubject(String header) {
-        return Jwts.parser()
-            .setSigningKey(authConfigurationProperties.getJwtSecret())
-            .parseClaimsJws(header)
-            .getBody()
-            .getSubject();
     }
 }

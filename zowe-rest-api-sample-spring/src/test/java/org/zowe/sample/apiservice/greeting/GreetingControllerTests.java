@@ -33,7 +33,6 @@ import java.util.Locale;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,36 +50,15 @@ public class GreetingControllerTests {
     @Autowired
     private MessageSource messageSource;
 
-    @Value("${server.ssl.keyStoreType:PKCS12}")
-    private String keyStoreType;
-
-    @Value("${apiml.security.auth.jwtKeyAlias:jwtsecret}")
-    private String keyAlias;
-
     @Value("${zowe.commons.security.token.cookieTokenName:zoweSdkAuthenticationToken}")
     private String cookieTokenName;
-
-    @Value("${zowe.commons.security.token.expiration:86400000}")
-    private int expiration;
-
-    @Value("${server.ssl.keyStore:#{null}}")
-    private String keyStore;
-
-    @Value("${server.ssl.keyStorePassword:#{null}}")
-    private String keyStorePassword;
-
-    @Value("${server.ssl.keyPassword:#{null}}")
-    private String keyPassword;
 
     String token = null;
 
     @Before
     public void setup() throws Exception {
-
         MvcResult loginResult = this.mvc.perform(post("/api/v1/auth/login").
             header("Authorization", TestUtils.ZOWE_BASIC_AUTHENTICATION)).andExpect(status().isNoContent()).andReturn();
-
-        when(zoweAuthenticationUtility.getJwtSecret()).thenReturn("token");
 
         Cookie[] cookies = loginResult.getResponse().getCookies();
         if (null != cookies) {

@@ -47,10 +47,14 @@ dependencies {
     implementation "com.ca.mfaas.sdk:mfaas-integration-enabler-java:$zoweApimlVersion"
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-	compileOnly 'org.projectlombok:lombok:1.18.10'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    compile 'io.jsonwebtoken:jjwt-api:0.11.0'
+    runtime 'io.jsonwebtoken:jjwt-impl:0.11.0',
+        // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+        //'org.bouncycastle:bcprov-jdk15on:1.60',
+        'io.jsonwebtoken:jjwt-jackson:0.11.0'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     testImplementation 'net.javacrumbs.json-unit:json-unit-fluent:2.8.0'
 }
 

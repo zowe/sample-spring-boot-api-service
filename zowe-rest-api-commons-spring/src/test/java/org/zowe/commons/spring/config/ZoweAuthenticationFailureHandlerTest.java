@@ -11,6 +11,7 @@ package org.zowe.commons.spring.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,7 @@ public class ZoweAuthenticationFailureHandlerTest {
 
     @Test
     public void checkSignatureException() throws ServletException {
-        assertFalse(zoweAuthenticationFailureHandler.handleException(new SignatureException(""), httpServletResponse));
+        assertFalse(zoweAuthenticationFailureHandler.handleException(new UnsupportedJwtException(""), httpServletResponse));
         assertFalse(zoweAuthenticationFailureHandler.handleException(new InsufficientAuthenticationException(""), httpServletResponse));
         assertFalse(zoweAuthenticationFailureHandler.handleException(new BadCredentialsException(""), httpServletResponse));
         assertFalse(zoweAuthenticationFailureHandler.handleException(new AuthenticationCredentialsNotFoundException(""), httpServletResponse));
@@ -71,7 +72,7 @@ public class ZoweAuthenticationFailureHandlerTest {
     @Test
     public void testLocalizedMessage() {
         assertNotNull(zoweAuthenticationFailureHandler.localizedMessage("org.zowe.commons.rest.invalidToken"));
-        assertNotNull(zoweAuthenticationFailureHandler.localizedMessage("org.zowe.commons.rest.forbidden","sample message"));
+        assertNotNull(zoweAuthenticationFailureHandler.localizedMessage("org.zowe.commons.rest.forbidden", "sample message"));
     }
 
 }

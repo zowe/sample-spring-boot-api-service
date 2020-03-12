@@ -10,9 +10,11 @@
 package org.zowe.commons.spring.config;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.zowe.commons.spring.token.AbstractTokenHandler;
 import org.zowe.commons.spring.token.TokenAuthentication;
 import org.zowe.commons.spring.token.TokenService;
+import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +30,8 @@ public class AuthorizationFilter extends AbstractTokenHandler {
 
     public AuthorizationFilter(ZoweAuthenticationFailureHandler failureHandler,
                                ZoweAuthenticationUtility authConfigurationProperties,
-                               TokenService tokenService) {
-        super(failureHandler, authConfigurationProperties, tokenService);
+                               ZosAuthenticationProvider authenticationManager) {
+        super(failureHandler, authConfigurationProperties, authenticationManager);
         this.authConfigurationProperties = authConfigurationProperties;
     }
 

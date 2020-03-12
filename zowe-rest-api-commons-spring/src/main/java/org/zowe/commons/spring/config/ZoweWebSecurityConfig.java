@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.zowe.commons.spring.token.TokenService;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
 
 @Configuration
@@ -27,9 +26,6 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     ZosAuthenticationProvider authenticationProvider;
-
-    @Autowired
-    TokenService tokenService;
 
     public ZoweWebSecurityConfig(ZoweAuthenticationUtility authConfigurationProperties,
                                  ZoweAuthenticationFailureHandler tokenFailureHanlder) {
@@ -62,7 +58,7 @@ public class ZoweWebSecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
 
             .and()
-            .addFilterBefore(new AuthorizationFilter(tokenFailureHandler, authConfigurationProperties, tokenService), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new AuthorizationFilter(tokenFailureHandler, authConfigurationProperties, authenticationProvider), UsernamePasswordAuthenticationFilter.class);
     }
 
     /**
