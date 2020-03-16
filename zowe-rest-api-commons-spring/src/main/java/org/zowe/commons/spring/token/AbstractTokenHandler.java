@@ -95,7 +95,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
      * @param header
      * @return
      */
-    private boolean listOfAllowedEndpoints(String header) {
+    public boolean listOfAllowedEndpoints(String header) {
         return header.equalsIgnoreCase(authConfigurationProperties.getServiceLoginEndpoint()) ||
             header.equalsIgnoreCase("/swagger-ui.html") || header.startsWith("/webjars/") ||
             header.equalsIgnoreCase("/login") || header.startsWith("/swagger-resources") ||

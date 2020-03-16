@@ -13,7 +13,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.zowe.commons.spring.token.LoginRequest;
 import org.zowe.commons.spring.token.QueryResponse;
 import org.zowe.commons.zos.security.authentication.ZosAuthenticationProvider;
@@ -38,6 +36,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -113,8 +112,7 @@ public class AuthorizationFilterTest {
 
     @Before
     public void setup() {
-        when(authConfigurationProperties.getJwtSecret()).thenReturn(key);
-        ReflectionTestUtils.setField(authConfigurationProperties, "cookieTokenName", "zoweSdkAuthenticationToken");
+        when(authConfigurationProperties.getClaims(any())).thenReturn(new QueryResponse("zowe", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis())));
     }
 
     @Test
@@ -133,13 +131,12 @@ public class AuthorizationFilterTest {
         assertNotEquals(authorizationFilter.extractContent(httpServletRequest), abstractAuthenticationToken);
     }
 
-    @Ignore
+    @Test
     public void testDoFilterInternalForOtherProtectedEndpoints() throws ServletException, IOException {
         when(httpServletRequest.getServletPath()).thenReturn("");
         when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/auth/query");
         when(authConfigurationProperties.getServiceLoginEndpoint()).thenReturn("/api/v1/auth/login");
         when(authorizationFilter.extractContent(httpServletRequest)).thenReturn(abstractAuthenticationToken);
-        Optional<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationToken = Optional.of(new UsernamePasswordAuthenticationToken("zowe", null, new ArrayList<>()));
         when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn("Bearer " + createJwtToken());
         authorizationFilter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
         assertTrue(authorizationFilter.extractContent(httpServletRequest).isPresent());
@@ -166,17 +163,15 @@ public class AuthorizationFilterTest {
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
     }
 
-    @Ignore
+    @Test
     public void testGetAuthenticationWithAuthorizationHeader() throws ServletException, IOException {
         String token = "Bearer " + createJwtToken();
         when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(token);
-        when(authConfigurationProperties.getClaims(token)).
-            thenReturn(new QueryResponse("zowe", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis())));
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
 
     }
 
-    @Ignore
+    @Test
     public void testGetAuthenticationWithCookieAuthentication() throws ServletException, IOException {
         when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(createJwtToken());
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
@@ -192,4 +187,23 @@ public class AuthorizationFilterTest {
             thenReturn(new UsernamePasswordAuthenticationToken("zowe", null, new ArrayList<>()));
         assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
     }
+
+    @Test
+    public void checkIfHeaderIsProperlyProvided() {
+        when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(ZoweAuthenticationUtility.BASIC_AUTHENTICATION_PREFIX + " " + createJwtToken());
+        assertNotNull(authorizationFilter.extractContent(httpServletRequest));
+    }
+
+    @Test
+    public void testListOfAllowedEndPoints() throws ServletException, IOException {
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/swagger-ui.html"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/webjars/"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/login"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/swagger-resources"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/apiDocs"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/favicon"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/"));
+        assertTrue(authorizationFilter.listOfAllowedEndpoints("/csrf"));
+    }
+
 }

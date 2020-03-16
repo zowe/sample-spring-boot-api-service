@@ -49,7 +49,7 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
 
     }
 
-    @Ignore
+    @Test
     public void failsWithInvalidAuthentication() throws Exception {
         String invalidToken = "eyJhbGciOiJIUzUxMiJ9.fyryerytuytry.KILjk1gpVxLY1wrr8";
         given().header("Authorization", invalidToken).when().get("/api/v1/securityTest/authenticatedUser").then().statusCode(401);

@@ -217,7 +217,7 @@ public class ZoweAuthenticationUtility {
         return null;
     }
 
-    private static Key findFirstSecretKey(KeyStore keyStore, char[] keyPasswordInChars) throws KeyStoreException, NoSuchAlgorithmException {
+    public static Key findFirstSecretKey(KeyStore keyStore, char[] keyPasswordInChars) throws KeyStoreException, NoSuchAlgorithmException {
         Key key = null;
         for (Enumeration<String> e = keyStore.aliases(); e.hasMoreElements(); ) {
             String alias = e.nextElement();
