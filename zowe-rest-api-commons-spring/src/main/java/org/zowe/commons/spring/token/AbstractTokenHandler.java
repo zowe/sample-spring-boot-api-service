@@ -9,11 +9,9 @@
  */
 package org.zowe.commons.spring.token;
 
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,7 +71,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             Optional<AbstractAuthenticationToken> authenticationToken = extractContent(request);
             if (authenticationToken.isPresent()) {
                 try {
-                    Optional<UsernamePasswordAuthenticationToken> authentication = getAuthentication(request, response);
+                    Optional<UsernamePasswordAuthenticationToken> authentication = getAuthentication(request);
                     if (authentication.isPresent()) {
                         SecurityContextHolder.getContext().setAuthentication(authentication.get());
                         filterChain.doFilter(request, response);
@@ -103,8 +101,7 @@ public abstract class AbstractTokenHandler extends OncePerRequestFilter {
             || header.startsWith("/csrf");
     }
 
-    public Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request,
-                                                                           HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    public Optional<UsernamePasswordAuthenticationToken> getAuthentication(HttpServletRequest request) {
         String header = null;
         String username = null;
 

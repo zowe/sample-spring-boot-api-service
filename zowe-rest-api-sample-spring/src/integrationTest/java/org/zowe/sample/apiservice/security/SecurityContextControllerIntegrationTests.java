@@ -56,6 +56,7 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
     }
 
     //TODO: Identify how we can expire a token
+    @Test
     @Ignore
     public void failsWithExpiredAuthentication() throws Exception {
         assumeTrue("The service under test is not running on localhost",
@@ -70,6 +71,7 @@ public class SecurityContextControllerIntegrationTests extends IntegrationTests 
     }
 
     //TODO: Take care of internal server error scenario
+    @Test
     @Ignore
     public void failsWithInternalServerError() throws Exception {
         assumeTrue("The service under test is not running on localhost",

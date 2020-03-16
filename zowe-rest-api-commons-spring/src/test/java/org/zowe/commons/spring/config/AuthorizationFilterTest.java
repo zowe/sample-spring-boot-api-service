@@ -154,27 +154,27 @@ public class AuthorizationFilterTest {
     @Test
     public void testGetAuthenticationWithCookies() throws ServletException, IOException {
         when(httpServletRequest.getCookies()).thenReturn(createCookie());
-        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
+        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest));
     }
 
     @Test
     public void testGetAuthenticationWithHeaders() throws ServletException, IOException {
         when(authConfigurationProperties.getAuthorizationHeader()).thenReturn(createJwtToken());
-        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
+        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest));
     }
 
     @Test
     public void testGetAuthenticationWithAuthorizationHeader() throws ServletException, IOException {
         String token = "Bearer " + createJwtToken();
         when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(token);
-        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
+        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest));
 
     }
 
     @Test
     public void testGetAuthenticationWithCookieAuthentication() throws ServletException, IOException {
         when(httpServletRequest.getHeader(authConfigurationProperties.getAuthorizationHeader())).thenReturn(createJwtToken());
-        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
+        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest));
 
     }
 
@@ -185,7 +185,7 @@ public class AuthorizationFilterTest {
         when(authConfigurationProperties.getCredentialFromAuthorizationHeader(httpServletRequest)).thenReturn(Optional.of(loginRequest));
         when(zosAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken("zowe", "zowe"))).
             thenReturn(new UsernamePasswordAuthenticationToken("zowe", null, new ArrayList<>()));
-        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest, httpServletResponse));
+        assertNotNull(authorizationFilter.getAuthentication(httpServletRequest));
     }
 
     @Test
