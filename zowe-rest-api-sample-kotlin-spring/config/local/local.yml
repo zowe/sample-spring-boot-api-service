@@ -1,0 +1,43 @@
+# Configuration for running the locally on your workstation
+# It overrides service defaults provided in src/main/resources/local.yml
+
+spring.profiles.active: https
+
+server:
+    address: 0.0.0.0
+    port: 10090
+    ssl:
+        keyAlias: localhost
+        keyPassword: password
+        # keyStore: config/local/keystore.p12                                          # For bootRun
+        keyStore: zowe-rest-api-sample-kotlin-spring/config/local/keystore.p12     # For IDEA
+        keyStorePassword: password
+        keyStoreType: PKCS12
+        # trustStore: config/local/truststore.p12                                      # For bootRun
+        trustStore: zowe-rest-api-sample-kotlin-spring/config/local/truststore.p12 # For IDEA
+        trustStorePassword: password
+        trustStoreType: PKCS12
+
+apiml:
+    service:
+        serviceId: zowekotlinsample
+        hostname: localhost
+        serviceIpAddress: 127.0.0.1
+        port: ${server.port}
+        baseUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${apiml.service.port}
+        discoveryServiceUrls:
+            - https://localhost:10011/eureka
+        ssl:
+            enabled: true
+            verifySslCertificatesOfServices: true
+            ciphers: ${server.ssl.ciphers}
+            protocol: ${server.ssl.protocol}
+            enabled-protocols: ${server.ssl.protocol}
+            keyStoreType: ${server.ssl.keyStoreType}
+            trustStoreType: ${server.ssl.trustStoreType}
+            keyAlias: ${server.ssl.keyAlias}
+            keyPassword: ${server.ssl.keyPassword}
+            keyStore: ${server.ssl.keyStore}
+            keyStorePassword: ${server.ssl.keyStorePassword}
+            trustStore: ${server.ssl.trustStore}
+            trustStorePassword: ${server.ssl.trustStorePassword}

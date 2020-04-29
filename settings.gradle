@@ -5,6 +5,7 @@ pluginManagement {
 }
 
 include 'zowe-rest-api-sample-spring'
+include 'zowe-rest-api-sample-kotlin-spring'
 include 'zowe-rest-api-commons-spring'
 include 'jarpatcher'
 

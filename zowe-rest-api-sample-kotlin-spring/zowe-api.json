@@ -1,0 +1,42 @@
+{
+    "name": "Zowe Kotlin Sample REST API",
+    "zosSourcesDir": "zossrc",
+    "buildCommand": "make && make install",
+    "buildFiles": {
+    },
+    "deployment": {
+        "files": {
+            "build/libs/zowe-rest-api-sample-kotlin-spring-0.0.1-SNAPSHOT.jar": {
+                "target": "bin/zowe-rest-api-sample-kotlin-spring.jar",
+                "postSoUpdateCommands": [
+                  ],
+                "binary": true
+            }
+        }
+    },
+    "shellStartCommand": "$JAVA -Djava.library.path=\"./lib:${LIBPATH}\" -Xquickstart -jar bin/zowe-rest-api-sample-kotlin-spring.jar --spring.config.additional-location=file:etc/zos.yml",
+    "jobTemplatePath": "src/main/jcl/template.jcl",
+    "jobPath": "build/api.jcl",
+    "defaultDirName": "zowe-rest-api-sample-kotlin-spring",
+    "defaultHlqSegment": "ZOWE.KOTLIN.SAMPLAPI",
+    "zfsMegabytes": 100,
+    "configurations": {
+        "zos": {
+            "files": {
+                "config/zos/zos.yml.hbs": {
+                    "target": "etc/zos.yml",
+                    "binary": true,
+                    "template": true
+                },
+                "config/local/keystore.p12": {
+                    "target": "etc/keystore.p12",
+                    "binary": true
+                },
+                "config/local/truststore.p12": {
+                    "target": "etc/truststore.p12",
+                    "binary": true
+                }
+            }
+        }
+    }
+}
