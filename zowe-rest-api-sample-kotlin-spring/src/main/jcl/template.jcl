@@ -29,7 +29,7 @@ TRAP(ON,NOSPIE)
 {{/if}}
 //MAINARGS DD *
 -jar bin/zowe-rest-api-sample-kotlin-spring.jar
---spring.config.additional-location=file:etc/application.yml
+--spring.config.additional-location=file:etc/zos.yml
 /*
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
