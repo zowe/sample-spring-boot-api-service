@@ -39,8 +39,8 @@ sonarqube {
 subprojects {
     sonarqube {
         properties {
-            property "sonar.sources", "src/main/java"
-            property "sonar.tests", "src/test/java"
+            property "sonar.sources", ["src/main/java","src/main/kotlin"]
+            property "sonar.tests", ["src/test/java","src/test/kotlin"]
         }
     }
 }
