@@ -47,10 +47,10 @@ jobs:
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
-      #      - run: &sonar
-      #          name: Sonar
-      #          command: |
-      #             ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
+      - run: &sonar
+          name: Sonar
+          command: |
+            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
       - run: &sample
           name: Building Standalone Sample
           command: |
@@ -64,15 +64,15 @@ jobs:
       - store_artifacts:
           path: zowe-rest-api-commons-spring/build/pom.xml
           destination: zowe-rest-api-commons-spring/pom.xml
-      #      - run: &integration_tests_sample
-      #          name: Running Integration Tests of the Sample in the Build Container
-      #          command: |
-      #            scripts/run-integration-tests.sh
-      #      - run: &integration_tests_sample_zos
-      #          name: Running Integration Tests of the Sample on z/OS
-      #          command: |
-      #            source .circleci/river.env
-      #            npm run zos-integration-tests
+      - run: &integration_tests_sample
+          name: Running Integration Tests of the Sample in the Build Container
+          command: |
+            scripts/run-integration-tests.sh
+      - run: &integration_tests_sample_zos
+          name: Running Integration Tests of the Sample on z/OS
+          command: |
+            source .circleci/river.env
+            npm run zos-integration-tests
       - run: &integration_tests_kotlin_sample
           name: Running Integration Tests of the Kotlin Sample in the Build Container
           command: |
@@ -117,10 +117,10 @@ jobs:
       - run: *zosbuild
       - run: *build
       - codecov/upload
-      #      - run: *sonar
+      - run: *sonar
       - run: *sample
-      #      - run: *integration_tests_sample
-      #      - run: *integration_tests_sample_zos
+      - run: *integration_tests_sample
+      - run: *integration_tests_sample_zos
       - run: *integration_tests_kotlin_sample
       - run: *integration_tests_kotlin_sample_zos
       - run: *zos_cleanup
