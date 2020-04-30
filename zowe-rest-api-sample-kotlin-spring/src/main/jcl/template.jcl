@@ -28,7 +28,7 @@ TRAP(ON,NOSPIE)
 //STEPLIB  DD DSN={{{user.javaLoadlib}}},DISP=SHR
 {{/if}}
 //MAINARGS DD *
--jar bin/zowe-rest-api-sample-spring.jar
+-jar bin/zowe-rest-api-sample-kotlin-spring.jar
 --spring.config.additional-location=file:etc/application.yml
 /*
 //STDOUT   DD SYSOUT=*
