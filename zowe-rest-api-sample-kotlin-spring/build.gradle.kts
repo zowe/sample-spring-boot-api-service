@@ -11,7 +11,7 @@ plugins {
     id("org.springframework.boot") version "2.2.5.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.hierynomus.license") version "0.15.0"
-    id("org.unbroken-dome.test-sets") version "3.0.0"
+    id("org.unbroken-dome.test-sets") version "3.0.1"
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
 }
@@ -97,4 +97,8 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "1.8"
     }
+}
+
+tasks.getByName<Test>("integrationTest") {
+    outputs.upToDateWhen { false }
 }
