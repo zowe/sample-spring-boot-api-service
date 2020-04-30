@@ -81,7 +81,7 @@ jobs:
           name: Running Integration Tests of the Kotlin Sample on z/OS
           command: |
             source .circleci/river.env
-            scripts/run-integration-tests-kotlin-zos.sh
+            npm run zos-kotlin-integration-tests
       - store_test_results:
           path: zowe-rest-api-commons-spring/build/test-results
       - store_test_results:
