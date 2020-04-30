@@ -1,3 +1,4 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.run.BootRun
 
@@ -12,6 +13,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.hierynomus.license") version "0.15.0"
     id("org.unbroken-dome.test-sets") version "3.0.1"
+    id("com.adarshr.test-logger") version "2.0.0"
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
 }
@@ -36,6 +38,10 @@ repositories {
 
 testSets {
     "integrationTest" { createArtifact = true }
+}
+
+testlogger {
+    theme = ThemeType.MOCHA
 }
 
 license {
