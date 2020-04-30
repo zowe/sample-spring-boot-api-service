@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-echo 'starting tests'
 cd zowe-rest-api-sample-kotlin-spring
 java -jar build/libs/zowe-rest-api-sample-kotlin-spring-*.jar --spring.config.additional-location=file:./config/local/local.yml &
 PID=$!
