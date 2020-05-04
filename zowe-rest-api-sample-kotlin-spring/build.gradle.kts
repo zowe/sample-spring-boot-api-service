@@ -62,8 +62,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("org.springdoc:springdoc-openapi-ui:1.3.7")
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.3.7")
+    implementation("org.springdoc:springdoc-openapi-ui:1.3.4")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.3.4")
 
     implementation("io.github.microutils:kotlin-logging:1.7.9")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
