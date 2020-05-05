@@ -59,6 +59,7 @@ logging:
     level:
         ROOT: INFO
         org.apache.catalina: WARN
+        org.springdoc.api: WARN
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
 
