@@ -1,0 +1,84 @@
+server:
+    port: 10090
+    ssl:
+        enabled: false
+        protocol: TLSv1.2
+        enabledProtocols: TLSv1.2
+        ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+
+spring:
+    application:
+        name: ${apiml.service.serviceId}
+    main:
+        bannerMode: "off"
+    mvc:
+        throw-exception-if-no-handler-found: true
+    resources:
+        add-mappings: false
+
+apiml:
+    enabled: false                          # Decision if the service should automatically register with API ML discovery service
+    enableUrlEncodedCharacters: false       # Decision if the service requests the API ML GW to receive encoded characters in the URL
+    service:                                # The root of API ML onboarding configuration
+        serviceId: zowekotlinsample         # The symbolic name of the service. Must be the same as `spring.application.name`
+        title: Zowe Kotlin Sample API Service
+        description: Sample Kotlin Spring Boot API service that provides REST API  # API service description
+
+        scheme: http
+
+        contextPath:            # By default the contextPath is set to be the same as apiml.service.serviceId
+
+        homePageRelativeUrl: ${apiml.service.contextPath}/
+        statusPageRelativeUrl: ${apiml.service.contextPath}/application/info
+        healthCheckRelativeUrl: ${apiml.service.contextPath}/application/health
+
+        routes:
+            -   gateway-url: "ui/v1"
+                service-url: ${apiml.service.contextPath}/
+            -   gateway-url: "api/v1"
+                service-url: ${apiml.service.contextPath}/api/v1
+
+        apiInfo:
+            -   apiId: org.zowe.sample.kotlin.apiservice
+                version: 1.0.0
+                gatewayUrl: api/v1
+                swaggerUrl: ${apiml.service.scheme}://${apiml.service.hostname}:${apiml.service.port}${apiml.service.contextPath}/v3/api-docs
+
+        catalog:
+            tile:
+                id: sample                                    # Provide ID for your service Catalog tile
+                title:  Sample API Services
+                description: Sample API services to demonstrate exposing a REST API service in the Zowe ecosystem
+                version: 1.0.0
+
+springdoc:
+    swagger-ui:
+        path: /
+
+logging:
+    level:
+        ROOT: INFO
+        org.apache.catalina: WARN
+        org.springdoc.api: WARN
+        org.springframework: WARN
+        org.springframework.boot.web.embedded: INFO
+
+--- #Enable HTTPS
+spring:
+    profiles: https
+
+apiml:
+    service:
+        scheme: https
+
+server:
+    ssl:
+        enabled: true
+
+--- #Enable APIML integration
+spring:
+    profiles: apiml
+
+apiml:
+    enabled: true
+

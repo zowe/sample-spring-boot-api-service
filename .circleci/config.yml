@@ -5,6 +5,11 @@ jobs:
   build_all:
     docker:
       - image: circleci/openjdk:8-jdk-node
+        environment:
+          # kotlin.incremental=false and kotlin.compiler.execution.strategy=in-process are required due to an issue with the Kotlin compiler in
+          # memory constrained environments: https://youtrack.jetbrains.com/issue/KT-15562
+          _JAVA_OPTIONS: "-Xmx3g"
+          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -Dorg.gradle.caching=true -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false
     working_directory: ~/code
     steps:
       - checkout
@@ -45,7 +50,7 @@ jobs:
       - run: &sonar
           name: Sonar
           command: |
-             ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
+            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
       - run: &sample
           name: Building Standalone Sample
           command: |
@@ -68,10 +73,19 @@ jobs:
           command: |
             source .circleci/river.env
             npm run zos-integration-tests
+      - run: &integration_tests_kotlin_sample
+          name: Running Integration Tests of the Kotlin Sample in the Build Container
+          command: |
+            scripts/run-integration-tests-kotlin.sh
+      - run: &integration_tests_kotlin_sample_zos
+          name: Running Integration Tests of the Kotlin Sample on z/OS
+          command: |
+            source .circleci/river.env
+            npm run zos-kotlin-integration-tests
       - store_test_results:
-            path: zowe-rest-api-commons-spring/build/test-results
+          path: zowe-rest-api-commons-spring/build/test-results
       - store_test_results:
-            path: zowe-rest-api-sample-spring/build/test-results
+          path: zowe-rest-api-sample-spring/build/test-results
       - run: &zos_cleanup
           name: Cleanup on z/OS
           when: always
@@ -107,6 +121,8 @@ jobs:
       - run: *sample
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
+      - run: *integration_tests_kotlin_sample
+      - run: *integration_tests_kotlin_sample_zos
       - run: *zos_cleanup
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com

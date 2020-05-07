@@ -7,6 +7,9 @@ plugins {
     id 'com.adarshr.test-logger' version '1.7.0'
 }
 
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
 version getVersionFromGitTag()
 
 ext {
@@ -49,6 +52,7 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok:1.18.10'
 	annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     testImplementation 'net.javacrumbs.json-unit:json-unit-fluent:2.8.0'
 }
@@ -111,3 +115,5 @@ jacocoTestReport {
 jacocoTestReport.dependsOn test
 
 check.dependsOn jacocoTestReport
+
+compileJava.dependsOn(processResources)

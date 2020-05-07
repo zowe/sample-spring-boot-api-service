@@ -13,6 +13,7 @@
     "zosbuild": "scripts/zosbuild.sh",
     "zos-cleanup": "scripts/zos-cleanup.sh",
     "zos-integration-tests": "scripts/run-integration-tests-zos.sh",
+    "zos-kotlin-integration-tests": "scripts/run-integration-tests-kotlin-zos.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

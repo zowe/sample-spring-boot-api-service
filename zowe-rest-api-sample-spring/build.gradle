@@ -64,6 +64,7 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:4.1.1'
@@ -130,3 +131,6 @@ task zosbuild(type: Exec) {
 testlogger {
     theme 'mocha'
 }
+
+compileJava.dependsOn(processResources)
+

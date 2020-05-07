@@ -29,7 +29,7 @@ sonarqube {
             property "sonar.pullrequest.base", System.getenv()['CHANGE_TARGET'] ?: null
             property "sonar.github.pullRequest", pullRequest
             property "sonar.github.repository", "zowe/sample-spring-boot-api-service"
-            property "sonar.github.oauth",  project.hasProperty('sonar.github.oauth') ? project.getProperty('sonar.github.oauth') : null
+            property "sonar.github.oauth", project.hasProperty('sonar.github.oauth') ? project.getProperty('sonar.github.oauth') : null
         } else {
             property "sonar.branch.name", System.getenv()['BRANCH_NAME'] ?: gitBranch()
         }
@@ -41,6 +41,15 @@ subprojects {
         properties {
             property "sonar.sources", "src/main/java"
             property "sonar.tests", "src/test/java"
+        }
+    }
+}
+
+project(":zowe-rest-api-sample-kotlin-spring") {
+    sonarqube {
+        properties {
+            property "sonar.sources", "src/main/kotlin"
+            property "sonar.tests", "src/test/kotlin"
         }
     }
 }
