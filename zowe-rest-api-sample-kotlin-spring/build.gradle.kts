@@ -9,11 +9,11 @@ val newZoweArtifactoryRepository: String by project
 
 plugins {
     jacoco
-    id("org.springframework.boot") version "2.2.6.RELEASE"
+    id("org.springframework.boot") version "2.3.1.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.hierynomus.license") version "0.15.0"
     id("org.unbroken-dome.test-sets") version "3.0.1"
-    id("com.adarshr.test-logger") version "2.0.0"
+    id("com.adarshr.test-logger") version "2.1.0"
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
 }
@@ -26,13 +26,6 @@ repositories {
     mavenCentral()
     maven {
         setUrl(zoweArtifactoryRepository)
-        credentials {
-            username = zoweArtifactoryUser
-            password = zoweArtifactoryPassword
-        }
-    }
-    maven {
-        setUrl(newZoweArtifactoryRepository)
     }
 }
 
@@ -54,7 +47,7 @@ dependencies {
     implementation("org.zowe:zowe-rest-api-commons-spring:1.0.0") {
         exclude(group = "com.ca.mfaas.sdk", module = "mfaas-integration-enabler-java")
     }
-    implementation("org.zowe.apiml.sdk:onboarding-enabler-spring-v2-springboot-2.1.1.RELEASE:1.5.0") {
+    implementation("org.zowe.apiml.sdk:onboarding-enabler-spring-v2-springboot-2.1.1.RELEASE:1.13.0") {
         exclude(group = "joda-time")
     }
 
@@ -62,10 +55,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("org.springdoc:springdoc-openapi-ui:1.3.4")
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.3.4")
+    implementation("org.springdoc:springdoc-openapi-ui:1.4.3")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.4.3")
 
-    implementation("io.github.microutils:kotlin-logging:1.7.9")
+    implementation("io.github.microutils:kotlin-logging:1.7.10")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -73,14 +66,15 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    // Does not work with RestAssured 4.3
+    // RestAssured 4.3 is not compatible with AdoptOpenJSK OpenJ9
+    // https://github.com/rest-assured/rest-assured/issues/1295
     testImplementation("io.rest-assured:rest-assured:4.2.0")
     testImplementation("io.rest-assured:spring-mock-mvc:4.2.0")
     testImplementation("io.rest-assured:json-path:4.2.0")
     testImplementation("io.rest-assured:xml-path:4.2.0")
     testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:4.2.0")
     testImplementation("io.rest-assured:kotlin-extensions:4.2.0")
-    "integrationTestImplementation"("org.awaitility:awaitility-kotlin:4.0.2")
+    "integrationTestImplementation"("org.awaitility:awaitility-kotlin:4.0.3")
 }
 
 tasks.getByName<BootRun>("bootRun") {

@@ -8,38 +8,39 @@
   },
   "bugs": "https://github.com/zowe/sample-spring-boot-api-service/issues",
   "dependencies": {
-    "@oclif/command": "^1.5.18",
-    "@oclif/config": "^1.13.3",
-    "@oclif/plugin-help": "^2.2.1",
-    "@types/unzipper": "^0.10.0",
+    "@oclif/command": "^1.7.0",
+    "@oclif/config": "^1.16.0",
+    "@oclif/plugin-help": "^2.2.3",
+    "@types/unzipper": "^0.10.3",
     "debug": "^4.1.1",
     "handlebars": "^4.5.3",
     "log-symbols": "^3.0.0",
+    "npm": "^6.14.6",
     "tmp": "^0.1.0",
-    "tslib": "^1.10.0",
-    "unzipper": "^0.10.5"
+    "tslib": "^1.13.0",
+    "unzipper": "^0.10.11"
   },
   "peerDependencies": {
     "@zowe/cli": "^6.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/test": "^1.2.5",
+    "@oclif/test": "^1.2.6",
     "@oclif/tslint": "^3.1.1",
-    "@types/chai": "^4.2.0",
+    "@types/chai": "^4.2.11",
     "@types/debug": "^4.1.5",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.14.17",
+    "@types/node": "^10.17.27",
     "@types/tmp": "^0.1.0",
     "chai": "^4.2.0",
-    "globby": "^10.0.1",
+    "globby": "^10.0.2",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "prettier": "1.18.2",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.19.0",
+    "ts-node": "^8.10.2",
+    "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.6.2"
+    "typescript": "^3.9.6"
   },
   "engines": {
     "node": ">=8.0.0"

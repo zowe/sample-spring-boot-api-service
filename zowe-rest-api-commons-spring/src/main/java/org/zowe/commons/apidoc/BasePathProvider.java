@@ -9,18 +9,24 @@
  */
 package org.zowe.commons.apidoc;
 
-import springfox.documentation.spring.web.paths.AbstractPathProvider;
+import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.spring.web.paths.DefaultPathProvider;
 
-public class BasePathProvider extends AbstractPathProvider {
+/**
+ * @deprecated This class does not correctly work with SpringFox 3.x
+ * A base path is not modified although paths for each endpoint are changed
+ *
+ * Use {@link org.zowe.commons.apidoc.BasePathTransformationFilter} instead
+ *
+ */
+@Deprecated
+@Slf4j
+public class BasePathProvider extends DefaultPathProvider {
     private final String basePath;
 
     public BasePathProvider(String basePath) {
         this.basePath = basePath;
-    }
-
-    @Override
-    protected String applicationPath() {
-        return basePath;
+        log.warn("BasePathProvider class is deprecated and does not work correctly. Use `org.zowe.commons.apidoc.BasePathTransformationFilter` instead.");
     }
 
     @Override

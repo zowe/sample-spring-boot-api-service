@@ -9,9 +9,8 @@
  */
 package org.zowe.commons.apiml;
 
-import com.ca.mfaas.eurekaservice.client.config.ApiMediationServiceConfig;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.zowe.apiml.eurekaservice.client.config.ApiMediationServiceConfig;
 
 @ConfigurationProperties("apiml.service")
 public class ApiMediationServiceConfigBean extends ApiMediationServiceConfig {

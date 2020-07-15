@@ -1,10 +1,10 @@
 plugins {
-    id 'org.springframework.boot' version '2.1.8.RELEASE'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
     id 'java'
     id 'jacoco'
     id 'com.github.hierynomus.license' version '0.15.0'
-    id 'org.unbroken-dome.test-sets' version '2.2.1'
-    id 'com.adarshr.test-logger' version '1.7.0'
+    id 'org.unbroken-dome.test-sets' version '3.0.1'
+    id 'com.adarshr.test-logger' version '2.1.0'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -27,10 +27,6 @@ repositories {
     mavenLocal()
     maven {
         url zoweArtifactoryRepository
-        credentials {
-            username zoweArtifactoryUser
-            password zoweArtifactoryPassword
-        }
     }
     jcenter()
     mavenCentral()
@@ -60,18 +56,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'io.springfox:springfox-swagger2:2.9.2'
-    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.rest-assured:rest-assured:4.1.1'
-    testImplementation 'io.rest-assured:json-path:4.1.1'
-    testImplementation 'io.rest-assured:xml-path:4.1.1'
-    testImplementation 'io.rest-assured:spring-mock-mvc:4.1.1'
-    testImplementation 'org.awaitility:awaitility:4.0.1'
+    // RestAssured 4.3 is not compatible with AdoptOpenJSK OpenJ9
+    // https://github.com/rest-assured/rest-assured/issues/1295
+    testImplementation 'io.rest-assured:rest-assured:4.2.0'
+    testImplementation 'io.rest-assured:json-path:4.2.0'
+    testImplementation 'io.rest-assured:xml-path:4.2.0'
+    testImplementation 'io.rest-assured:spring-mock-mvc:4.2.0'
+    testImplementation 'org.awaitility:awaitility:4.0.3'
     integrationTestAnnotationProcessor 'org.projectlombok:lombok'
 }
 

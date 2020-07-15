@@ -65,11 +65,11 @@ public class GreetingControllerTests {
     }
 
     @Test
-    public void returnsGreetingRestAssured() throws Exception {
+    public void returnsGreetingRestAssured() {
         GreetingController greetingController = new GreetingController();
         greetingController.setMessageSource(messageSource);
         given().standaloneSetup(greetingController).auth().principal(TestUtils.ZOWE_AUTHENTICATION_TOKEN).when()
-                .get("/api/v1/greeting").then().body("$.content", equalTo("Hello, world!"));
+                .get("/api/v1/greeting").then().body("content", equalTo("Hello, world!"));
     }
 
     @Test
