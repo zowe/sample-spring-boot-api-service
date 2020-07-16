@@ -39,7 +39,7 @@ jobs:
             npm uninstall @zowedev/zowe-api-dev
             npm install
             sudo npm install -g ./build/zowedev-zowe-api-dev.tgz
-            source .circleci/river.env
+            source .circleci/marist.env
             npm run zosbuild
       - run: &build
           name: Building Java Code using Gradle
@@ -71,7 +71,7 @@ jobs:
       - run: &integration_tests_sample_zos
           name: Running Integration Tests of the Sample on z/OS
           command: |
-            source .circleci/river.env
+            source .circleci/marist.env
             npm run zos-integration-tests
       - run: &integration_tests_kotlin_sample
           name: Running Integration Tests of the Kotlin Sample in the Build Container
@@ -80,7 +80,7 @@ jobs:
       - run: &integration_tests_kotlin_sample_zos
           name: Running Integration Tests of the Kotlin Sample on z/OS
           command: |
-            source .circleci/river.env
+            source .circleci/marist.env
             npm run zos-kotlin-integration-tests
       - store_test_results:
           path: zowe-rest-api-commons-spring/build/test-results
@@ -90,7 +90,7 @@ jobs:
           name: Cleanup on z/OS
           when: always
           command: |
-            source .circleci/river.env
+            source .circleci/marist.env
             npm run zos-cleanup
             scripts/package-sample.sh
       - store_artifacts: &store_sample_zip
