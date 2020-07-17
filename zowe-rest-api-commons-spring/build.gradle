@@ -87,9 +87,9 @@ task zosbuild(type: Exec) {
     outputs.cacheIf { true }
     outputs.file(sharedObjectFilePath)
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine 'zowe-api-dev.cmd', 'zosbuild', '--curl'
+        commandLine 'zowe-api-dev.cmd', 'zosbuild'
     } else {
-        commandLine 'npx', 'zowe-api-dev', 'zosbuild', '--curl'
+        commandLine 'npx', 'zowe-api-dev', 'zosbuild'
     }
 }
 
