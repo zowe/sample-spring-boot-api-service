@@ -18,7 +18,7 @@ safAccess:
         - ZOWE
   UNIXPRIV:
     SUPERUSER.FILESYS.MOUNT:
-      READ:
+      UPDATE:
         - ZOWE
         - ZOWE2
   ZOWE:
