@@ -17,6 +17,11 @@ safAccess:
       UPDATE:
         - ZOWE
         - ZOWE2
+  JESSPOOL:
+    BPX.DAEMON:
+      READ:
+        - ZOWE
+        - ZOWE2
   ZOWE:
     SAMPLE.RESOURCE:
       UPDATE:
