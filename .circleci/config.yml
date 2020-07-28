@@ -86,13 +86,13 @@ jobs:
           path: zowe-rest-api-commons-spring/build/test-results
       - store_test_results:
           path: zowe-rest-api-sample-spring/build/test-results
-      - run: &zos_cleanup
-          name: Cleanup on z/OS
-          when: always
-          command: |
-            source .circleci/marist.env
-            npm run zos-cleanup
-            scripts/package-sample.sh
+#      - run: &zos_cleanup
+#          name: Cleanup on z/OS
+#          when: always
+#          command: |
+#            source .circleci/marist.env
+#            npm run zos-cleanup
+#            scripts/package-sample.sh
       - store_artifacts: &store_sample_zip
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
@@ -123,7 +123,7 @@ jobs:
       - run: *integration_tests_sample_zos
       - run: *integration_tests_kotlin_sample
       - run: *integration_tests_kotlin_sample_zos
-      - run: *zos_cleanup
+#      - run: *zos_cleanup
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
           command: |
