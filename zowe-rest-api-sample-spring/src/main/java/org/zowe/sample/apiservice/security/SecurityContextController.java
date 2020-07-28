@@ -122,8 +122,8 @@ public class SecurityContextController {
     @PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.DAEMON', 'UPDATE')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
-        boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "UNIXPRIV",
-                "SUPERUSER.FILESYS.MOUNT", AccessLevel.READ);
+        boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "FACILITY",
+                "BPX.DAEMON", AccessLevel.UPDATE);
         result.put("authenticatedUserName", authentication.getName());
         result.put("canMount", Boolean.toString(canMount));
         return result;
