@@ -16,6 +16,7 @@ import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
 
+@Slf4j
 @Api(tags = "Security")
 @RestController
 @RequestMapping("/api/v1/securityTest")
@@ -121,6 +123,7 @@ public class SecurityContextController {
     @GetMapping("/safProtectedResource")
     @PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.DAEMON', 'UPDATE')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
+        log.debug("Entering /safProtectedResource ...");
         Map<String, String> result = new LinkedHashMap<>();
         boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "FACILITY",
                 "BPX.DAEMON", AccessLevel.UPDATE);

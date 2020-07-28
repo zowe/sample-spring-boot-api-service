@@ -18,6 +18,7 @@ logging:
         org.apache.coyote: WARN
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
+        org.zowe: TRACE
 
 server:
     port: 10080
