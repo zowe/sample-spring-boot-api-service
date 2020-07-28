@@ -16,10 +16,6 @@ safAccess:
     BPX.DAEMON:
       UPDATE:
         - ZOWE
-  UNIXPRIV:
-    SUPERUSER.FILESYS.MOUNT:
-      READ:
-        - ZOWE
         - ZOWE2
   ZOWE:
     SAMPLE.RESOURCE:
