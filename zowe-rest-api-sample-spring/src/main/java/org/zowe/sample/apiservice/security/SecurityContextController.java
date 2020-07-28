@@ -121,7 +121,7 @@ public class SecurityContextController {
     @ApiOperation(value = "This endpoint can be accessed only by users that have UPDATE access to `BPX.DAEMON` resource in the `FACILITY` class", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/safProtectedResource")
-    @PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.DAEMON', 'UPDATE')")
+    @PreAuthorize("hasSafResourceAccess('JESSPOOL', 'BPX.DAEMON', 'READ')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
         log.debug("Entering /safProtectedResource ...");
         Map<String, String> result = new LinkedHashMap<>();
