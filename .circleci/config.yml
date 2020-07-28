@@ -51,10 +51,10 @@ jobs:
 #          name: Sonar
 #          command: |
 #            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
-#      - run: &sample
-#          name: Building Standalone Sample
-#          command: |
-#            scripts/build-sample.sh
+      - run: &sample
+          name: Building Standalone Sample
+          command: |
+            scripts/build-sample.sh
 #      - store_artifacts:
 #          path: build/zowe-rest-api-sample-spring.jar
 #          destination: zowe-rest-api-sample-spring.jar
@@ -118,7 +118,7 @@ jobs:
       - run: *build
       - codecov/upload
 #      - run: *sonar
-#      - run: *sample
+      - run: *sample
       - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
       - run: *integration_tests_kotlin_sample
