@@ -116,10 +116,10 @@ public class SecurityContextController {
         return result;
     }
 
-    @ApiOperation(value = "This endpoint can be accessed only by users that have READ access to `SUPERUSER.FILESYS.MOUNT` resource in the `UNIXPRIV` class", authorizations = {
+    @ApiOperation(value = "This endpoint can be accessed only by users that have UPDATE access to `BPX.DAEMON` resource in the `FACILITY` class", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/safProtectedResource")
-    @PreAuthorize("hasSafResourceAccess('UNIXPRIV', 'SUPERUSER.FILESYS.MOUNT', 'UPDATE')")
+    @PreAuthorize("hasSafResourceAccess('FACILITY', 'BPX.DAEMON', 'UPDATE')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
         boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "UNIXPRIV",
