@@ -34,7 +34,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Slf4j
 @Api(tags = "Security")
 @RestController
 @RequestMapping("/api/v1/securityTest")
@@ -123,7 +122,6 @@ public class SecurityContextController {
     @GetMapping("/safProtectedResource")
     @PreAuthorize("hasSafResourceAccess('JESSPOOL', 'ALL', 'READ')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
-        log.debug("Entering /safProtectedResource ...");
         Map<String, String> result = new LinkedHashMap<>();
         boolean canReadSpool = platformSecurityService.checkPermission(authentication.getName(), "JESSPOOL",
                 "ALL", AccessLevel.READ);

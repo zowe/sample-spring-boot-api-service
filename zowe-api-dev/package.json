@@ -15,7 +15,7 @@
     "debug": "^4.1.1",
     "handlebars": "^4.5.3",
     "log-symbols": "^3.0.0",
-    "npm": "^6.14.6",
+    "npm": "^6.14.7",
     "tmp": "^0.1.0",
     "tslib": "^1.13.0",
     "unzipper": "^0.10.11"
@@ -27,20 +27,20 @@
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.6",
     "@oclif/tslint": "^3.1.1",
-    "@types/chai": "^4.2.11",
+    "@types/chai": "^4.2.12",
     "@types/debug": "^4.1.5",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.17.27",
+    "@types/node": "^10.17.28",
     "@types/tmp": "^0.1.0",
     "chai": "^4.2.0",
     "globby": "^10.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^8.0.1",
     "nyc": "^14.1.1",
     "prettier": "1.18.2",
     "ts-node": "^8.10.2",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   },
   "engines": {
     "node": ">=8.0.0"

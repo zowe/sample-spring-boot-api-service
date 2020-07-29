@@ -9,7 +9,7 @@ val newZoweArtifactoryRepository: String by project
 
 plugins {
     jacoco
-    id("org.springframework.boot") version "2.3.1.RELEASE"
+    id("org.springframework.boot") version "2.3.2.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.hierynomus.license") version "0.15.0"
     id("org.unbroken-dome.test-sets") version "3.0.1"
@@ -58,7 +58,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.4.3")
     implementation("org.springdoc:springdoc-openapi-kotlin:1.4.3")
 
-    implementation("io.github.microutils:kotlin-logging:1.7.10")
+    implementation("io.github.microutils:kotlin-logging:1.8.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
