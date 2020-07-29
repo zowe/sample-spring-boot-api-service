@@ -35,7 +35,7 @@ public class BasePathTransformationFilter implements WebMvcSwaggerTransformation
         Swagger swagger = context.getSpecification();
 
         String originalBasePath = swagger.getBasePath() != null ? swagger.getBasePath() : "";
-        swagger.setBasePath(originalBasePath + basePath);
+        swagger.setBasePath(originalBasePath.replaceAll("/$", "") + basePath);
 
         final Map<String, Path> newPaths = swagger.getPaths().entrySet().stream()
                 .collect(Collectors.toMap(
