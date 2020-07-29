@@ -12,7 +12,7 @@ TEST_BASE_URI=https://$ZOS_HOST ./gradlew integrationTest
 TEST_RESULT=$?
 
 set +e
-zowe-api-dev stop
+#zowe-api-dev stop
 cd ..
 
 scripts/unlock-port.sh
