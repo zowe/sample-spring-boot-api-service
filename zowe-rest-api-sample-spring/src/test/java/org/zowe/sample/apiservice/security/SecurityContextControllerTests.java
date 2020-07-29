@@ -53,7 +53,7 @@ public class SecurityContextControllerTests {
     public void allowsRequestToPermittedResource() throws Exception {
         mvc.perform(get("/api/v1/securityTest/safProtectedResource").header("Authorization",
                 TestUtils.ZOWE_BASIC_AUTHENTICATION)).andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.canMount", is("true")));
+                .andExpect(jsonPath("$.canReadSpool", is("true")));
     }
 
     @Test
