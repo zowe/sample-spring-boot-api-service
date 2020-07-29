@@ -64,24 +64,24 @@ jobs:
 #      - store_artifacts:
 #          path: zowe-rest-api-commons-spring/build/pom.xml
 #          destination: zowe-rest-api-commons-spring/pom.xml
-      - run: &integration_tests_sample
-          name: Running Integration Tests of the Sample in the Build Container
-          command: |
-            scripts/run-integration-tests.sh
+#      - run: &integration_tests_sample
+#          name: Running Integration Tests of the Sample in the Build Container
+#          command: |
+#            scripts/run-integration-tests.sh
       - run: &integration_tests_sample_zos
           name: Running Integration Tests of the Sample on z/OS
           command: |
             source .circleci/marist.env
             npm run zos-integration-tests
-      - run: &integration_tests_kotlin_sample
-          name: Running Integration Tests of the Kotlin Sample in the Build Container
-          command: |
-            scripts/run-integration-tests-kotlin.sh
-      - run: &integration_tests_kotlin_sample_zos
-          name: Running Integration Tests of the Kotlin Sample on z/OS
-          command: |
-            source .circleci/marist.env
-            npm run zos-kotlin-integration-tests
+#      - run: &integration_tests_kotlin_sample
+#          name: Running Integration Tests of the Kotlin Sample in the Build Container
+#          command: |
+#            scripts/run-integration-tests-kotlin.sh
+#      - run: &integration_tests_kotlin_sample_zos
+#          name: Running Integration Tests of the Kotlin Sample on z/OS
+#          command: |
+#            source .circleci/marist.env
+#            npm run zos-kotlin-integration-tests
       - store_test_results:
           path: zowe-rest-api-commons-spring/build/test-results
       - store_test_results:
@@ -119,10 +119,10 @@ jobs:
       - codecov/upload
 #      - run: *sonar
       - run: *sample
-      - run: *integration_tests_sample
+#      - run: *integration_tests_sample
       - run: *integration_tests_sample_zos
-      - run: *integration_tests_kotlin_sample
-      - run: *integration_tests_kotlin_sample_zos
+#      - run: *integration_tests_kotlin_sample
+#      - run: *integration_tests_kotlin_sample_zos
 #      - run: *zos_cleanup
       - run:
           name: Publishing zowe-api-dev Tool to npmjs.com
