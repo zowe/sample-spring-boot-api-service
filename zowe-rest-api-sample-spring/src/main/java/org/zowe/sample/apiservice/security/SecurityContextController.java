@@ -118,17 +118,17 @@ public class SecurityContextController {
         return result;
     }
 
-    @ApiOperation(value = "This endpoint can be accessed only by users that have UPDATE access to `BPX.DAEMON` resource in the `FACILITY` class", authorizations = {
+    @ApiOperation(value = "This endpoint can be accessed only by users that have READ access to any resource in the `JESSPOOL` class", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/safProtectedResource")
-    @PreAuthorize("hasSafResourceAccess('JESSPOOL', 'BPX.DAEMON', 'READ')")
+    @PreAuthorize("hasSafResourceAccess('JESSPOOL', 'ALL', 'READ')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
         log.debug("Entering /safProtectedResource ...");
         Map<String, String> result = new LinkedHashMap<>();
-        boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "FACILITY",
-                "BPX.DAEMON", AccessLevel.UPDATE);
+        boolean canReadSpool = platformSecurityService.checkPermission(authentication.getName(), "JESSPOOL",
+                "ALL", AccessLevel.READ);
         result.put("authenticatedUserName", authentication.getName());
-        result.put("canMount", Boolean.toString(canMount));
+        result.put("canReadSpool", Boolean.toString(canReadSpool));
         return result;
     }
 
