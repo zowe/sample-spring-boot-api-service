@@ -68,7 +68,7 @@ export default class Init extends Command {
                         f.account = account;
                     }
                 }
-                if (f.account === "ACCT") {
+                if (!f.account || f.account === "ACCT") {
                     this.log(logSymbols.warning, "Accounting information not found in your Zowe TSO profile. Please substitute 'ACCT' string with your accounting information in user-zowe-api.json manually.")
                 }
             }
