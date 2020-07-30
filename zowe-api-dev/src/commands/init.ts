@@ -62,10 +62,13 @@ export default class Init extends Command {
             const defaultZosmfProfile = getDefaultProfile("zosmf");
             if (f.account === "ACCT") {
                 const defaultTsoProfile = getDefaultProfile("tso");
-                const account = defaultTsoProfile.profile.account;
-                if (account) {
-                    f.account = account;
-                } else {
+                if (defaultTsoProfile) {
+                    const account = defaultTsoProfile.profile.account;
+                    if (account) {
+                        f.account = account;
+                    }
+                }
+                if (!f.account || f.account === "ACCT") {
                     this.log(logSymbols.warning, "Accounting information not found in your Zowe TSO profile. Please substitute 'ACCT' string with your accounting information in user-zowe-api.json manually.")
                 }
             }
