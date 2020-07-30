@@ -10,11 +10,11 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.projectlombok:lombok:1.18.10'
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    testImplementation 'junit:junit:4.12'
-    testImplementation  'commons-io:commons-io:2.6'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+	implementation 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    testImplementation 'junit:junit:4.13'
+    testImplementation  'commons-io:commons-io:2.7'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
 
 application {
@@ -22,7 +22,7 @@ application {
 }
 
 jacoco {
-    toolVersion = '0.8.4'
+    toolVersion = '0.8.5'
 }
 
 jacocoTestReport {

@@ -9,19 +9,13 @@
  */
 package org.zowe.sample.apiservice.apidoc;
 
-import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.zowe.commons.apidoc.BasePathProvider;
-
+import org.zowe.commons.apidoc.BasePathTransformationFilter;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -30,6 +24,11 @@ import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 
 @Configuration
 @EnableSwagger2
@@ -50,8 +49,12 @@ public class SwaggerConfig implements WebMvcConfigurer {
         schemes.add(new BasicAuth(DOC_SCHEME_BASIC_AUTH));
 
         return new Docket(DocumentationType.SWAGGER_2).groupName("v1").select().apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/v1/**")).build().apiInfo(apiInfo()).securitySchemes(schemes)
-                .pathProvider(new BasePathProvider("/api/v1"));
+                .paths(PathSelectors.ant("/api/v1/**")).build().apiInfo(apiInfo()).securitySchemes(schemes);
+    }
+
+    @Bean
+    public BasePathTransformationFilter basePathTransformationFilter () {
+        return new BasePathTransformationFilter("/api/v1");
     }
 
     private ApiInfo apiInfo() {
@@ -61,12 +64,12 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/api/v1/apiDocs", "/apiDocs/v2?group=v1");
-        registry.addRedirectViewController("/", "swagger-ui.html");
+        registry.addRedirectViewController("/", "/swagger-ui/");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

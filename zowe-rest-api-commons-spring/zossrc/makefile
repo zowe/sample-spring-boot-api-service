@@ -68,7 +68,6 @@ install:
 $(LIB_SECUR): secur.o jnitools.o
 	$(CXX) $(DLL_BND_FLAGS) -o $@ $(SIDEDECKPATH)/$(SIDEDECK).x jnitools.o $^ > $*.bind.lst
 	extattr +p $@
-	pax -wvf $@.pax $@
 
 secur.o: secur.c
 	$(CC) $(DLL_CPP_FLAGS) -qlist=$*.cpp.lst -o $@ $^
