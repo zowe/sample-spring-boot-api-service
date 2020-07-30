@@ -49,7 +49,7 @@ public class BasePathTransformationFilter implements WebMvcSwaggerTransformation
 
     @Override
     public boolean supports(@NonNull DocumentationType delimiter) {
-        return delimiter == DocumentationType.SWAGGER_2;
+        return DocumentationType.SWAGGER_2.equals(delimiter);
     }
 
 }

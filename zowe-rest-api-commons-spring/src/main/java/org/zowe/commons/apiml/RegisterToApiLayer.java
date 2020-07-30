@@ -76,13 +76,14 @@ public class RegisterToApiLayer {
     }
 
     public String getApiGatewayBaseUrl() {
-        if ((apiGatewayBaseUrl == null) && (apiMediationClient != null)) {
-            Application gateway = apiMediationClient.getEurekaClient().getApplication("gateway");
-            if ((gateway != null) && !gateway.getInstances().isEmpty()) {
-                apiGatewayBaseUrl = gateway.getInstances().get(0).getHomePageUrl();
-                log.info("Using API Gateway at {}", apiGatewayBaseUrl);
-            }
-        }
+        if (apiGatewayBaseUrl != null) return apiGatewayBaseUrl;
+        
+        if (apiMediationClient == null) return null;
+        Application gateway = apiMediationClient.getEurekaClient().getApplication("gateway");
+        if ((gateway == null) || gateway.getInstances().isEmpty()) return null;
+        apiGatewayBaseUrl = gateway.getInstances().get(0).getHomePageUrl();
+        log.info("Using API Gateway at {}", apiGatewayBaseUrl);
+        
         return apiGatewayBaseUrl;
     }
 

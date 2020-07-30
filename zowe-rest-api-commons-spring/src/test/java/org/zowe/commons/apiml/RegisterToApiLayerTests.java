@@ -23,6 +23,7 @@ import org.zowe.apiml.eurekaservice.client.ApiMediationClient;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -104,7 +105,6 @@ public class RegisterToApiLayerTests {
         assertSame(homepage, registerToApiLayer.getApiGatewayBaseUrl());
 
         verify(apiMediationClient, times(1)).getEurekaClient();
-        //verify(application, times(1)).getInstances();
         verify(instanceInfo, times(1)).getHomePageUrl();
     }
 
@@ -119,7 +119,7 @@ public class RegisterToApiLayerTests {
         doReturn(application).when(eurekaClient).getApplication("gateway");
         doReturn(Collections.emptyList()).when(application).getInstances();
 
-        assertSame(null, registerToApiLayer.getApiGatewayBaseUrl());
+        assertNull(registerToApiLayer.getApiGatewayBaseUrl());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class RegisterToApiLayerTests {
         doReturn(eurekaClient).when(apiMediationClient).getEurekaClient();
         //doReturn(null).when(eurekaClient).getApplication("gateway");
 
-        assertSame(null, registerToApiLayer.getApiGatewayBaseUrl());
+        assertNull(registerToApiLayer.getApiGatewayBaseUrl());
     }
 
 }
