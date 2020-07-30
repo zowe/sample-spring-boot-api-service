@@ -4,7 +4,8 @@
 ext {
     githubUrl = 'https://github.com/zowe/sample-spring-boot-api-service'
     projectUrl = "$githubUrl/zowe-rest-api-commons-spring"
-    licenseName = 'EPL-2.0'
+    eplLicenseName = 'EPL-2.0'
+    apacheLicenseName = 'Apache-2.0'
     artifactId = 'zowe-rest-api-commons-spring'
     packageDescription = 'Zowe REST API Common Library for Spring'
     repositoryId = 'zowe'
@@ -43,9 +44,12 @@ publishing {
                     issueManagement.appendNode('url', "$githubUrl/issues")
 
                     def licenses = root.appendNode('licenses')
-                    def license = licenses.appendNode('license')
-                    license.appendNode('name', licenseName)
-                    license.appendNode('url', 'https://www.eclipse.org/legal/epl-2.0/')
+                    def apacheLicense = licenses.appendNode('license')
+                    apacheLicense.appendNode('name', apacheLicenseName)
+                    apacheLicense.appendNode('url', 'https://www.apache.org/licenses/LICENSE-2.0')
+                    def eplLicense = licenses.appendNode('license')
+                    eplLicense.appendNode('name', eplLicenseName)
+                    eplLicense.appendNode('url', 'https://www.eclipse.org/legal/epl-2.0/')
                 }
             }
 
@@ -69,7 +73,7 @@ bintray {
         websiteUrl = githubUrl
         issueTrackerUrl = "$githubUrl/issues"
         vcsUrl = githubUrl
-        licenses = [licenseName]
+        licenses = [apacheLicenseName, eplLicenseName]
 
         version {
             desc = packageDescription
