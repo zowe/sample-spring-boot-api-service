@@ -13,10 +13,12 @@ server:
     ssl:
         keyAlias: localhost
         keyPassword: password
-        keyStore: config/local/keystore.p12
+        keyStore: config/local/keystore.p12                                 # Gradle
+#       keyStore: zowe-rest-api-sample-spring/config/local/keystore.p12     # IntelliJ
         keyStorePassword: password
         keyStoreType: PKCS12
-        trustStore: config/local/truststore.p12
+        trustStore: config/local/truststore.p12                              # Gradle
+#       trustStore: zowe-rest-api-sample-spring/config/local/truststore.p12  # IntelliJ
         trustStorePassword: password
         trustStoreType: PKCS12
 

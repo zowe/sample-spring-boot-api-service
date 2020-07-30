@@ -16,6 +16,7 @@ import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -116,16 +117,16 @@ public class SecurityContextController {
         return result;
     }
 
-    @ApiOperation(value = "This endpoint can be accessed only by users that have READ access to `SUPERUSER.FILESYS.MOUNT` resource in the `UNIXPRIV` class", authorizations = {
+    @ApiOperation(value = "This endpoint can be accessed only by users that have READ access to any resource in the `JESSPOOL` class", authorizations = {
             @Authorization(value = DOC_SCHEME_BASIC_AUTH) })
     @GetMapping("/safProtectedResource")
-    @PreAuthorize("hasSafResourceAccess('UNIXPRIV', 'SUPERUSER.FILESYS.MOUNT', 'READ')")
+    @PreAuthorize("hasSafResourceAccess('JESSPOOL', 'ALL', 'READ')")
     public Map<String, String> safProtectedResource(@ApiIgnore Authentication authentication) {
         Map<String, String> result = new LinkedHashMap<>();
-        boolean canMount = platformSecurityService.checkPermission(authentication.getName(), "UNIXPRIV",
-                "SUPERUSER.FILESYS.MOUNT", AccessLevel.READ);
+        boolean canReadSpool = platformSecurityService.checkPermission(authentication.getName(), "JESSPOOL",
+                "ALL", AccessLevel.READ);
         result.put("authenticatedUserName", authentication.getName());
-        result.put("canMount", Boolean.toString(canMount));
+        result.put("canReadSpool", Boolean.toString(canReadSpool));
         return result;
     }
 

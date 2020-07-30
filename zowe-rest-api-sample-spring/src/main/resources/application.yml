@@ -18,8 +18,6 @@ logging:
         org.apache.coyote: WARN
         org.springframework: WARN
         org.springframework.boot.web.embedded: INFO
-        springfox.documentation: WARN
-        com.ca.mfaas.eurekaservice.client.impl: WARN
 
 server:
     port: 10080
@@ -30,7 +28,10 @@ server:
         enabledProtocols: TLSv1.2
         ciphers: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
 
-springfox.documentation.swagger.v2.path: /apiDocs/v2
+springfox:
+    documentation:
+        swagger.v2.path: /apiDocs/v2
+        swagger-ui.base-url: /
 
 zowe.commons.security.saf:
     serviceResourceClass: "ZOWE"
@@ -44,11 +45,12 @@ apiml:
         serviceId: zowesample
         title: Zowe Sample API Service
         description: Sample Spring Boot API service that provides REST API
-        catalogUiTile:
-            id: sample
-            title: Sample API Services
-            description: Sample API services to demonstrate exposing a REST API service in the Zowe ecosystem
-            version: 1.0.0
+        catalog:
+            tile:
+                id: sample
+                title: Sample API Services
+                description: Sample API services to demonstrate exposing a REST API service in the Zowe ecosystem
+                version: 1.0.0
 
         # Following values are provided by the developer:
         scheme: http
@@ -92,8 +94,6 @@ logging:
         org.apache.catalina: INFO
         org.apache.juli.logging: INFO
         com.netflix: INFO
-        springfox.documentation: INFO
-        com.ca.mfaas.eurekaservice.client.impl: INFO
 
 ---
 spring:

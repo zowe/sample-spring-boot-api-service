@@ -16,8 +16,9 @@ safAccess:
     BPX.DAEMON:
       UPDATE:
         - ZOWE
-  UNIXPRIV:
-    SUPERUSER.FILESYS.MOUNT:
+        - ZOWE2
+  JESSPOOL:
+    ALL:
       READ:
         - ZOWE
         - ZOWE2
