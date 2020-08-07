@@ -6,9 +6,9 @@ scripts/lock-port.sh
 cd zowe-rest-api-sample-spring
 zowe-api-dev deploy
 zowe-api-dev config --name zos -p port=$TEST_PORT
+export DEBUG=zowe
 zowe-api-dev start --job --killPrevious
 
-export DEBUG=zowe
 TEST_BASE_URI=https://$ZOS_HOST ./gradlew integrationTest
 TEST_RESULT=$?
 
