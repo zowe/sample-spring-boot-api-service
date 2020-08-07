@@ -73,15 +73,15 @@ jobs:
           command: |
             source .circleci/marist.env
             npm run zos-integration-tests
-    #   - run: &integration_tests_kotlin_sample
-    #       name: Running Integration Tests of the Kotlin Sample in the Build Container
-    #       command: |
-    #         scripts/run-integration-tests-kotlin.sh
-      - run: &integration_tests_kotlin_sample_zos
-          name: Running Integration Tests of the Kotlin Sample on z/OS
+      - run: &integration_tests_kotlin_sample
+          name: Running Integration Tests of the Kotlin Sample in the Build Container
           command: |
-            source .circleci/marist.env
-            npm run zos-kotlin-integration-tests
+            scripts/run-integration-tests-kotlin.sh
+    #   - run: &integration_tests_kotlin_sample_zos
+    #       name: Running Integration Tests of the Kotlin Sample on z/OS
+    #       command: |
+    #         source .circleci/marist.env
+    #         npm run zos-kotlin-integration-tests
       - store_test_results:
           path: zowe-rest-api-commons-spring/build/test-results
       - store_test_results:
