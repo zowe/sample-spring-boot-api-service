@@ -27,4 +27,4 @@ Follow the instructions at [Zowe Sample API Service](zowe-rest-api-sample-spring
 
 ## License
 
-The subproject with the sample application `zowe-rest-api-sample-spring` is licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0). The rest of this repository is licensed under [Eclipse Public License - v 2.0](https://www.eclipse.org/legal/epl-2.0/).
+The repository is dual-licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0) and [Eclipse Public License - v 2.0](https://www.eclipse.org/legal/epl-2.0/).
