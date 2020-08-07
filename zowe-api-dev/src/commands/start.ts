@@ -51,7 +51,8 @@ export default class Start extends Command {
                     for (const job of jobs) {
                         if (["ACTIVE", "INPUT"].includes(job.status)) {
                             this.log(`Canceling job ${job.jobname} (${job.jobid})`);
-                            zoweSync(`jobs cancel job ${job.jobid}`);
+                            // zoweSync(`jobs cancel job ${job.jobid}`);
+                            zoweSync(`console issue command "C ${job.jobname}"`);
                         }
                     }
                 }
