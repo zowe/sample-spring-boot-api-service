@@ -97,7 +97,7 @@ export function transferFiles(
             const zosFileExists = !force && zosExistsSync(zosFile);
             if (!force && zosFileExists && isFileSame(file, zosFile, userConfig.zoweProfileName)) {
                 command.log(`${file} has not changed`)
-                return;
+                continue;
             }
             const oldFile = cachedOldFilePath(zosFile, userConfig.zoweProfileName);
             if (!force && file.endsWith(".jar") && existsSync(oldFile) && zosFileExists) {
