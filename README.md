@@ -1,4 +1,4 @@
-# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [ ![Download](https://api.bintray.com/packages/plavjanik/zowe/zowe-rest-api-commons-spring/images/download.svg?version=1.1.0) ](https://bintray.com/plavjanik/zowe/zowe-rest-api-commons-spring/1.1.0/link)
+# [Zowe](https://zowe.org/) REST API SDK and Sample Service &middot; [![CircleCI](https://circleci.com/gh/zowe/sample-spring-boot-api-service.svg?style=shield)](https://circleci.com/gh/zowe/sample-spring-boot-api-service) [ ![download](https://api.bintray.com/packages/plavjanik/zowe/zowe-rest-api-commons-spring/images/download.svg?version=1.1.0) ](https://bintray.com/plavjanik/zowe/zowe-rest-api-commons-spring/1.1.0/link)<a href="https://scan.coverity.com/projects/zowe-sample-spring-boot-api-service"><img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/21953/badge.svg"/></a>
 
 This project provides:
 
