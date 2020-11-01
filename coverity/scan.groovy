@@ -11,8 +11,12 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
 
+    triggers {
+        cron('H 23 * * *')
+    }
+
     stages {
-        stage('Coverity') {
+        stage('Coverity Scan') {
             steps {
                 withCredentials([
                     usernamePassword(
