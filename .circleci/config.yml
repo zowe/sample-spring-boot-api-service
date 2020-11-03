@@ -148,6 +148,7 @@ jobs:
       - image: plavjanik/coverity-oss
     working_directory: ~/code
     steps:
+      - checkout
       - run:
           name: Coverity Capture Build and Start Analysis
           command: scripts/coverity-scan.sh
