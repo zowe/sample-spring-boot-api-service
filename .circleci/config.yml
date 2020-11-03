@@ -143,6 +143,15 @@ jobs:
           command: |
             scripts/package-sample.sh
             scripts/publish-sample.sh
+  coverity_scan:
+    docker:
+      - image: plavjanik/coverity-oss
+    working_directory: ~/code
+    steps:
+      - run:
+          name: Coverity Capture Build and Start Analysis
+          command: scripts/coverity-scan.sh
+
 workflows:
   version: 2
   untagged_build:
@@ -151,6 +160,11 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - coverity_scan:
+          filters:
+            branches:
+              only:
+                - coverity
   tagged_build:
     jobs:
       - publish_all:
