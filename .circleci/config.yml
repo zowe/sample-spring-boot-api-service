@@ -165,7 +165,7 @@ workflows:
           filters:
             branches:
               only:
-                - coverity
+                - master
   tagged_build:
     jobs:
       - publish_all:
