@@ -49,3 +49,6 @@ zowe-rest-api-sample-spring/config/ca*/
 /*.jar
 zowe-rest-api-sample-spring/*.zip
 .zowe-api-dev/
+cov-int/
+zowe-rest-api-sample-kotlin-spring/bin/
+cov-int.tgz
