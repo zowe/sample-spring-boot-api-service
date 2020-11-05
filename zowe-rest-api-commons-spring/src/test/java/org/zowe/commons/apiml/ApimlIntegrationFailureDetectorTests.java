@@ -9,20 +9,17 @@
  */
 package org.zowe.commons.apiml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLPeerUnverifiedException;
-
-import org.junit.Test;
-import org.zowe.commons.spring.SpringContext;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.spi.FilterReply;
+import org.junit.Test;
+import org.zowe.commons.spring.SpringContext;
+
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLPeerUnverifiedException;
+
+import static org.junit.Assert.*;
 
 public class ApimlIntegrationFailureDetectorTests {
 
@@ -32,9 +29,9 @@ public class ApimlIntegrationFailureDetectorTests {
         ApimlIntegrationFailureDetector detector = new ApimlIntegrationFailureDetector();
         assertEquals(FilterReply.NEUTRAL,
                 detector.decide(null, null, Level.INFO, null, null, new NullPointerException()));
-        assertFalse(detector.reportFatalErrorAndDecideToExit(Level.INFO, new NullPointerException()));
-        assertTrue(detector.reportFatalErrorAndDecideToExit(Level.ERROR, new SSLHandshakeException("test")));
-        assertTrue(detector.reportFatalErrorAndDecideToExit(Level.ERROR, new SSLPeerUnverifiedException("test")));
+        assertFalse(detector.reportFatalError(Level.INFO, new NullPointerException()));
+        assertTrue(detector.reportFatalError(Level.ERROR, new SSLHandshakeException("test")));
+        assertTrue(detector.reportFatalError(Level.ERROR, new SSLPeerUnverifiedException("test")));
 
         LoggerContext ctx = new LoggerContext();
         Logger logger = ctx.getLogger("com.netflix.DiscoveryClient");
@@ -44,7 +41,7 @@ public class ApimlIntegrationFailureDetectorTests {
 
         logger = ctx.getLogger("com.netflix.RedirectingEurekaHttpClient");
         assertEquals(FilterReply.DENY, detector.decide(null, logger, Level.ERROR,
-        null, null, new NullPointerException(null)));
+                null, null, new NullPointerException(null)));
     }
 
 }
