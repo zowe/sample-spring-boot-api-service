@@ -119,7 +119,7 @@ jobs:
       - run: &sonar
           name: Sonar
           command: |
-            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
+            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN -x test -x compileJava -x compileTestJava
   coverity_scan:
     docker:
       - image: plavjanik/coverity-oss
