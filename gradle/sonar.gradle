@@ -1,10 +1,8 @@
-plugins {
-    id "org.sonarqube" version "3.0"
-}
+apply plugin: "org.sonarqube"
 
 ext.pullRequest = System.getenv()['CHANGE_ID'] ?: null
 
-def static gitBranch() {
+def gitBranch() {
     def branch = ""
     def proc = "git rev-parse --abbrev-ref HEAD".execute()
     proc.in.eachLine { line -> branch = line }
