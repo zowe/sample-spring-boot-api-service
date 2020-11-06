@@ -92,6 +92,10 @@ jobs:
       - store_artifacts:
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/*
       - save_cache:
           paths:
             - ~/.gradle
@@ -116,6 +120,8 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Coverity Capture Build and Start Analysis
           command: scripts/coverity-scan.sh
