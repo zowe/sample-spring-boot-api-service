@@ -14,11 +14,6 @@ apply from: 'gradle/sonar.gradle'
 apply from: 'gradle/generate-pom.gradle'
 
 allprojects {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
     ext.getLastGitTag = { ->
         try {
             def stdout = new ByteArrayOutputStream()
