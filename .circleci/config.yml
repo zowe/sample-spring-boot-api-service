@@ -47,6 +47,14 @@ jobs:
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/*
+            - zowe-rest-api-commons-spring/build/*
+            - zowe-rest-api-sample-kotlin-spring/build/*
+            - zowe-rest-api-sample-spring/build/*
+            - jarpatcher/build/*
       - run: &sample
           name: Building Standalone Sample
           command: |
@@ -92,14 +100,6 @@ jobs:
       - store_artifacts:
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build/*
-            - zowe-rest-api-commons-spring/build/*
-            - zowe-rest-api-sample-kotlin-spring/build/*
-            - zowe-rest-api-sample-spring/build/*
-            - jarpatcher/build/*
       - save_cache:
           paths:
             - ~/.gradle
