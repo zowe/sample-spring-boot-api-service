@@ -96,6 +96,10 @@ jobs:
           root: .
           paths:
             - build/*
+            - zowe-rest-api-commons-spring/build/*
+            - zowe-rest-api-sample-kotlin-spring/build/*
+            - zowe-rest-api-sample-spring/build/*
+            - jarpatcher/build/*
       - save_cache:
           paths:
             - ~/.gradle
@@ -108,14 +112,10 @@ jobs:
   sonar:
     docker:
       - image: 'circleci/openjdk:11-jdk'
-        environment:
-          # kotlin.incremental=false and kotlin.compiler.execution.strategy=in-process are required due to an issue with the Kotlin compiler in
-          # memory constrained environments: https://youtrack.jetbrains.com/issue/KT-15562
-          _JAVA_OPTIONS: "-Xmx3g"
-          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -Dorg.gradle.caching=true -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false
-    working_directory: ~/code
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - run: &sonar
           name: Sonar
           command: |
@@ -126,8 +126,6 @@ jobs:
     working_directory: ~/code
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - run:
           name: Coverity Capture Build and Start Analysis
           command: scripts/coverity-scan.sh
