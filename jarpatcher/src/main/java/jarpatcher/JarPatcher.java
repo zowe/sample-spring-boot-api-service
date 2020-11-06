@@ -30,6 +30,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+// Suppresses `I/O function calls should not be vulnerable to path injection attacks` because it is only an internal
+// development tool where a developer is responsible for the correct input. The input may vary according to the tool
+// usage and it is difficult to validate. Do not suppress this security issue for the code which is released to
+// customers.
+@SuppressWarnings("javasecurity:S2083")
 public class JarPatcher {
     private static final Logger logger = Logger.getLogger(JarPatcher.class.getName());
 

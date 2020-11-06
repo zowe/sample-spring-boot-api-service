@@ -47,10 +47,6 @@ jobs:
             ./gradlew build
             scripts/so-test.sh
       - codecov/upload
-      - run: &sonar
-          name: Sonar
-          command: |
-            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
       - run: &sample
           name: Building Standalone Sample
           command: |
@@ -93,7 +89,7 @@ jobs:
             source .circleci/marist.env
             npm run zos-cleanup
             scripts/package-sample.sh
-      - store_artifacts: &store_sample_zip
+      - store_artifacts:
           path: ~/code/build/zowe-rest-api-sample-spring.zip
           destination: zowe-rest-api-sample-spring.zip
       - save_cache:
@@ -105,6 +101,24 @@ jobs:
             - ~/code/zowe-rest-api-sample-spring/.gradle
             - ~/code/gradle/wrapper/gradle-wrapper.jar
           key: v3-zowe-sdk-{{ .Branch }}-{{ epoch }}
+  sonar:
+    docker:
+      - image: 'circleci/openjdk:11-jdk'
+    steps:
+      - checkout
+      - run: &sonar
+          name: Sonar
+          command: |
+            ./gradlew --info sonarqube -Psonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_AUTH_TOKEN
+  coverity_scan:
+    docker:
+      - image: plavjanik/coverity-oss
+    working_directory: ~/code
+    steps:
+      - checkout
+      - run:
+          name: Coverity Capture Build and Start Analysis
+          command: scripts/coverity-scan.sh
   publish_all:
     docker:
       - image: circleci/openjdk:8-jdk-node
@@ -143,15 +157,6 @@ jobs:
           command: |
             scripts/package-sample.sh
             scripts/publish-sample.sh
-  coverity_scan:
-    docker:
-      - image: plavjanik/coverity-oss
-    working_directory: ~/code
-    steps:
-      - checkout
-      - run:
-          name: Coverity Capture Build and Start Analysis
-          command: scripts/coverity-scan.sh
 
 workflows:
   version: 2
@@ -161,6 +166,12 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - sonar:
+          filters:
+            tags:
+              ignore: /.*/
+          requires:
+            - build_all
       - coverity_scan:
           filters:
             branches:
