@@ -3,6 +3,7 @@ set -e
 
 scripts/lock-port.sh
 
+export DEBUG=*
 cd zowe-rest-api-sample-spring
 zowe-api-dev deploy
 zowe-api-dev config --name zos -p port=$TEST_PORT
