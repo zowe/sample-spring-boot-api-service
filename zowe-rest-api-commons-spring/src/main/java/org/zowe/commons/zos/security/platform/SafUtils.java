@@ -13,16 +13,30 @@ import org.zowe.commons.zos.ZosUtils;
 import org.zowe.commons.zos.security.jni.Secur;
 
 public class SafUtils {
-    private SafUtils() {
-        // no instances
-    }
 
-    private static ThreadLocal<String> threadApplid = new ThreadLocal<>();
+    private static final SetApplid SECUR;
+
+    static {
+        if (ZosUtils.isRunningOnZos()) {
+            SECUR = new SetApplid() {
+
+                private final Secur secur = new Secur();
+
+                @Override
+                public int setApplid(String applid) {
+                    return secur.setApplid(applid);
+                }
+
+            };
+        } else {
+            SECUR = applId -> 0;
+        }
+    }
 
     /**
      * Sets the APPLID for the current thread so the PlatformUser.authenticate can
      * use PassTickets for the provide APPLID.
-     *
+     * <p>
      * The APPLID can be changed but not unset.
      *
      * @param applid The APPLID to be set. Up to 8 characters.
@@ -32,12 +46,13 @@ public class SafUtils {
             return;
         }
 
-        String currentApplid = threadApplid.get();
-        if (currentApplid == null || !currentApplid.equals(applid)) {
-            if (ZosUtils.isRunningOnZos()) {
-                new Secur().setApplid(applid);
-            }
-            threadApplid.set(applid);
-        }
+        SECUR.setApplid(applid);
     }
+
+    private interface SetApplid {
+
+        int setApplid(String applId);
+
+    }
+
 }

@@ -43,9 +43,9 @@ export function zoweSync(command: string, options?: IZoweOptions): IZoweResult {
     if (options === undefined) {
         options = defaultOptions;
     }
-    const direct = options.direct ? defaultOptions.direct : options.direct;
-    const logOutput = options.logOutput ? defaultOptions.logOutput : options.logOutput;
-    const throwError = options.throwError ? defaultOptions.throwError : options.throwError;
+    const direct = options.direct ? options.direct : defaultOptions.direct;
+    const logOutput = options.logOutput ? options.logOutput : defaultOptions.logOutput;
+    const throwError = options.throwError ? options.throwError : defaultOptions.throwError;
 
     try {
         debug(command);

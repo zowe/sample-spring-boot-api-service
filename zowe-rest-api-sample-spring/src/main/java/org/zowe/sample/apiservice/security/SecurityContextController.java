@@ -9,14 +9,9 @@
  */
 package org.zowe.sample.apiservice.security;
 
-import static org.zowe.commons.zos.security.platform.SafConstants.BPX_SERVER;
-import static org.zowe.commons.zos.security.platform.SafConstants.CLASS_FACILITY;
-import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -28,11 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zowe.commons.zos.security.platform.PlatformAccessControl.AccessLevel;
 import org.zowe.commons.zos.security.service.PlatformSecurityService;
 import org.zowe.commons.zos.security.thread.PlatformThreadLevelSecurity;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.zowe.commons.apidoc.ApiDocConstants.DOC_SCHEME_BASIC_AUTH;
+import static org.zowe.commons.zos.security.platform.SafConstants.BPX_SERVER;
+import static org.zowe.commons.zos.security.platform.SafConstants.CLASS_FACILITY;
 
 @Api(tags = "Security")
 @RestController
