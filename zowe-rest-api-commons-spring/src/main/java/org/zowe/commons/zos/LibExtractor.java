@@ -11,10 +11,10 @@ package org.zowe.commons.zos;
 
 import org.springframework.util.ResourceUtils;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +42,7 @@ public class LibExtractor {
             try (InputStream inputStream = url.openStream();
                  FileOutputStream fos = new FileOutputStream(targetPath.toString());
                  BufferedOutputStream outputStream = new BufferedOutputStream(fos)
-        ) {
+            ) {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int lengthRead;
                 while ((lengthRead = inputStream.read(buffer)) > 0) {

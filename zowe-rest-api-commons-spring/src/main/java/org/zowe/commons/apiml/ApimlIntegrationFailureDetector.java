@@ -14,6 +14,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Marker;
 import org.zowe.commons.error.CommonsErrorService;
@@ -35,7 +36,7 @@ public class ApimlIntegrationFailureDetector extends TurboFilter {
                 || logger.getName().contains("RedirectingEurekaHttpClient"))) {
             if (logger.getLevel() == Level.ERROR) {
                 String message = ExceptionUtils.getMessage(t);
-                if (!message.isEmpty()) {
+                if (!StringUtils.isEmpty(message)) {
                     log.error(CommonsErrorService.get().getReadableMessage("org.zowe.commons.apiml.unableToRegister",
                             message));
                     logOriginalError(t);
