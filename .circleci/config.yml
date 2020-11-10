@@ -183,10 +183,10 @@ workflows:
           requires:
             - build_all
       - coverity_scan:
-          filters:
-            branches:
-              only:
-                - master
+#          filters:
+#            branches:
+#              only:
+#                - master
   tagged_build:
     jobs:
       - publish_all:

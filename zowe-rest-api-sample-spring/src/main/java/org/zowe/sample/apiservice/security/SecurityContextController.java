@@ -79,7 +79,7 @@ public class SecurityContextController {
         }).run();
 
         try {
-            String afterSwitchUserNameCall = (String) platformThreadLevelSecurity
+            String afterSwitchUserNameCall = platformThreadLevelSecurity
                     .wrapCallableInEnvironmentForAuthenticatedUser(platformSecurityService::getCurrentThreadUserId)
                     .call();
             result.put("afterSwitchUserNameCall", afterSwitchUserNameCall);
