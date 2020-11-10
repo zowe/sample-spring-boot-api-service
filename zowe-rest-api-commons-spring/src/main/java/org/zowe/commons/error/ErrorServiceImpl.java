@@ -215,12 +215,12 @@ public class ErrorServiceImpl implements ErrorService {
     }
 
     private String getLocalizedComponentOrUseDefault(Locale locale, String key, ErrorMessage message) {
-        String component = message.getComponent();
-        if (component == null) {
+        String component;
+        if ( message.getComponent() == null) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             component = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
         } else {
-            component = localizedText(locale, key + ".component", component);
+            component = localizedText(locale, key + ".component", message.getComponent());
         }
         return component;
     }

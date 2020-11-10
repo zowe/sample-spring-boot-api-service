@@ -40,7 +40,9 @@ public class LibExtractor {
         try {
             URL url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + filename);
             try (InputStream inputStream = url.openStream();
-                 OutputStream outputStream = new FileOutputStream(targetPath.toString())) {
+                 FileOutputStream fos = new FileOutputStream(targetPath.toString());
+                 BufferedOutputStream outputStream = new BufferedOutputStream(fos)
+        ) {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int lengthRead;
                 while ((lengthRead = inputStream.read(buffer)) > 0) {

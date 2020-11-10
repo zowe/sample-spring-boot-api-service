@@ -206,7 +206,9 @@ public class JarPatcher {
         }
 
         try (FileOutputStream fos = new FileOutputStream(patchPath);
-             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             ZipOutputStream zipOut = new ZipOutputStream(bos)
+        ) {
 
             addChangedOrCreatedFiles(newPath, result, zipOut);
             addDeletedEntries(result.deleted, zipOut);
@@ -235,7 +237,9 @@ public class JarPatcher {
         String originalTargetPath = targetPath + "-original";
         Files.copy(Paths.get(targetPath), Paths.get(originalTargetPath), StandardCopyOption.REPLACE_EXISTING);
         try (FileOutputStream fos = new FileOutputStream(targetPath);
-             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             ZipOutputStream zipOut = new ZipOutputStream(bos)
+      ) {
             Set<String> deletedOrPatchedNames = new HashSet<>();
             int keeping = 0;
 
