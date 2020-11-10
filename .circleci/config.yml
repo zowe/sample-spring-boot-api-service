@@ -182,11 +182,11 @@ workflows:
               ignore: /.*/
           requires:
             - build_all
-      - coverity_scan
-#          filters:
-#            branches:
-#              only:
-#                - master
+      - coverity_scan:
+          filters:
+            branches:
+              only:
+                - master
   tagged_build:
     jobs:
       - publish_all:
