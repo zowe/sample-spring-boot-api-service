@@ -182,7 +182,7 @@ workflows:
               ignore: /.*/
           requires:
             - build_all
-      - coverity_scan:
+      - coverity_scan
 #          filters:
 #            branches:
 #              only:
