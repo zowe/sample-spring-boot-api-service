@@ -37,8 +37,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.favorPathExtension(true).favorParameter(false).ignoreAcceptHeader(true)
-                .useRegisteredExtensionsOnly(true).defaultContentType(MediaType.APPLICATION_JSON);
+        configurer
+                .favorParameter(false)
+                .ignoreAcceptHeader(true)
+                .useRegisteredExtensionsOnly(true)
+                .defaultContentType(MediaType.APPLICATION_JSON);
     }
 
     @Bean

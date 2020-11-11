@@ -5,6 +5,9 @@ plugins {
     id 'com.github.hierynomus.license' version '0.15.0'
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
 repositories {
     jcenter()
 }

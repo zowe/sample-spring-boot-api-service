@@ -9,16 +9,17 @@
  */
 package org.zowe.commons.zos.security.thread;
 
-import java.util.concurrent.Callable;
-
 import org.springframework.security.core.context.SecurityContext;
+
+import java.util.concurrent.Callable;
 
 public interface PlatformThreadLevelSecurity {
     Runnable wrapRunnableInEnvironmentForAuthenticatedUser(Runnable runnable);
 
     Runnable wrapRunnableInEnvironment(Runnable runnable, SecurityContext authentication);
 
-    Callable wrapCallableInEnvironmentForAuthenticatedUser(Callable runnable);
+    <T> Callable<T> wrapCallableInEnvironmentForAuthenticatedUser(Callable<T> runnable);
 
-    Callable wrapCallableInEnvironment(Callable runnable, SecurityContext authentication);
+    <T> Callable<T> wrapCallableInEnvironment(Callable<T> runnable, SecurityContext authentication);
+
 }

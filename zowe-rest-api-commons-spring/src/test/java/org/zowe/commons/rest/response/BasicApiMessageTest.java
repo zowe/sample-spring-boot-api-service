@@ -11,16 +11,17 @@ package org.zowe.commons.rest.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.util.Collections;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class BasicApiMessageTest {
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void fullJsonFormat() throws IOException {
@@ -45,8 +46,11 @@ public class BasicApiMessageTest {
 
     @Test
     public void equalsTest() {
-        ApiMessage message = new BasicApiMessage(new BasicMessage(MessageType.ERROR, "MAS0001", "Error"));
+        BasicMessage basicMessage = new BasicMessage(MessageType.ERROR, "MAS0001", "Error");
+        ApiMessage message = new BasicApiMessage(basicMessage);
 
-        assertTrue(message.equals(message));
+        Assertions.assertEquals(message, message);
+        Assertions.assertEquals(message, new BasicApiMessage(basicMessage));
+        assertNotEquals(message, new BasicApiMessage(new BasicMessage(null, null, null)));
     }
 }

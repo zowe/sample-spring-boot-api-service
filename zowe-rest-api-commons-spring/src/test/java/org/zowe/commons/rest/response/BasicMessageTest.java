@@ -12,7 +12,8 @@ package org.zowe.commons.rest.response;
 import org.junit.Test;
 
 import static net.javacrumbs.jsonunit.fluent.JsonFluentAssert.assertThatJson;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class BasicMessageTest {
     private Message getTestErrorMessage() {
@@ -38,10 +39,9 @@ public class BasicMessageTest {
     @Test
     public void testEquals() {
         Message message = getTestErrorMessage();
-        Message sameMessage = message;
         Message differentMessage = getTestInfoMessage();
-        assertTrue(message.equals(sameMessage));
-        assertFalse(message.equals(differentMessage));
+        assertEquals(message, message);
+        assertNotEquals(message, differentMessage);
     }
 
     @Test

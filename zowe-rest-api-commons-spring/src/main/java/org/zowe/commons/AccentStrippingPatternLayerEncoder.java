@@ -9,12 +9,14 @@
  */
 package org.zowe.commons;
 
-import java.text.Normalizer;
-
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Layout;
 import lombok.Setter;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.nio.charset.Charset;
+import java.text.Normalizer;
 
 public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {  // NOSONAR
     // Sonar exclusion: This class is extending Logback class that is not under our control
@@ -29,7 +31,15 @@ public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {  
         String txt = layout.doLayout(event);
         if (stripAccents) {
             String stripped = stripAccents(txt);
-            return (stripped != null) ? stripped.getBytes() : null;
+            if (stripped == null) {
+                return ArrayUtils.EMPTY_BYTE_ARRAY;
+            }
+
+            Charset charset = getCharset();
+            if (charset == null) {
+                charset = Charset.defaultCharset();
+            }
+            return stripped.getBytes(charset);
         } else {
             return super.encode(event);
         }
@@ -40,7 +50,8 @@ public class AccentStrippingPatternLayerEncoder extends PatternLayoutEncoder {  
                 : Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");  // NOSONAR: Used for internal strings
     }
 
-    void overrideLayout(Layout layout) {
+    void overrideLayout(Layout<ILoggingEvent> layout) {
         this.layout = layout;
     }
+
 }

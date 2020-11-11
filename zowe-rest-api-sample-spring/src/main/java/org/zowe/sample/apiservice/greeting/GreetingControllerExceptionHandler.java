@@ -24,7 +24,7 @@ import org.zowe.commons.rest.response.ApiMessage;
 /**
  * Creates responses for exceptional behavior of the {@link GreetingController}.
  */
-@ControllerAdvice(assignableTypes = { GreetingController.class })
+@ControllerAdvice(assignableTypes = {GreetingController.class})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GreetingControllerExceptionHandler {
     private final ErrorService errorService;
@@ -38,6 +38,6 @@ public class GreetingControllerExceptionHandler {
     public ResponseEntity<ApiMessage> handleEmptyName(EmptyNameError exception) {
         ApiMessage message = errorService.createApiMessage(LocaleContextHolder.getLocale(), "org.zowe.sample.apiservice.greeting.empty");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(message);
     }
 }

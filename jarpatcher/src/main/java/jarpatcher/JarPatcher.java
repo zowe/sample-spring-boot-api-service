@@ -12,12 +12,9 @@
  */
 package jarpatcher;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import lombok.ToString;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,13 +30,15 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import lombok.ToString;
-
+// Suppresses `I/O function calls should not be vulnerable to path injection attacks` because it is only an internal
+// development tool where a developer is responsible for the correct input. The input may vary according to the tool
+// usage and it is difficult to validate. Do not suppress this security issue for the code which is released to
+// customers.
 public class JarPatcher {
     private static final Logger logger = Logger.getLogger(JarPatcher.class.getName());
 
     @ToString
-    public class CompareResult {
+    public static class CompareResult {
         Set<String> created = new HashSet<>();
         Set<String> deleted = new HashSet<>();
         Set<String> changed = new HashSet<>();
@@ -53,7 +52,7 @@ public class JarPatcher {
         }
     }
 
-    public class JarPatcherError extends RuntimeException {
+    public static class JarPatcherError extends RuntimeException {
         private static final long serialVersionUID = 8522323019867383326L;
 
         public JarPatcherError(IOException e) {
@@ -119,15 +118,15 @@ public class JarPatcher {
     private void printEntry(ZipFile f, ZipEntry entry) {  // NOSONAR
         if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("zipFile=%s file=%s size=%d crc=%d dir=%b comment=%s method=%s", f.getName(),
-                entry.getName(), entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment(),
-                entry.getMethod()));
+                    entry.getName(), entry.getSize(), entry.getCrc(), entry.isDirectory(), entry.getComment(),
+                    entry.getMethod()));
         }
     }
 
     private boolean compareEntries(ZipEntry entry1, ZipEntry entry2) {  // NOSONAR
         return (entry1.isDirectory() == entry2.isDirectory()) && (entry1.getSize() == entry2.getSize())
                 && (entry1.getName().equals(entry2.getName())) && (entry1.getCrc() == entry2.getCrc()
-                        && (entry1.isDirectory() || (entry1.getMethod() == entry2.getMethod())));
+                && (entry1.isDirectory() || (entry1.getMethod() == entry2.getMethod())));
     }
 
     private Set<String> setFromEntryNames(ZipFile zipFile) {
@@ -206,7 +205,9 @@ public class JarPatcher {
         }
 
         try (FileOutputStream fos = new FileOutputStream(patchPath);
-                ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             ZipOutputStream zipOut = new ZipOutputStream(bos)
+        ) {
 
             addChangedOrCreatedFiles(newPath, result, zipOut);
             addDeletedEntries(result.deleted, zipOut);
@@ -235,31 +236,45 @@ public class JarPatcher {
         String originalTargetPath = targetPath + "-original";
         Files.copy(Paths.get(targetPath), Paths.get(originalTargetPath), StandardCopyOption.REPLACE_EXISTING);
         try (FileOutputStream fos = new FileOutputStream(targetPath);
-                ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             ZipOutputStream zipOut = new ZipOutputStream(bos)
+      ) {
             Set<String> deletedOrPatchedNames = new HashSet<>();
             int keeping = 0;
 
             ZipFile zipPatch = new ZipFile(patchPath);
             Enumeration<? extends ZipEntry> entries = zipPatch.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();  // NOSONAR
-                processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
+            try {
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement(); //NOSONAR
+
+                    String name = entry.getName();
+                    if (!name.contains("..")) {
+                        processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
+                    } else {
+                        throw new IllegalArgumentException("Path cannot contain '..': " + name);
+                    }
+                }
+            } finally {
+                zipPatch.close();
             }
-            zipPatch.close();
 
             ZipFile zipIn = new ZipFile(originalTargetPath);
             entries = zipIn.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();  // NOSONAR
-                String filename = entry.getName();
+            try {
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();  // NOSONAR
+                    String filename = entry.getName();
 
-                if (!deletedOrPatchedNames.contains(filename)) {
-                    keeping++;
-                    deletedOrPatchedNames.add(filename);
-                    writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
+                    if (!deletedOrPatchedNames.contains(filename)) {
+                        keeping++;
+                        deletedOrPatchedNames.add(filename);
+                        writeEntry(zipOut, deletedOrPatchedNames, zipIn, entry, filename);
+                    }
                 }
+            } finally {
+                zipIn.close();
             }
-            zipIn.close();
 
             if (logger.isLoggable(Level.INFO)) {
                 logger.info(String.format("Keeping %d ZIP entries", keeping));
@@ -269,7 +284,7 @@ public class JarPatcher {
     }
 
     private void processPatchEntry(String ignoredPath, ZipOutputStream zipOut, Set<String> deletedOrPatchedNames,
-            ZipFile zipPatch, ZipEntry entry) throws IOException {  // NOSONAR
+                                   ZipFile zipPatch, ZipEntry entry) throws IOException {  // NOSONAR
         String filename = entry.getName();
         if (filename.startsWith(DELETED)) {
             String realFilename = filename.substring(DELETED.length());
@@ -291,14 +306,17 @@ public class JarPatcher {
     }
 
     private void writeEntry(ZipOutputStream zipOut, Set<String> createdDirectories, ZipFile zipPatch, ZipEntry entry,  // NOSONAR
-            String filename) throws IOException {
+                            String filename) throws IOException {
         createDirectories(filename, zipOut, createdDirectories);
         ZipEntry zipEntry = new ZipEntry(filename);
         copyZipEntryAttributes(entry, zipEntry);
-        InputStream inputStream = zipPatch.getInputStream(entry);
-        zipOut.putNextEntry(zipEntry);
-        copyStream(inputStream, zipOut);
-        zipOut.closeEntry();
+
+        try (InputStream inputStream = zipPatch.getInputStream(entry)) {
+            zipOut.putNextEntry(zipEntry);
+            copyStream(inputStream, zipOut);
+        } finally {
+            zipOut.closeEntry();
+        }
     }
 
     private void copyZipEntryAttributes(ZipEntry inEntry, ZipEntry outEntry) {  // NOSONAR
@@ -314,4 +332,5 @@ public class JarPatcher {
         System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
         System.exit(new JarPatcher().run(args));
     }
+
 }

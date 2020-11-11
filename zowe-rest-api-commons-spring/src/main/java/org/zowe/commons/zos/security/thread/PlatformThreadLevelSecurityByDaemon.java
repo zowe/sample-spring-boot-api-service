@@ -21,7 +21,7 @@ import org.zowe.commons.zos.security.service.PlatformSecurityService;
 
 @Service
 public class PlatformThreadLevelSecurityByDaemon implements PlatformThreadLevelSecurity {
-    private PlatformSecurityService platformSecurityService;
+    private final PlatformSecurityService platformSecurityService;
 
     @Autowired
     public PlatformThreadLevelSecurityByDaemon(PlatformSecurityService platformSecurityService) {
@@ -40,13 +40,14 @@ public class PlatformThreadLevelSecurityByDaemon implements PlatformThreadLevelS
     }
 
     @Override
-    public Callable wrapCallableInEnvironmentForAuthenticatedUser(Callable callable) {
+    public <T> Callable<T> wrapCallableInEnvironmentForAuthenticatedUser(Callable<T> callable) {
         return wrapCallableInEnvironment(callable, SecurityContextHolder.getContext());
     }
 
     @Override
-    public Callable wrapCallableInEnvironment(Callable callable, SecurityContext securityContext) {
-        return new DelegatingSecurityContextCallable(new CallInThreadLevelSecurityEnvironmentByDaemon(
-            platformSecurityService, callable, securityContext.getAuthentication()), securityContext);
+    public <T> Callable<T> wrapCallableInEnvironment(Callable<T> callable, SecurityContext securityContext) {
+        return new DelegatingSecurityContextCallable<>(new CallInThreadLevelSecurityEnvironmentByDaemon<>(
+                platformSecurityService, callable, securityContext.getAuthentication()), securityContext);
     }
+
 }

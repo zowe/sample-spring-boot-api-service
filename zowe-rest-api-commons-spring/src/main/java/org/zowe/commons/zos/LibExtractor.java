@@ -9,18 +9,19 @@
  */
 package org.zowe.commons.zos;
 
+import org.springframework.util.ResourceUtils;
+
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.springframework.util.ResourceUtils;
-
 public class LibExtractor {
-    public class LibExtractionError extends RuntimeException {
+
+    public static class LibExtractionError extends RuntimeException {
         private static final long serialVersionUID = 2453905334387687806L;
 
         public LibExtractionError(String message, IOException e) {
@@ -30,16 +31,18 @@ public class LibExtractor {
 
     private static final int BUFFER_SIZE = 4096;
 
-    private LibLoader libLoader = new LibLoader();
+    private final LibLoader libLoader = new LibLoader();
 
     public void extractLibrary(String libraryName, String targetDir) {
         String filename = "lib/lib" + libraryName + ".so";
         Path targetPath = Paths.get(targetDir, libLoader.libraryFileName(libraryName));
-        System.out.println(String.format("Extracting %s to %s", filename, targetPath));  // NOSONAR
+        System.out.printf("Extracting %s to %s%n", filename, targetPath);  // NOSONAR
         try {
             URL url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + filename);
             try (InputStream inputStream = url.openStream();
-                    OutputStream outputStream = new FileOutputStream(targetPath.toString())) {
+                 FileOutputStream fos = new FileOutputStream(targetPath.toString());
+                 BufferedOutputStream outputStream = new BufferedOutputStream(fos)
+            ) {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int lengthRead;
                 while ((lengthRead = inputStream.read(buffer)) > 0) {

@@ -9,40 +9,23 @@
  */
 package org.zowe.commons.error;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
+import org.zowe.commons.rest.response.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.IllegalFormatConversionException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Objects;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.security.PrivilegedAction;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
-import org.zowe.commons.rest.response.ApiMessage;
-import org.zowe.commons.rest.response.BasicApiMessage;
-import org.zowe.commons.rest.response.BasicMessage;
-import org.zowe.commons.rest.response.Message;
-import org.zowe.commons.rest.response.MessageType;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Default implementation of {@link ErrorService} that loads messages from YAML
@@ -79,7 +62,7 @@ public class ErrorServiceImpl implements ErrorService {
      * Recommended way how to get an instance of ErrorService for your application.
      *
      * @return Error service that uses common messages and messages from default
-     *         resource file (messages.yml).
+     * resource file (messages.yml).
      */
     public static ErrorService getDefault() {
         ErrorServiceImpl errorService = new ErrorServiceImpl("/" + DEFAULT_MESSAGES_BASENAME + YAML_EXTENSION);
@@ -90,7 +73,7 @@ public class ErrorServiceImpl implements ErrorService {
 
     /**
      * @return Returns an instance of error service with messages for the Zowe REST
-     *         API Commons.
+     * API Commons.
      */
     public static ErrorService getCommonsDefault() {
         ErrorServiceImpl errorService = new ErrorServiceImpl();
@@ -232,20 +215,19 @@ public class ErrorServiceImpl implements ErrorService {
     }
 
     private String getLocalizedComponentOrUseDefault(Locale locale, String key, ErrorMessage message) {
-        String component = message.getComponent();
-        if (component == null) {
+        String component;
+        if ( message.getComponent() == null) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String className = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
-            component = className;
+            component = stackTrace[STACK_TRACE_ELEMENT_ABOVE_CREATEAPIMESSAGE_METHOD].getClassName();
         } else {
-            component = localizedText(locale, key + ".component", component);
+            component = localizedText(locale, key + ".component", message.getComponent());
         }
         return component;
     }
 
     private String localizedText(Locale locale, String key, String defaultText) {
         if (locale != null) {
-            for (int i = baseNames.size() -1; i >= 0; i--) {
+            for (int i = baseNames.size() - 1; i >= 0; i--) {
                 String baseName = baseNames.get(i);
                 ResourceBundle bundle = getResourceBundle(baseName, locale);
                 if (bundle == null) {
@@ -282,23 +264,24 @@ public class ErrorServiceImpl implements ErrorService {
 
     private Object[] validateParameters(ErrorMessage message, String key, Object... parameters) {
         if (message.getKey().equals(INVALID_KEY_MESSAGE)) {
-            return new Object[] { key };
+            return new Object[]{key};
         } else {
             return parameters;
         }
     }
+
     /**
      * Custom implementation of {@code ResourceBundle.Control}, adding support for
      * UTF-8.
      */
-    class ErrorServiceControl extends ResourceBundle.Control {
+    static class ErrorServiceControl extends ResourceBundle.Control {
         protected ResourceBundle loadBundle(Reader reader) throws IOException {
             return new PropertyResourceBundle(reader);
         }
 
         @Override
         public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader,
-                boolean reload) throws IllegalAccessException, InstantiationException, IOException {
+                                        boolean reload) throws IllegalAccessException, InstantiationException, IOException {
             if (format.equals("java.properties")) {
                 return newJavaPropertiesBundle(baseName, locale, loader);
             } else {
@@ -308,20 +291,23 @@ public class ErrorServiceImpl implements ErrorService {
 
         private ResourceBundle newJavaPropertiesBundle(String baseName, Locale locale, ClassLoader loader)
                 throws IOException {
-            String bundleName = toBundleName(baseName, locale);
-            String resourceName = toResourceName(bundleName, "properties");
-            ClassLoader classLoader = loader;
-            InputStream inputStream;
-            try {
-                inputStream = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-                    InputStream is = null;
-                    is = classLoader.getResourceAsStream(resourceName);
-                    return is;
-                });
-            } catch (PrivilegedActionException ex) {
-                throw (IOException) ex.getException();
+            try (
+                    InputStream is = loader.getResourceAsStream(getResourceName(baseName, locale));
+                    InputStream pid = AccessController.doPrivileged(getPrivilegedAction(is))
+            ) {
+                return loadBundleFromInputStream(pid);
             }
-            return loadBundleFromInputStream(inputStream);
+        }
+
+        private String getResourceName(
+                String baseName, Locale locale
+        ) {
+            String bundleName = toBundleName(baseName, locale);
+            return toResourceName(bundleName, "properties");
+        }
+
+        private <T> PrivilegedAction<T> getPrivilegedAction(T in) {
+            return () -> in;
         }
 
         private ResourceBundle loadBundleFromInputStream(InputStream inputStream) throws IOException {
