@@ -246,7 +246,7 @@ public class JarPatcher {
             Enumeration<? extends ZipEntry> entries = zipPatch.entries();
             try {
                 while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
+                    ZipEntry entry = entries.nextElement(); //NOSONAR
 
                     String name = entry.getName();
                     if (!name.contains("..")) {
