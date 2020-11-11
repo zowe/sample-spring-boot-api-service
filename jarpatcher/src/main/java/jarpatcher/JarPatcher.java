@@ -246,8 +246,14 @@ public class JarPatcher {
             Enumeration<? extends ZipEntry> entries = zipPatch.entries();
             try {
                 while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();  // NOSONAR
-                    processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
+                    ZipEntry entry = entries.nextElement();
+
+                    String name = entry.getName();
+                    if (!name.contains("..")) {
+                        processPatchEntry(ignoredPath, zipOut, deletedOrPatchedNames, zipPatch, entry);
+                    } else {
+                        throw new IllegalArgumentException("Path cannot contain '..': " + name);
+                    }
                 }
             } finally {
                 zipPatch.close();
@@ -304,11 +310,6 @@ public class JarPatcher {
         createDirectories(filename, zipOut, createdDirectories);
         ZipEntry zipEntry = new ZipEntry(filename);
         copyZipEntryAttributes(entry, zipEntry);
-
-        String name = entry.getName();
-        if (name.contains("..")) {
-            throw new IllegalArgumentException("Path cannot contain '..': " + name);
-        }
 
         try (InputStream inputStream = zipPatch.getInputStream(entry)) {
             zipOut.putNextEntry(zipEntry);
