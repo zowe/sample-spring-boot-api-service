@@ -89,7 +89,7 @@ public interface Message {
      * For support and developers - source service that generated the error (it can
      * be a Zowe service name or host:port). This field is optional.
      *
-     * Example: zzow01.zowe.marist.cloud:1234:myservice
+     * Example: zzow04.zowe.marist.cloud:1234:myservice
      */
     String getMessageSource();
 

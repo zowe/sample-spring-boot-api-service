@@ -7,7 +7,7 @@ Both subprojects provide documentation on how to build the z/OS native code:
 
 ## Building in CircleCI
 
-Native code is built on `zzow01.zowe.marist.cloud`.
+Native code is built on `zzow04.zowe.marist.cloud`.
 The definition of the steps in CircleCI is labeled `&zosbuild` in [`.circleci/config.yml`](/.circleci/config.yml)
 It calls `npm run zosbuild` that invokes [`scripts/zosbuild.sh`](.scripts/zosbuild.sh). `npm run` is used to initialize the NPM environment with Zowe CLI and zowe-api-dev modules. [`scripts/zosbuild.sh`](.scripts/zosbuild.sh) does following:
 
